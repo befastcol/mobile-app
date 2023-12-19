@@ -42,7 +42,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Hide keys from hackers
+/node_modules
+
+# Hide keys
 /lib/env.dart
 android/app/src/main/res/values/strings.xml
 ios/Runner/Config.swift
+ios/Runner/Secrets.h
