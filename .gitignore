@@ -44,13 +44,5 @@ app.*.map.json
 
 /node_modules
 
-#Hide API Key,
 
-/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
-
-#         <EnvironmentVariable
-#           key = "GOOGLE_MAPS_API_KEY"
-#            value = ""
-#            isEnabled = "YES">
-#         </EnvironmentVariable>
 
