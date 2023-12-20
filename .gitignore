@@ -44,8 +44,14 @@ app.*.map.json
 
 /node_modules
 
-# Hide keys
-/lib/env.dart
-android/app/src/main/res/values/strings.xml
-ios/Runner/Config.swift
-ios/Runner/Secrets.h
+#Hide API Key,
+
+/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
+
+#         <EnvironmentVariable
+#           key = "GOOGLE_MAPS_API_KEY"
+#            value = ""
+#            isEnabled = "YES">
+#         </EnvironmentVariable>
+#      </EnvironmentVariables>
+
