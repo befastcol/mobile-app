@@ -53,5 +53,4 @@ app.*.map.json
 #            value = ""
 #            isEnabled = "YES">
 #         </EnvironmentVariable>
-#      </EnvironmentVariables>
 
