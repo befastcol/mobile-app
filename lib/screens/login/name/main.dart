@@ -65,7 +65,7 @@ class _NameState extends State<Name> {
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Nombre',
-                          hintText: 'Erick Llerenas'),
+                          hintText: 'Nombre Apellido'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Introduce tu nombre por favor';
@@ -79,10 +79,11 @@ class _NameState extends State<Name> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            Navigator.push(
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const Home()),
+                              (Route<dynamic> route) => false,
                             );
                           }
                         },

@@ -49,6 +49,10 @@ class _PhoneVerificationState extends State<PhoneVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+      ),
       backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () {},
@@ -153,9 +157,10 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const Name()),
+                          (Route<dynamic> route) => false,
                         );
                       } else {
                         _errorController?.add(ErrorAnimationType.shake);
