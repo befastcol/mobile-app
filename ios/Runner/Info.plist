@@ -47,5 +47,7 @@
 	</array>
 	<key>FLTEnableImpeller</key>
 <false />
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Esta aplicación requiere acceso a la biblioteca de fotos para cargar y compartir imágenes.</string>
 </dict>
 </plist>
