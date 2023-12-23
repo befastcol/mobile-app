@@ -74,7 +74,7 @@ class _OrdersState extends State<Orders> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            "Casa de erick",
+                            "Plaza Sendera",
                             style: TextStyle(color: Colors.grey[700]),
                           )
                         ],

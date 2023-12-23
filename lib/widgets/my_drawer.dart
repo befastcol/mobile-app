@@ -1,5 +1,6 @@
-import 'package:be_fast/screens/home/orders.dart';
-import 'package:be_fast/screens/home/profile.dart';
+import 'package:be_fast/screens/home/register/main.dart';
+import 'package:be_fast/screens/home/orders/main.dart';
+import 'package:be_fast/screens/home/profile/main.dart';
 import 'package:flutter/material.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -15,7 +16,7 @@ class _MyDrawerState extends State<MyDrawer> {
 
   @override
   void initState() {
-    hasAdminAccess = true;
+    hasAdminAccess = false;
     hasDeliveryAccess = false;
     super.initState();
   }
@@ -38,7 +39,7 @@ class _MyDrawerState extends State<MyDrawer> {
             currentAccountPictureSize: const Size(60, 60),
             accountEmail: const Text('(312)312-3123'),
             accountName: const Text(
-              'Eduardo Apps',
+              'Eduardo',
               style: TextStyle(fontSize: 24.0),
             ),
             decoration: const BoxDecoration(
@@ -83,7 +84,10 @@ class _MyDrawerState extends State<MyDrawer> {
               trailing: const Icon(Icons.navigate_next),
               title: const Text('Quiero ser repartidor'),
               onTap: () {
-                // Acción al presionar
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Register()),
+                );
               },
             ),
           if (hasDeliveryAccess)
