@@ -17,7 +17,7 @@ class _OrdersState extends State<Orders> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.yellow[600],
-        title: const Text("Mis pedidos"),
+        title: const Text("Mis pedidos test"),
       ),
       body: SingleChildScrollView(
         child: Column(
