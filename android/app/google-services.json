@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1017648713481",
+    "project_id": "be-fast-34130",
+    "storage_bucket": "be-fast-34130.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017648713481:android:f278bfe6b8f27b001ccdd8",
+        "android_client_info": {
+          "package_name": "com.be_fast.be_fast"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUcGBX-JVCou_Mdjg9uD8YDRXSC0daza0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

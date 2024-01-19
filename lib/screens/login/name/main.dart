@@ -1,21 +1,58 @@
-import 'package:be_fast/screens/home/main.dart';
+import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
+import '../../../api/user.dart';
+import 'package:be_fast/screens/home/main.dart';
+
 class Name extends StatefulWidget {
-  const Name({super.key});
+  final String phoneNumber;
+
+  const Name({super.key, required this.phoneNumber});
 
   @override
   State<Name> createState() => _NameState();
 }
 
 class _NameState extends State<Name> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
   late TextEditingController _nameController;
+  late bool _isLoading;
+
+  void _registerUser() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      String userId =
+          await createUser(_nameController.text, widget.phoneNumber);
+      debugPrint(userId);
+      await UserSession.storeUserId(userId);
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Home()),
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      debugPrint("Error: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _formKey = GlobalKey<FormState>();
     _nameController = TextEditingController();
+    _isLoading = false;
   }
 
   @override
@@ -74,32 +111,26 @@ class _NameState extends State<Name> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Home()),
-                              (Route<dynamic> route) => false,
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                    if (!_isLoading)
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _registerUser,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            backgroundColor: Colors.blue,
                           ),
-                          backgroundColor: Colors.blue,
-                        ),
-                        child: const Text(
-                          'Continuar',
-                          style: TextStyle(color: Colors.white),
+                          child: const Text(
+                            'Continuar',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
+                    if (_isLoading)
+                      const Center(child: CircularProgressIndicator()),
                   ],
                 ),
               ),

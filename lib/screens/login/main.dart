@@ -1,3 +1,4 @@
+import 'package:be_fast/utils/auth_service.dart';
 import 'package:be_fast/screens/login/phone_verification/main.dart';
 import 'package:flutter/material.dart';
 
@@ -89,6 +90,7 @@ class _LoginState extends State<Login> {
                                         phoneNumber: _phoneController.text,
                                       )),
                             );
+                            AuthService.sendOtp(phone: _phoneController.text);
                           }
                         },
                         style: ElevatedButton.styleFrom(

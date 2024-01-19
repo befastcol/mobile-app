@@ -1,46 +1,43 @@
-import 'package:be_fast/screens/home/register/main.dart';
-import 'package:be_fast/screens/home/orders/main.dart';
-import 'package:be_fast/screens/home/profile/main.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:flutter/material.dart';
+import 'package:be_fast/utils/auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyDrawer extends StatefulWidget {
+import 'package:be_fast/screens/home/register/main.dart';
+import 'package:be_fast/screens/home/deliveries/main.dart';
+import 'package:be_fast/screens/home/profile/main.dart';
+
+class MyDrawer extends ConsumerWidget {
   const MyDrawer({super.key});
 
-  @override
-  State<MyDrawer> createState() => _MyDrawerState();
-}
+  String formatPhoneNumber(String? phoneNumber) {
+    if (phoneNumber == null || phoneNumber.length < 10) {
+      return '';
+    }
+    String areaCode = phoneNumber.substring(0, 3);
+    String middlePart = phoneNumber.substring(3, 6);
+    String lastPart = phoneNumber.substring(6, 10);
 
-class _MyDrawerState extends State<MyDrawer> {
-  late bool hasAdminAccess;
-  late bool hasDeliveryAccess;
-
-  @override
-  void initState() {
-    hasAdminAccess = false;
-    hasDeliveryAccess = false;
-    super.initState();
+    return '($areaCode) $middlePart-$lastPart';
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+
+    void updateUserName(String name) async {
+      ref.read(userProvider.notifier).updateUserName(name);
+    }
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            currentAccountPicture: CircleAvatar(
-              radius: 10,
-              backgroundColor: Colors.yellow[600],
-              child: const Text(
-                'E',
-                style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-              ),
-            ),
-            currentAccountPictureSize: const Size(60, 60),
-            accountEmail: const Text('(312)312-3123'),
-            accountName: const Text(
-              'Eduardo',
-              style: TextStyle(fontSize: 24.0),
+            accountEmail: Text(formatPhoneNumber(user?.phone)),
+            accountName: Text(
+              user?.name ?? '',
+              style: const TextStyle(fontSize: 24.0),
             ),
             decoration: const BoxDecoration(
               color: Color.fromRGBO(39, 50, 112, 1),
@@ -53,7 +50,12 @@ class _MyDrawerState extends State<MyDrawer> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Profile()),
+                MaterialPageRoute(
+                    builder: (context) => Profile(
+                          userId: user?.id,
+                          name: user?.name,
+                          updateUserName: updateUserName,
+                        )),
               );
             },
           ),
@@ -64,21 +66,12 @@ class _MyDrawerState extends State<MyDrawer> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Orders()),
+                MaterialPageRoute(builder: (context) => const Deliveries()),
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            trailing: const Icon(Icons.navigate_next),
-            title: const Text('Configuración'),
-            onTap: () {
-              // Update the state of the app.
-              // ...
-            },
-          ),
           const Divider(),
-          if (!hasDeliveryAccess && !hasAdminAccess)
+          if (user?.role == 'user')
             ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
@@ -90,7 +83,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 );
               },
             ),
-          if (hasDeliveryAccess)
+          if (user?.role == 'courier')
             ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
@@ -99,7 +92,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 // Acción al presionar
               },
             ),
-          if (hasAdminAccess)
+          if (user?.role == 'admin')
             ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
@@ -108,7 +101,7 @@ class _MyDrawerState extends State<MyDrawer> {
                 // Acción al presionar
               },
             ),
-          if (hasAdminAccess)
+          if (user?.role == 'admin')
             ListTile(
               leading: const Icon(Icons.people),
               trailing: const Icon(Icons.navigate_next),
@@ -117,6 +110,19 @@ class _MyDrawerState extends State<MyDrawer> {
                 // Acción al presionar
               },
             ),
+          ListTile(
+            leading: const Icon(
+              Icons.logout,
+              color: Colors.red,
+            ),
+            title: const Text(
+              'Cerrar sesión',
+              style: TextStyle(color: Colors.red),
+            ),
+            onTap: () {
+              AuthService.logout();
+            },
+          ),
         ],
       ),
     );

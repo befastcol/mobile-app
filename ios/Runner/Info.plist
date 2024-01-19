@@ -49,5 +49,14 @@
 <false />
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>Esta aplicación requiere acceso a la biblioteca de fotos para cargar y compartir imágenes.</string>
+	<key>CFBundleURLTypes</key>
+		<array>
+    		<dict>
+        		<key>CFBundleURLSchemes</key>
+        		<array>
+            		<string>app-1-1017648713481-ios-be54880237590de91ccdd8</string>
+				</array>
+			</dict>
+		</array>
 </dict>
 </plist>
