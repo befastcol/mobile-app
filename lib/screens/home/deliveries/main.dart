@@ -1,6 +1,7 @@
 import 'package:be_fast/api/delivery.dart';
-import 'package:be_fast/api/models/delivery.dart';
+import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
+import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
 class Deliveries extends StatefulWidget {
@@ -19,14 +20,16 @@ class _DeliveriesState extends State<Deliveries> {
       isLoading = true;
     });
     try {
-      String userId = "65a452775531c41d71aef08a";
+      String? userId = await UserSession.getUserId();
       deliveries = await getUserDeliveries(userId);
     } catch (error) {
       debugPrint('Error: $error');
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -59,8 +62,8 @@ class _DeliveriesState extends State<Deliveries> {
                   final delivery = deliveries[index];
                   return DeliveryCard(
                     date: delivery.requestedDate,
-                    destination: delivery.destination.label,
-                    origin: delivery.origin.label,
+                    destination: delivery.destination.title,
+                    origin: delivery.origin.title,
                     price: delivery.price,
                   );
                 },

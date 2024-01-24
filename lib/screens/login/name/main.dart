@@ -2,7 +2,7 @@ import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
 import '../../../api/user.dart';
-import 'package:be_fast/screens/home/main.dart';
+import 'package:be_fast/screens/home/map/main.dart';
 
 class Name extends StatefulWidget {
   final String phoneNumber;

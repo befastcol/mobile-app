@@ -1,4 +1,4 @@
-import 'package:be_fast/api/constants.dart';
+import 'package:be_fast/constants/api.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

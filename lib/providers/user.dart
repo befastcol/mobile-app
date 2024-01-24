@@ -1,9 +1,10 @@
-import 'package:be_fast/api/constants.dart';
-import 'package:be_fast/api/models/user.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:be_fast/constants/api.dart';
+import 'package:be_fast/models/user.dart';
+import 'package:be_fast/utils/user_session.dart';
 
 final userProvider = StateNotifierProvider<UserNotifier, UserModel?>((ref) {
   return UserNotifier();
@@ -15,20 +16,23 @@ class UserNotifier extends StateNotifier<UserModel?> {
   }
 
   Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-    if (userId == null) {
-      state = null;
-      return;
-    }
+    try {
+      String? userId = await UserSession.getUserId();
+      if (userId == null) {
+        state = null;
+        return;
+      }
 
-    final url = Uri.parse('$baseUrl/user/$userId');
-    final response = await http.get(url);
+      final url = Uri.parse('$baseUrl/user/$userId');
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final user = json.decode(response.body);
-      state = UserModel.fromJson(user);
-    } else {
+      if (response.statusCode == 200) {
+        final user = json.decode(response.body);
+        state = UserModel.fromJson(user);
+      } else {
+        state = null;
+      }
+    } catch (e) {
       state = null;
     }
   }

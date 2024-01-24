@@ -1,4 +1,4 @@
-import 'package:be_fast/api/models/location.dart';
+import 'package:be_fast/models/location.dart';
 
 class Delivery {
   final String id;

@@ -1,9 +1,9 @@
-import 'package:be_fast/api/constants.dart';
-import 'package:be_fast/api/models/delivery.dart';
+import 'package:be_fast/constants/api.dart';
+import 'package:be_fast/models/delivery.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<List<Delivery>> getUserDeliveries(String userId) async {
+Future<List<Delivery>> getUserDeliveries(String? userId) async {
   final url = Uri.parse('$baseUrl/delivery/$userId');
 
   try {
