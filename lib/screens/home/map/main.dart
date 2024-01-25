@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:be_fast/screens/home/map/components/location_selection_card.dart';
 import 'package:be_fast/utils/location_utils.dart';
 import 'package:be_fast/widgets/my_drawer.dart';
-import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Home extends StatefulWidget {
@@ -17,40 +18,48 @@ class _HomeState extends State<Home> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   final Set<Marker> _markers = {};
-  CameraPosition _initialCameraPosition = const CameraPosition(
-    target: LatLng(19.251918, -103.720911),
-    zoom: 14,
-  );
+  CameraPosition? _initialCameraPosition;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _initializeMap();
   }
 
-  Future<void> _getCurrentLocation() async {
+  Future<void> _initializeMap() async {
     try {
       final position = await LocationHelper.determinePosition();
-      final currentLatLng = LatLng(position.latitude, position.longitude);
-
-      final BitmapDescriptor blueMarker =
-          BitmapDescriptor.defaultMarkerWithHue(200);
-
-      setState(() {
-        _initialCameraPosition =
-            CameraPosition(target: currentLatLng, zoom: 14);
-        _markers.add(Marker(
-          markerId: const MarkerId('currentLocation'),
-          position: currentLatLng,
-          icon: blueMarker,
-        ));
-      });
-
-      final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(CameraUpdate.newLatLngZoom(currentLatLng, 17));
+      _updateCameraPosition(position);
+      _addCurrentLocationMarker(position);
     } catch (e) {
       debugPrint('Error al obtener ubicación: $e');
     }
+  }
+
+  void _updateCameraPosition(Position position) {
+    final currentLatLng = LatLng(position.latitude, position.longitude);
+    setState(() {
+      _initialCameraPosition = CameraPosition(target: currentLatLng, zoom: 17);
+    });
+    _moveCamera(currentLatLng);
+  }
+
+  void _addCurrentLocationMarker(Position position) {
+    final currentLatLng = LatLng(position.latitude, position.longitude);
+    final BitmapDescriptor blueMarker =
+        BitmapDescriptor.defaultMarkerWithHue(200);
+    setState(() {
+      _markers.add(Marker(
+        markerId: const MarkerId('currentLocation'),
+        position: currentLatLng,
+        icon: blueMarker,
+      ));
+    });
+  }
+
+  Future<void> _moveCamera(LatLng target) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newLatLngZoom(target, 17));
   }
 
   @override
@@ -65,25 +74,31 @@ class _HomeState extends State<Home> {
         onPressed: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
-      body: Stack(
-        children: [
-          GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: _initialCameraPosition,
-            myLocationButtonEnabled: false,
-            markers: _markers,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
-          ),
-          const Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: LocationSelectionCard(),
-          ),
-        ],
-      ),
+      body: _initialCameraPosition == null
+          ? const Center(child: CircularProgressIndicator())
+          : _buildGoogleMap(),
+    );
+  }
+
+  Widget _buildGoogleMap() {
+    return Stack(
+      children: [
+        GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: _initialCameraPosition!,
+          myLocationButtonEnabled: false,
+          markers: _markers,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+        ),
+        const Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: LocationSelectionCard(),
+        ),
+      ],
     );
   }
 }

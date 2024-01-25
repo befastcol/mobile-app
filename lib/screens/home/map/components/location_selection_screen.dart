@@ -1,7 +1,6 @@
 import 'package:be_fast/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:be_fast/utils/location_utils.dart';
 import 'package:geolocator/geolocator.dart';
