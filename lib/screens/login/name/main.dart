@@ -21,9 +21,11 @@ class _NameState extends State<Name> {
   void _registerUser() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     try {
       String userId =

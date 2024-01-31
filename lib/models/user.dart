@@ -1,10 +1,20 @@
 class UserModel {
-  final String? id;
-  final String? name;
-  final String? phone;
-  final String? role;
+  final String id, name, phone, role;
 
-  UserModel({this.id, this.name, this.phone, this.role});
+  UserModel(
+      {required this.id,
+      required this.name,
+      required this.phone,
+      required this.role});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['_id'],
+      name: json['name'],
+      phone: json['phone'],
+      role: json['role'],
+    );
+  }
 
   UserModel copyWith({
     String? id,
@@ -17,15 +27,6 @@ class UserModel {
       name: name ?? this.name,
       phone: phone ?? this.phone,
       role: role ?? this.role,
-    );
-  }
-
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['_id'],
-      name: json['name'],
-      phone: json['phone'],
-      role: json['role'],
     );
   }
 }

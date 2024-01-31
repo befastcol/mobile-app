@@ -35,21 +35,25 @@ class _LocationSelectionCardState extends State<LocationSelectionCard> {
   }
 
   void updateOrigin(LatLng latlng, String title, String subtitle) {
-    setState(() {
-      origin = Location(
-          coordinates: [latlng.latitude, latlng.longitude],
-          title: title,
-          subtitle: subtitle);
-    });
+    if (mounted) {
+      setState(() {
+        origin = Location(
+            coordinates: [latlng.latitude, latlng.longitude],
+            title: title,
+            subtitle: subtitle);
+      });
+    }
   }
 
   void updateDestination(LatLng latlng, String title, String subtitle) {
-    setState(() {
-      destination = Location(
-          coordinates: [latlng.latitude, latlng.longitude],
-          title: title,
-          subtitle: subtitle);
-    });
+    if (mounted) {
+      setState(() {
+        destination = Location(
+            coordinates: [latlng.latitude, latlng.longitude],
+            title: title,
+            subtitle: subtitle);
+      });
+    }
   }
 
   void onFindCouriersPressed() {}
@@ -84,7 +88,7 @@ class _LocationSelectionCardState extends State<LocationSelectionCard> {
               iconData: Icons.location_on,
               iconColor: Colors.red,
               text: destination.title.isEmpty
-                  ? '¿A dónde va?'
+                  ? '¿A dónde vamos?'
                   : destination.title,
             ),
             const SizedBox(height: 20),
