@@ -2,12 +2,12 @@ import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
 import '../../../api/user.dart';
-import 'package:be_fast/screens/home/main.dart';
+import 'package:be_fast/screens/home/map/main.dart';
 
 class Name extends StatefulWidget {
-  final String phoneNumber;
+  final String phone;
 
-  const Name({super.key, required this.phoneNumber});
+  const Name({super.key, required this.phone});
 
   @override
   State<Name> createState() => _NameState();
@@ -21,28 +21,23 @@ class _NameState extends State<Name> {
   void _registerUser() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    if (mounted) {
+      setState(() => _isLoading = true);
+    }
 
     try {
-      String userId =
-          await createUser(_nameController.text, widget.phoneNumber);
-      debugPrint(userId);
-      await UserSession.storeUserId(userId);
-      if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const Home()),
-        (Route<dynamic> route) => false,
-      );
-    } catch (e) {
-      debugPrint("Error: $e");
+      String? userId = await UserSession.getUserId();
+      await updateUser(name: _nameController.text, userId: userId);
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+          (Route<dynamic> route) => false,
+        );
+      }
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }

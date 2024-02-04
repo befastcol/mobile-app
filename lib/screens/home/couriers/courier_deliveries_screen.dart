@@ -1,27 +1,29 @@
 import 'package:be_fast/api/delivery.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
-import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
-class Deliveries extends StatefulWidget {
-  const Deliveries({super.key});
+class CourierDeliveries extends StatefulWidget {
+  final String userId;
+  final String name;
+
+  const CourierDeliveries(
+      {super.key, required this.userId, required this.name});
 
   @override
-  State<Deliveries> createState() => _DeliveriesState();
+  State<CourierDeliveries> createState() => _CourierDeliveriesState();
 }
 
-class _DeliveriesState extends State<Deliveries> {
+class _CourierDeliveriesState extends State<CourierDeliveries> {
   List<Delivery> deliveries = [];
   bool isLoading = false;
 
-  void loadUserDeliveries() async {
+  void loadCourierDeliveries() async {
     setState(() {
       isLoading = true;
     });
     try {
-      String? userId = await UserSession.getUserId();
-      deliveries = await getUserDeliveries(userId);
+      deliveries = await getUserDeliveries(widget.userId);
     } catch (error) {
       debugPrint('Error: $error');
     } finally {
@@ -34,13 +36,13 @@ class _DeliveriesState extends State<Deliveries> {
   }
 
   Future<void> _refreshList() async {
-    loadUserDeliveries();
+    loadCourierDeliveries();
   }
 
   @override
   void initState() {
     super.initState();
-    loadUserDeliveries();
+    loadCourierDeliveries();
   }
 
   @override
@@ -50,7 +52,7 @@ class _DeliveriesState extends State<Deliveries> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.teal[600],
-        title: const Text("Mis pedidos"),
+        title: Text(widget.name),
       ),
       body: RefreshIndicator(
         onRefresh: _refreshList,

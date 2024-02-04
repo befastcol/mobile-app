@@ -1,32 +1,15 @@
-import 'package:be_fast/utils/auth_service.dart';
-import 'package:be_fast/screens/login/phone_verification/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:be_fast/screens/login/phone_veritication.dart';
 
-class Login extends StatefulWidget {
+class Login extends HookWidget {
   const Login({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late TextEditingController _phoneController;
-
-  @override
-  void initState() {
-    super.initState();
-    _phoneController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final phoneController = useTextEditingController();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -35,7 +18,7 @@ class _LoginState extends State<Login> {
             child: Container(
               margin: const EdgeInsets.all(30),
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +45,7 @@ class _LoginState extends State<Login> {
                     const SizedBox(height: 20),
                     TextFormField(
                       maxLength: 10,
-                      controller: _phoneController,
+                      controller: phoneController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -82,15 +65,14 @@ class _LoginState extends State<Login> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
+                          if (formKey.currentState!.validate()) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PhoneVerification(
-                                        phoneNumber: _phoneController.text,
+                                        phone: phoneController.text,
                                       )),
                             );
-                            AuthService.sendOtp(phone: _phoneController.text);
                           }
                         },
                         style: ElevatedButton.styleFrom(

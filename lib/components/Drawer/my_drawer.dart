@@ -1,42 +1,49 @@
-import 'package:be_fast/providers/user.dart';
-import 'package:flutter/material.dart';
-import 'package:be_fast/utils/auth_service.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import "package:be_fast/components/Drawer/utils/user_data.dart";
+import "package:be_fast/models/user.dart";
+import "package:be_fast/screens/home/courier_requests/main.dart";
+import "package:be_fast/screens/home/couriers/main.dart";
+import "package:be_fast/screens/home/deliveries/main.dart";
+import "package:be_fast/screens/home/profile/main.dart";
+import "package:be_fast/screens/home/register/main.dart";
+import "package:be_fast/screens/home/users/main.dart";
+import "package:be_fast/utils/auth_service.dart";
+import "package:flutter/material.dart";
 
-import 'package:be_fast/screens/home/register/main.dart';
-import 'package:be_fast/screens/home/deliveries/main.dart';
-import 'package:be_fast/screens/home/profile/main.dart';
+import "utils/phone_format.dart";
 
-class MyDrawer extends ConsumerWidget {
+class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
 
-  String formatPhoneNumber(String? phoneNumber) {
-    if (phoneNumber == null || phoneNumber.length < 10) {
-      return '';
-    }
-    String areaCode = phoneNumber.substring(0, 3);
-    String middlePart = phoneNumber.substring(3, 6);
-    String lastPart = phoneNumber.substring(6, 10);
+  @override
+  State<MyDrawer> createState() => _MyDrawerState();
+}
 
-    return '($areaCode) $middlePart-$lastPart';
+class _MyDrawerState extends State<MyDrawer> {
+  UserModel user = UserModel(id: '', name: '', phone: '', role: '');
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData().then((value) {
+      setState(() => user = value);
+    });
+  }
+
+  void updateUserName(String newName) {
+    setState(() => user = UserModel(
+        id: user.id, name: newName, phone: user.phone, role: user.role));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
-
-    void updateUserName(String name) async {
-      ref.read(userProvider.notifier).updateUserName(name);
-    }
-
+  Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountEmail: Text(formatPhoneNumber(user?.phone)),
+            accountEmail: Text(formatPhone(user.phone)),
             accountName: Text(
-              user?.name ?? '',
+              user.name,
               style: const TextStyle(fontSize: 24.0),
             ),
             decoration: const BoxDecoration(
@@ -52,8 +59,8 @@ class MyDrawer extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => Profile(
-                          userId: user?.id,
-                          name: user?.name,
+                          userId: user.id,
+                          name: user.name,
                           updateUserName: updateUserName,
                         )),
               );
@@ -71,8 +78,9 @@ class MyDrawer extends ConsumerWidget {
             },
           ),
           const Divider(),
-          if (user?.role == 'user')
-            ListTile(
+          Visibility(
+            visible: user.role == 'user',
+            child: ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
               title: const Text('Quiero ser repartidor'),
@@ -83,8 +91,10 @@ class MyDrawer extends ConsumerWidget {
                 );
               },
             ),
-          if (user?.role == 'courier')
-            ListTile(
+          ),
+          Visibility(
+            visible: user.role == 'courier',
+            child: ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
               title: const Text('Mis viajes'),
@@ -92,24 +102,50 @@ class MyDrawer extends ConsumerWidget {
                 // Acción al presionar
               },
             ),
-          if (user?.role == 'admin')
-            ListTile(
+          ),
+          Visibility(
+            visible: user.role == 'admin',
+            child: ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
               title: const Text('Repartidores'),
               onTap: () {
-                // Acción al presionar
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Couriers()),
+                );
               },
             ),
-          if (user?.role == 'admin')
-            ListTile(
+          ),
+          Visibility(
+            visible: user.role == 'admin',
+            child: ListTile(
               leading: const Icon(Icons.people),
               trailing: const Icon(Icons.navigate_next),
               title: const Text('Usuarios'),
               onTap: () {
-                // Acción al presionar
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Users()),
+                );
               },
             ),
+          ),
+          Visibility(
+            visible: user.role == 'admin',
+            child: ListTile(
+              leading: const Icon(Icons.insert_drive_file_sharp),
+              trailing: const Icon(Icons.navigate_next),
+              title: const Text('Solicitudes'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CourierRequests()),
+                );
+              },
+            ),
+          ),
           ListTile(
             leading: const Icon(
               Icons.logout,

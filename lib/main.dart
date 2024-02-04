@@ -4,10 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:be_fast/utils/firebase_options.dart';
 
-import 'package:be_fast/screens/home/main.dart';
+import 'package:be_fast/screens/home/map/main.dart';
 import 'package:be_fast/screens/login/main.dart';
 
 void main() async {
@@ -17,6 +18,7 @@ void main() async {
   );
 
   await initializeDateFormatting();
+  await dotenv.load(fileName: ".env");
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(const ProviderScope(child: MyApp()));
