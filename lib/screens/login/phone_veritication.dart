@@ -5,7 +5,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:be_fast/api/user.dart';
 import 'package:be_fast/utils/auth_service.dart';
 
-import 'package:be_fast/screens/home/map/main.dart';
+import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/name.dart';
 
 class PhoneVerification extends StatefulWidget {

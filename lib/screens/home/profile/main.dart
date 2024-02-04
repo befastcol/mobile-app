@@ -1,16 +1,11 @@
 import 'package:be_fast/api/user.dart';
+import 'package:be_fast/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
-  final String? name;
-  final String? userId;
-  final Function updateUserName;
-
-  const Profile(
-      {super.key,
-      required this.name,
-      required this.userId,
-      required this.updateUserName});
+  final String name, id;
+  const Profile({super.key, required this.name, required this.id});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -23,15 +18,15 @@ class _ProfileState extends State<Profile> {
 
   @override
   void initState() {
+    super.initState();
     _nameController = TextEditingController(text: widget.name);
     _isLoading = false;
-    super.initState();
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
+    _nameController.dispose();
   }
 
   @override
@@ -95,7 +90,13 @@ class _ProfileState extends State<Profile> {
                       : SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: __saveUser,
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                final userProvider =
+                                    context.read<UserProvider>();
+                                _saveUser(userProvider);
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                               shape: RoundedRectangleBorder(
@@ -126,22 +127,14 @@ class _ProfileState extends State<Profile> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void __saveUser() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      try {
-        await updateUser(userId: widget.userId, name: _nameController.text);
-        await widget.updateUserName(_nameController.text);
-        if (mounted) showSnackBar(context, "Nombre guardado correctamente");
-      } catch (e) {
-        debugPrint("Error: $e");
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+  void _saveUser(UserProvider userProvider) async {
+    setState(() => _isLoading = true);
+    try {
+      await updateUser(userId: widget.id, name: _nameController.text);
+      userProvider.updateUserName(_nameController.text);
+      if (mounted) showSnackBar(context, "Nombre guardado correctamente");
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 }

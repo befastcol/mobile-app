@@ -1,15 +1,17 @@
+import 'package:be_fast/providers/map_provider.dart';
+import 'package:be_fast/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:be_fast/utils/firebase_options.dart';
 
-import 'package:be_fast/screens/home/map/main.dart';
-import 'package:be_fast/screens/login/main.dart';
+import 'package:be_fast/screens/home/home/home.dart';
+import 'package:be_fast/screens/login/login.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +23,15 @@ void main() async {
   await dotenv.load(fileName: ".env");
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
-    runApp(const ProviderScope(child: MyApp()));
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => UserProvider()),
+          ChangeNotifierProvider(create: (context) => MapProvider()),
+        ],
+        child: const MyApp(),
+      ),
+    );
   });
 }
 

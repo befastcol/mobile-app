@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:be_fast/screens/login/phone_veritication.dart';
 
-class Login extends HookWidget {
-  const Login({super.key});
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final formKey = useMemoized(() => GlobalKey<FormState>());
-    final phoneController = useTextEditingController();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -48,9 +58,10 @@ class Login extends HookWidget {
                       controller: phoneController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Teléfono',
-                          hintText: '3120000000'),
+                        border: OutlineInputBorder(),
+                        labelText: 'Teléfono',
+                        hintText: '3120000000',
+                      ),
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -69,9 +80,10 @@ class Login extends HookWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => PhoneVerification(
-                                        phone: phoneController.text,
-                                      )),
+                                builder: (context) => PhoneVerification(
+                                  phone: phoneController.text,
+                                ),
+                              ),
                             );
                           }
                         },

@@ -45,9 +45,9 @@ class LocationHelper {
     }
   }
 
-  static Future<List<dynamic>> getAutocompleteResults(
-      String query, Position? position) async {
+  static Future<List<dynamic>> getAutocompleteResults(String query) async {
     try {
+      Position position = await determinePosition();
       String url = _getGoogleMapsUrl(query, position);
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

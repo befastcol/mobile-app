@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:ui';
 
-Function debounce(
-    {required Function(String) callback,
-    Duration duration = const Duration(milliseconds: 500)}) {
-  Timer? debounce;
+class Debounce {
+  final int milliseconds;
+  Timer? _timer;
 
-  return (String value) {
-    if (debounce?.isActive ?? false) debounce!.cancel();
-    debounce = Timer(duration, () => callback(value));
-  };
+  Debounce({required this.milliseconds});
+
+  run(VoidCallback action) {
+    _timer?.cancel();
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
+  }
 }
