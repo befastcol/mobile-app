@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:be_fast/utils/firebase_options.dart';
 
 import 'package:be_fast/screens/home/map/main.dart';
-import 'package:be_fast/screens/login/phone/main.dart';
+import 'package:be_fast/screens/login/main.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

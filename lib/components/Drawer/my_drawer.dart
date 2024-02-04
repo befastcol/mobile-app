@@ -1,35 +1,49 @@
-import 'package:be_fast/providers/user.dart';
-import 'package:be_fast/screens/home/courier_requests/main.dart';
-import 'package:be_fast/screens/home/couriers/main.dart';
-import 'package:be_fast/screens/home/users/main.dart';
-import 'package:be_fast/utils/phone_number_format.dart';
-import 'package:flutter/material.dart';
-import 'package:be_fast/utils/auth_service.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import "package:be_fast/components/Drawer/utils/user_data.dart";
+import "package:be_fast/models/user.dart";
+import "package:be_fast/screens/home/courier_requests/main.dart";
+import "package:be_fast/screens/home/couriers/main.dart";
+import "package:be_fast/screens/home/deliveries/main.dart";
+import "package:be_fast/screens/home/profile/main.dart";
+import "package:be_fast/screens/home/register/main.dart";
+import "package:be_fast/screens/home/users/main.dart";
+import "package:be_fast/utils/auth_service.dart";
+import "package:flutter/material.dart";
 
-import 'package:be_fast/screens/home/register/main.dart';
-import 'package:be_fast/screens/home/deliveries/main.dart';
-import 'package:be_fast/screens/home/profile/main.dart';
+import "utils/phone_format.dart";
 
-class MyDrawer extends ConsumerWidget {
+class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+  State<MyDrawer> createState() => _MyDrawerState();
+}
 
-    void updateUserName(String name) async {
-      ref.read(userProvider.notifier).updateUserName(name);
-    }
+class _MyDrawerState extends State<MyDrawer> {
+  UserModel user = UserModel(id: '', name: '', phone: '', role: '');
 
+  @override
+  void initState() {
+    super.initState();
+    getUserData().then((value) {
+      setState(() => user = value);
+    });
+  }
+
+  void updateUserName(String newName) {
+    setState(() => user = UserModel(
+        id: user.id, name: newName, phone: user.phone, role: user.role));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountEmail: Text(formatPhoneNumber(user?.phone)),
+            accountEmail: Text(formatPhone(user.phone)),
             accountName: Text(
-              user?.name ?? '',
+              user.name,
               style: const TextStyle(fontSize: 24.0),
             ),
             decoration: const BoxDecoration(
@@ -45,8 +59,8 @@ class MyDrawer extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => Profile(
-                          userId: user?.id,
-                          name: user?.name,
+                          userId: user.id,
+                          name: user.name,
                           updateUserName: updateUserName,
                         )),
               );
@@ -65,7 +79,7 @@ class MyDrawer extends ConsumerWidget {
           ),
           const Divider(),
           Visibility(
-            visible: user?.role == 'user',
+            visible: user.role == 'user',
             child: ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
@@ -79,7 +93,7 @@ class MyDrawer extends ConsumerWidget {
             ),
           ),
           Visibility(
-            visible: user?.role == 'courier',
+            visible: user.role == 'courier',
             child: ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
@@ -90,7 +104,7 @@ class MyDrawer extends ConsumerWidget {
             ),
           ),
           Visibility(
-            visible: user?.role == 'admin',
+            visible: user.role == 'admin',
             child: ListTile(
               leading: const Icon(Icons.motorcycle),
               trailing: const Icon(Icons.navigate_next),
@@ -104,7 +118,7 @@ class MyDrawer extends ConsumerWidget {
             ),
           ),
           Visibility(
-            visible: user?.role == 'admin',
+            visible: user.role == 'admin',
             child: ListTile(
               leading: const Icon(Icons.people),
               trailing: const Icon(Icons.navigate_next),
@@ -118,7 +132,7 @@ class MyDrawer extends ConsumerWidget {
             ),
           ),
           Visibility(
-            visible: user?.role == 'admin',
+            visible: user.role == 'admin',
             child: ListTile(
               leading: const Icon(Icons.insert_drive_file_sharp),
               trailing: const Icon(Icons.navigate_next),
