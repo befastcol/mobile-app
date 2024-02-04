@@ -1,12 +1,10 @@
 import 'package:be_fast/models/location.dart';
 
 class Delivery {
-  final String id;
-  final DateTime requestedDate;
-  final Location origin;
-  final Location destination;
+  final String id, status;
   final double price;
-  final String status;
+  final Location origin, destination;
+  final DateTime requestedDate;
 
   Delivery({
     required this.id,

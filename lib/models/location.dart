@@ -1,7 +1,6 @@
 class Location {
   final List<double> coordinates;
-  final String title;
-  final String subtitle;
+  final String title, subtitle;
 
   Location({
     required this.coordinates,

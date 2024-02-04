@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 Future<List<Delivery>> getUserDeliveries(String? userId) async {
-  final url = Uri.parse('$baseUrl/delivery/$userId');
+  final url = Uri.parse('$baseUrl/deliveries/$userId');
 
   try {
     final response = await http.get(url);

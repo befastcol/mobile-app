@@ -31,20 +31,14 @@ class AuthService {
   }
 
   static Future<bool> loginWithOtp({required String otp}) async {
-    final cred =
+    final credential =
         PhoneAuthProvider.credential(verificationId: verifyId, smsCode: otp);
 
     try {
-      final UserCredential userCredential =
-          await _firebaseAuth.signInWithCredential(cred);
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
 
-      if (userCredential.user != null) {
-        return true;
-      } else {
-        return false;
-      }
-    } on FirebaseAuthException catch (e) {
-      throw Exception('Error de Firebase: ${e.message}');
+      return userCredential.user != null;
     } catch (e) {
       throw Exception('Error: ${e.toString()}');
     }

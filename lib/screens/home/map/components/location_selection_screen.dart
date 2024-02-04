@@ -104,7 +104,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                 controller: _destinationController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.location_on, color: Colors.red),
-                  hintText: '¿A dónde va?',
+                  hintText: '¿A dónde vamos?',
                   fillColor: Theme.of(context).colorScheme.surfaceVariant,
                   filled: true,
                   border: OutlineInputBorder(
