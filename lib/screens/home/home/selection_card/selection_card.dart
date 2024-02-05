@@ -1,7 +1,5 @@
 import 'package:be_fast/providers/map_provider.dart';
-import 'package:be_fast/screens/home/home/selection_card/widgets/destination_location.dart';
-import 'package:be_fast/screens/home/home/selection_card/widgets/origin_location.dart';
-import 'package:be_fast/screens/home/home/selection_card/widgets/search_button.dart';
+import 'package:be_fast/screens/home/home/selection_card/widgets/selection_card_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,14 +25,7 @@ class _SelectionCardState extends State<SelectionCard> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: const Padding(
               padding: EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  OriginLocation(),
-                  DestinationLocation(),
-                  SearchButtonWidget(),
-                ],
-              ),
+              child: SelectionCardContent(),
             ),
           );
         });

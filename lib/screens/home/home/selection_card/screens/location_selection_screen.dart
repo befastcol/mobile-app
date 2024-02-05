@@ -82,11 +82,10 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                           prefixIcon:
                               const Icon(Icons.location_on, color: Colors.blue),
                           hintText: '¿De dónde salimos?',
-                          fillColor:
-                              Theme.of(context).colorScheme.surfaceVariant,
+                          fillColor: Colors.grey[100],
                           filled: true,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
                           contentPadding:
@@ -105,11 +104,10 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                           prefixIcon:
                               const Icon(Icons.location_on, color: Colors.red),
                           hintText: '¿A dónde vamos?',
-                          fillColor:
-                              Theme.of(context).colorScheme.surfaceVariant,
+                          fillColor: Colors.grey[100],
                           filled: true,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
                           contentPadding:
@@ -165,11 +163,16 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
 
                             return ListTile(
                               onTap: () async {
-                                Navigator.pop(context);
-                                LatLng latLng = await GoogleMapsApi()
-                                    .getPlaceLatLng(placeId);
-                                mapProvider.updateDestination(
-                                    latLng, title, subtitle);
+                                try {
+                                  mapProvider.setIsUpdatingLocation(true);
+                                  Navigator.pop(context);
+                                  LatLng latLng = await GoogleMapsApi()
+                                      .getPlaceLatLng(placeId);
+                                  mapProvider.updateDestination(
+                                      latLng, title, subtitle);
+                                } finally {
+                                  mapProvider.setIsUpdatingLocation(false);
+                                }
                               },
                               leading: const Icon(Icons.location_on,
                                   color: Colors.red),

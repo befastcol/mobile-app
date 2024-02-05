@@ -21,8 +21,8 @@ class LocationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<MapProvider>(
         builder: (context, value, child) => Material(
-              color: Theme.of(context).colorScheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(20),
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(10),
               child: InkWell(
                 onTap: () => Navigator.push(
                   context,
@@ -34,7 +34,7 @@ class LocationItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
                   child: Row(

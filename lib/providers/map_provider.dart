@@ -14,6 +14,7 @@ class MapProvider extends ChangeNotifier {
   final Set<Polyline> _polylines = {};
   final Completer<GoogleMapController> _controller = Completer();
   CameraPosition? _initialCameraPosition;
+  bool _isUpdatingLocation = false;
 
   Location get origin => _origin;
   Location get destination => _destination;
@@ -21,6 +22,7 @@ class MapProvider extends ChangeNotifier {
   Set<Polyline> get polylines => _polylines;
   Completer<GoogleMapController> get controller => _controller;
   CameraPosition? get initialCameraPosition => _initialCameraPosition;
+  bool get isUpdatingLocation => _isUpdatingLocation;
 
   Future<void> initializeMap() async {
     try {
@@ -48,8 +50,11 @@ class MapProvider extends ChangeNotifier {
     String titlePlace = await GoogleMapsApi()
         .getAddressFromLatLng(position.latitude, position.longitude);
     String subtitlePlace = await LocationHelper.getLongPlace(position);
-    updateOrigin(LatLng(position.latitude, position.longitude), titlePlace,
-        subtitlePlace);
+
+    _origin = Location(
+        coordinates: [position.latitude, position.longitude],
+        title: titlePlace,
+        subtitle: subtitlePlace);
   }
 
   void updateOrigin(LatLng latlng, String title, String subtitle) {
@@ -65,7 +70,6 @@ class MapProvider extends ChangeNotifier {
       position: latlng,
       icon: BitmapDescriptor.defaultMarkerWithHue(200),
     ));
-
     _checkRouteAndAdjustCamera();
   }
 
@@ -82,7 +86,7 @@ class MapProvider extends ChangeNotifier {
       position: latlng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     ));
-
+    notifyListeners();
     _checkRouteAndAdjustCamera();
   }
 
@@ -118,7 +122,6 @@ class MapProvider extends ChangeNotifier {
   Future<void> _fitRoute() async {
     GoogleMapController mapController = await _controller.future;
 
-    // Determina los puntos suroeste y noreste basándose en las coordenadas de origen y destino
     LatLng southwest = LatLng(
       min(_origin.coordinates[0], _destination.coordinates[0]),
       min(_origin.coordinates[1], _destination.coordinates[1]),
@@ -131,9 +134,13 @@ class MapProvider extends ChangeNotifier {
     LatLngBounds bounds =
         LatLngBounds(southwest: southwest, northeast: northeast);
 
-    // No es necesario ajustar el centro para la creación de bounds
     await mapController
         .animateCamera(CameraUpdate.newLatLngBounds(bounds, 120.0));
+    notifyListeners();
+  }
+
+  void setIsUpdatingLocation(bool isUpdating) {
+    _isUpdatingLocation = isUpdating;
     notifyListeners();
   }
 }

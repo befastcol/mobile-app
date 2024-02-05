@@ -36,7 +36,7 @@ class _SearchButtonWidgetState extends State<SearchButtonWidget> {
         }
 
         return Container(
-          margin: const EdgeInsets.only(top: 20),
+          margin: EdgeInsets.only(top: isButtonEnabled ? 0 : 20),
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
