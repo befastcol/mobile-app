@@ -45,8 +45,8 @@ class MapProvider extends ChangeNotifier {
 
   Future<void> getAddressLocation() async {
     Position position = await LocationHelper.determinePosition();
-    String titlePlace = await LocationHelper.getAddressFromLatLng(
-        position.latitude, position.longitude);
+    String titlePlace = await GoogleMapsApi()
+        .getAddressFromLatLng(position.latitude, position.longitude);
     String subtitlePlace = await LocationHelper.getLongPlace(position);
     updateOrigin(LatLng(position.latitude, position.longitude), titlePlace,
         subtitlePlace);

@@ -2,21 +2,20 @@
 
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapsApi {
-  static const String _baseUrl =
-      'https://maps.googleapis.com/maps/api/directions/json?';
+  static const String _baseUrl = 'https://maps.googleapis.com/maps/api';
   String? apiKey = dotenv.env['GOOGLE_API_KEY'];
-
-  GoogleMapsApi();
 
   Future<List<LatLng>> getRouteCoordinates(
       LatLng origin, LatLng destination) async {
     final response = await http.get(
       Uri.parse(
         '$_baseUrl'
+        '/directions/json?'
         'origin=${origin.latitude},${origin.longitude}&'
         'destination=${destination.latitude},${destination.longitude}&'
         'key=$apiKey',
@@ -64,5 +63,70 @@ class GoogleMapsApi {
       points.add(p);
     }
     return points;
+  }
+
+  Future<List<dynamic>> getAutocompleteResults(
+      String query, Position position) async {
+    final String url =
+        '$_baseUrl/place/autocomplete/json?input=$query&location=${position.latitude},${position.longitude}&radius=25000&strictbounds=true&key=$apiKey';
+
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['predictions'] as List;
+    } else {
+      throw Exception('Failed to fetch autocomplete results');
+    }
+  }
+
+  Future<LatLng> getPlaceLatLng(String placeId) async {
+    final String url =
+        '$_baseUrl/place/details/json?place_id=$placeId&key=$apiKey';
+
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final locationData = data['result']['geometry']['location'];
+      return LatLng(locationData['lat'], locationData['lng']);
+    } else {
+      throw Exception('Failed to fetch place details');
+    }
+  }
+
+  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
+    final String url =
+        '$_baseUrl/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['results'] != null &&
+            responseData['results'].length > 0) {
+          var addressComponents =
+              responseData['results'][0]['address_components'];
+
+          String streetNumber = '';
+          String route = '';
+
+          for (var component in addressComponents) {
+            if (component['types'].contains('street_number')) {
+              streetNumber = component['long_name'];
+            }
+            if (component['types'].contains('route')) {
+              route = component['long_name'];
+            }
+          }
+
+          return '$route $streetNumber';
+        } else {
+          throw Exception('No se encontraron resultados.');
+        }
+      } else {
+        throw Exception('Error al contactar con el servidor de Google Maps.');
+      }
+    } catch (e) {
+      throw Exception('Error al obtener la dirección: $e');
+    }
   }
 }

@@ -1,4 +1,6 @@
+import 'package:be_fast/api/google_maps.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import 'package:be_fast/providers/map_provider.dart';
@@ -35,7 +37,9 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
   }
 
   void _getAutocompleteResults(String value, bool isOrigin) async {
-    List<dynamic> results = await LocationHelper.getAutocompleteResults(value);
+    Position position = await LocationHelper.determinePosition();
+    List<dynamic> results =
+        await GoogleMapsApi().getAutocompleteResults(value, position);
 
     setState(() {
       if (isOrigin) {
@@ -98,7 +102,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             onTap: () async {
                               Navigator.pop(context);
                               LatLng latLng =
-                                  await LocationHelper.getPlaceLatLng(placeId);
+                                  await GoogleMapsApi().getPlaceLatLng(placeId);
                               if (_isSelectingOrigin) {
                                 value.updateOrigin(latLng, title, subtitle);
                               } else {
