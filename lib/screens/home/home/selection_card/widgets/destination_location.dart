@@ -9,12 +9,13 @@ class DestinationLocation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<MapProvider>(
-        builder: (context, value, child) => LocationItem(
+        builder: (context, mapProvider, child) => LocationItem(
+              isSelectingOrigin: false,
               iconData: Icons.location_on,
               iconColor: Colors.red,
-              text: value.destination.title.isEmpty
+              text: mapProvider.destination.title.isEmpty
                   ? '¿A dónde vamos?'
-                  : value.destination.title,
+                  : mapProvider.destination.title,
             ));
   }
 }

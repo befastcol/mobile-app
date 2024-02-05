@@ -10,10 +10,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationSelectionScreen extends StatefulWidget {
   final String originTitle, destinationTitle;
+  final bool isSelectingOrigin;
 
   const LocationSelectionScreen(
-      {Key? key, required this.originTitle, required this.destinationTitle})
-      : super(key: key);
+      {super.key,
+      required this.originTitle,
+      required this.destinationTitle,
+      required this.isSelectingOrigin});
 
   @override
   State<LocationSelectionScreen> createState() =>
@@ -26,8 +29,8 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
 
   List<dynamic> _originAutocompleteResults = [];
   List<dynamic> _destinationAutocompleteResults = [];
+
   final Debounce _debounce = Debounce(milliseconds: 200);
-  bool _isSelectingOrigin = false;
 
   @override
   void initState() {
@@ -36,24 +39,33 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
     _destinationController.text = widget.destinationTitle;
   }
 
-  void _getAutocompleteResults(String value, bool isOrigin) async {
-    Position position = await LocationHelper.determinePosition();
-    List<dynamic> results =
-        await GoogleMapsApi().getAutocompleteResults(value, position);
+  void onOriginChanged(String value) {
+    setState(() => _destinationAutocompleteResults = []);
+    _debounce.run(() async {
+      Position position = await LocationHelper.determinePosition();
+      List<dynamic> results =
+          await GoogleMapsApi().getAutocompleteResults(value, position);
 
-    setState(() {
-      if (isOrigin) {
-        _originAutocompleteResults = results.take(4).toList();
-      } else {
-        _destinationAutocompleteResults = results.take(4).toList();
-      }
+      setState(() => _originAutocompleteResults = results.take(4).toList());
+    });
+  }
+
+  void onDestinationChanged(String value) {
+    setState(() => _originAutocompleteResults = []);
+    _debounce.run(() async {
+      Position position = await LocationHelper.determinePosition();
+      List<dynamic> results =
+          await GoogleMapsApi().getAutocompleteResults(value, position);
+
+      setState(
+          () => _destinationAutocompleteResults = results.take(4).toList());
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<MapProvider>(
-        builder: (context, value, child) => Scaffold(
+        builder: (context, mapProvider, child) => Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 title: const Text('Ubicación'),
@@ -61,93 +73,117 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
               body: SafeArea(
                 child: Column(
                   children: [
-                    _buildTextField(
-                      controller: _originController,
-                      hintText: '¿De dónde sale?',
-                      iconColor: Colors.blue,
-                      onChanged: (text) {
-                        _isSelectingOrigin = true;
-                        _debounce
-                            .run(() => _getAutocompleteResults(text, true));
-                      },
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        autofocus: widget.isSelectingOrigin,
+                        controller: _originController,
+                        decoration: InputDecoration(
+                          prefixIcon:
+                              const Icon(Icons.location_on, color: Colors.blue),
+                          hintText: '¿De dónde salimos?',
+                          fillColor:
+                              Theme.of(context).colorScheme.surfaceVariant,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                        ),
+                        onChanged: onOriginChanged,
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    _buildTextField(
-                      controller: _destinationController,
-                      hintText: '¿A dónde vamos?',
-                      iconColor: Colors.red,
-                      onChanged: (text) {
-                        _isSelectingOrigin = false;
-                        _debounce
-                            .run(() => _getAutocompleteResults(text, false));
-                      },
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        autofocus: !widget.isSelectingOrigin,
+                        controller: _destinationController,
+                        decoration: InputDecoration(
+                          prefixIcon:
+                              const Icon(Icons.location_on, color: Colors.red),
+                          hintText: '¿A dónde vamos?',
+                          fillColor:
+                              Theme.of(context).colorScheme.surfaceVariant,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                        ),
+                        onChanged: onDestinationChanged,
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _isSelectingOrigin
-                            ? _originAutocompleteResults.length
-                            : _destinationAutocompleteResults.length,
-                        itemBuilder: (context, index) {
-                          var result = _isSelectingOrigin
-                              ? _originAutocompleteResults[index]
-                              : _destinationAutocompleteResults[index];
-                          String title =
-                              result['structured_formatting']['main_text'];
-                          String subtitle =
-                              result['structured_formatting']['secondary_text'];
-                          String placeId = result['place_id'];
+                    Visibility(
+                      visible: _originAutocompleteResults.isNotEmpty,
+                      child: Expanded(
+                        child: ListView.builder(
+                          itemCount: _originAutocompleteResults.length,
+                          itemBuilder: (context, index) {
+                            var result = _originAutocompleteResults[index];
+                            String title =
+                                result['structured_formatting']['main_text'];
+                            String subtitle = result['structured_formatting']
+                                ['secondary_text'];
+                            String placeId = result['place_id'];
 
-                          return ListTile(
-                            onTap: () async {
-                              Navigator.pop(context);
-                              LatLng latLng =
-                                  await GoogleMapsApi().getPlaceLatLng(placeId);
-                              if (_isSelectingOrigin) {
-                                value.updateOrigin(latLng, title, subtitle);
-                              } else {
-                                value.updateDestination(
+                            return ListTile(
+                              onTap: () async {
+                                Navigator.pop(context);
+                                LatLng latLng = await GoogleMapsApi()
+                                    .getPlaceLatLng(placeId);
+                                mapProvider.updateOrigin(
                                     latLng, title, subtitle);
-                              }
-                            },
-                            leading: const Icon(Icons.location_on,
-                                color: Colors.grey),
-                            title: Text(title),
-                            subtitle: Text(subtitle,
-                                style: const TextStyle(color: Colors.grey)),
-                          );
-                        },
+                              },
+                              leading: const Icon(Icons.location_on,
+                                  color: Colors.blue),
+                              title: Text(title),
+                              subtitle: Text(subtitle,
+                                  style: const TextStyle(color: Colors.grey)),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: _destinationAutocompleteResults.isNotEmpty,
+                      child: Expanded(
+                        child: ListView.builder(
+                          itemCount: _destinationAutocompleteResults.length,
+                          itemBuilder: (context, index) {
+                            var result = _destinationAutocompleteResults[index];
+                            String title =
+                                result['structured_formatting']['main_text'];
+                            String subtitle = result['structured_formatting']
+                                ['secondary_text'];
+                            String placeId = result['place_id'];
+
+                            return ListTile(
+                              onTap: () async {
+                                Navigator.pop(context);
+                                LatLng latLng = await GoogleMapsApi()
+                                    .getPlaceLatLng(placeId);
+                                mapProvider.updateDestination(
+                                    latLng, title, subtitle);
+                              },
+                              leading: const Icon(Icons.location_on,
+                                  color: Colors.red),
+                              title: Text(title),
+                              subtitle: Text(subtitle,
+                                  style: const TextStyle(color: Colors.grey)),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ));
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    required Color iconColor,
-    required Function(String) onChanged,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.location_on, color: iconColor),
-          hintText: hintText,
-          fillColor: Theme.of(context).colorScheme.surfaceVariant,
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
-        ),
-        onChanged: onChanged,
-      ),
-    );
   }
 }

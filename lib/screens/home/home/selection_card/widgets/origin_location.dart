@@ -9,18 +9,19 @@ class OriginLocation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<MapProvider>(
-        builder: (context, value, child) =>
-            value.destination.coordinates.isNotEmpty
-                ? Column(
-                    children: [
-                      LocationItem(
-                        iconData: Icons.location_on,
-                        iconColor: Colors.blue,
-                        text: value.origin.title,
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  )
-                : const SizedBox.shrink());
+        builder: (context, mapProvider, child) => Visibility(
+              visible: mapProvider.destination.coordinates.isNotEmpty,
+              child: Column(
+                children: [
+                  LocationItem(
+                    isSelectingOrigin: true,
+                    iconData: Icons.location_on,
+                    iconColor: Colors.blue,
+                    text: mapProvider.origin.title,
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ));
   }
 }

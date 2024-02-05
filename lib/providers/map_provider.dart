@@ -53,20 +53,17 @@ class MapProvider extends ChangeNotifier {
   }
 
   void updateOrigin(LatLng latlng, String title, String subtitle) {
-    // Actualizar la ubicación de origen
     _origin = Location(
         coordinates: [latlng.latitude, latlng.longitude],
         title: title,
         subtitle: subtitle);
 
-    // Remover el marcador existente de origen si existe
     _markers.removeWhere((m) => m.markerId == const MarkerId('origin'));
 
-    // Añadir el nuevo marcador de origen
     _markers.add(Marker(
       markerId: const MarkerId('origin'),
       position: latlng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      icon: BitmapDescriptor.defaultMarkerWithHue(200),
     ));
 
     _checkRouteAndAdjustCamera();
@@ -96,18 +93,14 @@ class MapProvider extends ChangeNotifier {
       LatLng destinationLatLng =
           LatLng(_destination.coordinates[0], _destination.coordinates[1]);
 
-      // Instancia de DirectionsAPI
       GoogleMapsApi mapsApi = GoogleMapsApi();
 
       try {
-        // Obtener las coordenadas de la ruta
         List<LatLng> routeCoords =
             await mapsApi.getRouteCoordinates(originLatLng, destinationLatLng);
 
-        // Limpiar polylines existentes
         _polylines.clear();
 
-        // Añadir la nueva polyline con la ruta detallada
         _polylines.add(Polyline(
           polylineId: const PolylineId('route'),
           points: routeCoords,
@@ -124,19 +117,23 @@ class MapProvider extends ChangeNotifier {
 
   Future<void> _fitRoute() async {
     GoogleMapController mapController = await _controller.future;
-    LatLngBounds bounds = LatLngBounds(
-      southwest: LatLng(
-        min(_origin.coordinates[0], _destination.coordinates[0]),
-        min(_origin.coordinates[1], _destination.coordinates[1]),
-      ),
-      northeast: LatLng(
-        max(_origin.coordinates[0], _destination.coordinates[0]),
-        max(_origin.coordinates[1], _destination.coordinates[1]),
-      ),
+
+    // Determina los puntos suroeste y noreste basándose en las coordenadas de origen y destino
+    LatLng southwest = LatLng(
+      min(_origin.coordinates[0], _destination.coordinates[0]),
+      min(_origin.coordinates[1], _destination.coordinates[1]),
+    );
+    LatLng northeast = LatLng(
+      max(_origin.coordinates[0], _destination.coordinates[0]),
+      max(_origin.coordinates[1], _destination.coordinates[1]),
     );
 
+    LatLngBounds bounds =
+        LatLngBounds(southwest: southwest, northeast: northeast);
+
+    // No es necesario ajustar el centro para la creación de bounds
     await mapController
-        .animateCamera(CameraUpdate.newLatLngBounds(bounds, 50.0));
+        .animateCamera(CameraUpdate.newLatLngBounds(bounds, 120.0));
     notifyListeners();
   }
 }

@@ -16,31 +16,23 @@ class _UserDeliveriesState extends State<UserDeliveries> {
   List<Delivery> deliveries = [];
   bool isLoading = false;
 
-  void loadUserDeliveries() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future _handleGetUserDeliveries() async {
+    setState(() => isLoading = true);
     try {
       deliveries = await getUserDeliveries(widget.userId);
-    } catch (error) {
-      debugPrint('Error: $error');
     } finally {
       if (mounted) {
         setState(() {
-          isLoading = false;
+          setState(() => isLoading = false);
         });
       }
     }
   }
 
-  Future<void> _refreshList() async {
-    loadUserDeliveries();
-  }
-
   @override
   void initState() {
     super.initState();
-    loadUserDeliveries();
+    _handleGetUserDeliveries();
   }
 
   @override
@@ -53,7 +45,7 @@ class _UserDeliveriesState extends State<UserDeliveries> {
         title: Text(widget.name),
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshList,
+        onRefresh: _handleGetUserDeliveries,
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : deliveries.isEmpty

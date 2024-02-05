@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 class DeliveryCard extends StatelessWidget {
   final DateTime date;
-  final double price;
+  final int price;
   final String origin;
   final String destination;
 

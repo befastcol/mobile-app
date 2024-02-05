@@ -7,13 +7,15 @@ class LocationItem extends StatelessWidget {
   final IconData iconData;
   final Color iconColor;
   final String text;
+  final bool isSelectingOrigin;
 
   const LocationItem({
-    Key? key,
+    super.key,
     required this.iconData,
     required this.iconColor,
     required this.text,
-  }) : super(key: key);
+    required this.isSelectingOrigin,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class LocationItem extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => LocationSelectionScreen(
+                      isSelectingOrigin: isSelectingOrigin,
                       originTitle: value.origin.title,
                       destinationTitle: value.destination.title,
                     ),

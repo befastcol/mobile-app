@@ -21,6 +21,7 @@ class _SelectionCardState extends State<SelectionCard> {
         future: mapProvider.getAddressLocation(),
         builder: (context, snapshot) {
           return Card(
+            surfaceTintColor: Colors.white,
             margin: const EdgeInsets.all(20),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -31,7 +32,6 @@ class _SelectionCardState extends State<SelectionCard> {
                 children: [
                   OriginLocation(),
                   DestinationLocation(),
-                  SizedBox(height: 20),
                   SearchButtonWidget(),
                 ],
               ),

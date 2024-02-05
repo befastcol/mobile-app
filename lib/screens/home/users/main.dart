@@ -14,31 +14,21 @@ class _UsersState extends State<Users> {
   List<UserModel> users = [];
   bool isLoading = false;
 
-  void loadAllUsers() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      users = await getAllUsers();
-    } catch (error) {
-      debugPrint('Error: $error');
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _refreshList() async {
-    loadAllUsers();
-  }
-
   @override
   void initState() {
     super.initState();
-    loadAllUsers();
+    _handleGetAllUsers();
+  }
+
+  Future _handleGetAllUsers() async {
+    try {
+      setState(() => isLoading = true);
+      users = await getAllUsers();
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
   }
 
   @override
@@ -51,7 +41,7 @@ class _UsersState extends State<Users> {
         title: const Text("Usuarios"),
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshList,
+        onRefresh: _handleGetAllUsers,
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : ListView.builder(

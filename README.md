@@ -8,10 +8,11 @@
 
 ### 1. Administrador
 
-- **Aprobación de Usuarios:** Gestiona el registro de nuevos usuarios, aprobándolos para usar la app.
+- **Aprobación de Usuarios:** Gestiona el registro de nuevos usuarios, aprobándolos para usar la app (No recomendado).
+- **Aprobación de Repartidores:** Gestiona el registro de nuevos repartidores, aprobándolos para poder repartir.
 - **Seguimiento en Tiempo Real:** Permite ver la ubicación actual de las motocicletas.
 - **Acceso a Bitácoras:** Visualiza el historial de servicios solicitados por los usuarios.
-- **Notificación de Servicios Finalizados:** Recibe alertas cuando un servicio de entrega se completa.
+- **Notificación de Servicios Finalizados:** Recibe alertas cuando un servicio de entrega se completa (No recomendado).
 
 ### 2. Usuario de Moto 🏍️
 
