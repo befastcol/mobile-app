@@ -23,7 +23,7 @@ class _DeliveriesState extends State<Deliveries> {
       String? userId = await UserSession.getUserId();
       deliveries = await getUserDeliveries(userId);
     } catch (error) {
-      debugPrint('Error: $error');
+      debugPrint('loadUserDeliveries: $error');
     } finally {
       if (mounted) {
         setState(() {

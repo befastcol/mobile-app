@@ -30,7 +30,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
   List<dynamic> _originAutocompleteResults = [];
   List<dynamic> _destinationAutocompleteResults = [];
 
-  final Debounce _debounce = Debounce(milliseconds: 200);
+  final Debounce _debounce = Debounce(milliseconds: 500);
 
   @override
   void initState() {

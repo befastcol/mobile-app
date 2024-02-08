@@ -23,8 +23,8 @@ Future<List<Delivery>> getUserDeliveries(String? userId) async {
 }
 
 Future<Delivery> createDelivery({
-  required Location origin,
-  required Location destination,
+  required LocationModel origin,
+  required LocationModel destination,
 }) async {
   String? userId = await UserSession.getUserId();
   final url = Uri.parse('$baseUrl/deliveries/create/$userId');

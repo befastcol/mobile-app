@@ -25,7 +25,7 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
     try {
       deliveries = await getUserDeliveries(widget.userId);
     } catch (error) {
-      debugPrint('Error: $error');
+      debugPrint('loadCourierDeliveries: $error');
     } finally {
       if (mounted) {
         setState(() {

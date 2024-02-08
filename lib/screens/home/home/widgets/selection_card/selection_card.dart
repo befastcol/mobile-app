@@ -1,5 +1,5 @@
 import 'package:be_fast/providers/map_provider.dart';
-import 'package:be_fast/screens/home/home/selection_card/widgets/selection_card_content.dart';
+import 'package:be_fast/screens/home/home/widgets/selection_card/widgets/selection_card_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

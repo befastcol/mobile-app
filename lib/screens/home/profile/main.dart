@@ -1,5 +1,6 @@
 import 'package:be_fast/api/user.dart';
 import 'package:be_fast/providers/user_provider.dart';
+import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -74,7 +75,7 @@ class _ProfileState extends State<Profile> {
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Nombre',
-                        hintText: 'Nombre Apellido'),
+                        hintText: 'Nombre'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Introduce tu nombre por favor';
@@ -117,14 +118,6 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
-  }
-
-  void showSnackBar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _saveUser(UserProvider userProvider) async {

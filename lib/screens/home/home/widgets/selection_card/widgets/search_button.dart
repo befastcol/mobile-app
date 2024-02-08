@@ -1,4 +1,5 @@
 import 'package:be_fast/api/delivery.dart';
+import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,14 +21,17 @@ class _SearchButtonWidgetState extends State<SearchButtonWidget> {
             mapProvider.destination.coordinates.isNotEmpty;
 
         Future handleOnPressed() async {
-          setState(() => isLoading = true);
           try {
-            final response = await createDelivery(
+            setState(() => isLoading = true);
+            mapProvider.setIsSearchingDeliveries(true);
+            Delivery response = await createDelivery(
                 origin: mapProvider.origin,
                 destination: mapProvider.destination);
-            debugPrint(response.courier);
+            mapProvider.setCreateDeliveryResponse(response);
           } finally {
-            setState(() => isLoading = false);
+            if (mounted) {
+              setState(() => isLoading = false);
+            }
           }
         }
 
@@ -46,7 +50,7 @@ class _SearchButtonWidgetState extends State<SearchButtonWidget> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
                   backgroundColor: Colors.blue),
-              child: Text('Buscar repartidores',
+              child: Text('Solicitar servicio',
                   style: TextStyle(
                       color: isButtonEnabled ? Colors.white : Colors.grey)),
             ),

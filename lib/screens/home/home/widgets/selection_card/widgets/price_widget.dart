@@ -16,7 +16,7 @@ class PriceWidget extends StatelessWidget {
               child: ListTile(
                 leading: Icon(Icons.motorcycle, color: Colors.grey[600]),
                 title: Text(
-                  "Costo del servicio",
+                  "Costo del envío",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.grey[600], fontWeight: FontWeight.w600),

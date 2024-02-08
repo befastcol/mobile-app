@@ -1,15 +1,15 @@
-class Location {
+class LocationModel {
   final List<double> coordinates;
   final String title, subtitle;
 
-  Location({
+  LocationModel({
     required this.coordinates,
     required this.title,
     required this.subtitle,
   });
 
-  factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
+  factory LocationModel.fromJson(Map<String, dynamic> json) {
+    return LocationModel(
       coordinates: List<double>.from(json['coordinates']),
       title: json['title'],
       subtitle: json['subtitle'],

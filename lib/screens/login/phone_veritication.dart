@@ -1,3 +1,4 @@
+import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -234,12 +235,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                     onPressed: _isResendButtonEnabled
                         ? () {
                             startTimer();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Código reenviado."),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
+                            showSnackBar(context, "Código reenviado.");
                             AuthService.resendOtp(phone: widget.phone);
                           }
                         : null,

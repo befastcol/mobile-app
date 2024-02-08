@@ -27,14 +27,13 @@ class LocationHelper {
     return await Geolocator.getCurrentPosition();
   }
 
-  static Future<String> getLongPlace(Position position) async {
+  static Future<Placemark> getPlacemarks(Position position) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
-      Placemark place = placemarks[0];
-      return '${place.name}, ${place.locality}, ${place.postalCode}';
+      return placemarks[0];
     } catch (e) {
       throw Exception('Failed to get place name: $e');
     }

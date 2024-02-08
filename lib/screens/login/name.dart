@@ -97,7 +97,7 @@ class _NameState extends State<Name> {
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Nombre',
-                          hintText: 'Nombre Apellido'),
+                          hintText: 'Nombre'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Introduce tu nombre por favor';

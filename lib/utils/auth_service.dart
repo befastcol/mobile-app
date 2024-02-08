@@ -16,7 +16,7 @@ class AuthService {
         phoneNumber: "+52$phone",
         verificationCompleted: (phoneAuthCredential) async {},
         verificationFailed: (error) async {
-          debugPrint("Falló $error");
+          debugPrint("sendOtp $error");
         },
         codeSent: (verificationId, forceResendingToken) async {
           verifyId = verificationId;
@@ -25,7 +25,7 @@ class AuthService {
         codeAutoRetrievalTimeout: (verificationId) async {},
       );
     } catch (e) {
-      debugPrint("Error $e");
+      debugPrint("sendOtp $e");
       throw Exception(e);
     }
   }
@@ -63,7 +63,7 @@ class AuthService {
         forceResendingToken: forceResendingToken,
         verificationCompleted: (phoneAuthCredential) async {},
         verificationFailed: (error) async {
-          debugPrint("Falló $error");
+          debugPrint("resendOtp $error");
         },
         codeSent: (verificationId, resendingToken) async {
           verifyId = verificationId;
@@ -72,7 +72,7 @@ class AuthService {
         codeAutoRetrievalTimeout: (verificationId) async {},
       );
     } catch (e) {
-      debugPrint("Error $e");
+      debugPrint("resendOtp $e");
       throw Exception(e);
     }
   }

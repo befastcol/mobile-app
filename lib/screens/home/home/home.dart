@@ -1,7 +1,8 @@
 import 'package:be_fast/components/Drawer/my_drawer.dart';
 import 'package:be_fast/providers/map_provider.dart';
 import 'package:be_fast/providers/user_provider.dart';
-import 'package:be_fast/screens/home/home/selection_card/selection_card.dart';
+import 'package:be_fast/screens/home/home/widgets/searching_card/searching_card.dart';
+import 'package:be_fast/screens/home/home/widgets/selection_card/selection_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -57,11 +58,23 @@ class _HomeState extends State<Home> {
                                   }
                                 },
                               ),
-                              const Positioned(
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                child: SelectionCard(),
+                              Visibility(
+                                visible: !value.isSearchingDeliveries,
+                                child: const Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  child: SelectionCard(),
+                                ),
+                              ),
+                              Visibility(
+                                visible: value.isSearchingDeliveries,
+                                child: const Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  child: SearchingCard(),
+                                ),
                               ),
                             ],
                           ),

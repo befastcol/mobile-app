@@ -4,7 +4,7 @@ class Delivery {
   final String id, status;
   final String? courier;
   final int price;
-  final Location origin, destination;
+  final LocationModel origin, destination;
   final DateTime requestedDate;
   final DateTime? deliveredDate;
 
@@ -22,8 +22,8 @@ class Delivery {
     return Delivery(
       id: json['_id'],
       requestedDate: DateTime.parse(json['requestedDate']),
-      origin: Location.fromJson(json['origin']),
-      destination: Location.fromJson(json['destination']),
+      origin: LocationModel.fromJson(json['origin']),
+      destination: LocationModel.fromJson(json['destination']),
       price: json['price'],
       status: json['status'],
       courier: json['courier'],

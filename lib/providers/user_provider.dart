@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
       _user = await getUserById(userId);
       notifyListeners();
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("initializeUser: $e");
     }
   }
 

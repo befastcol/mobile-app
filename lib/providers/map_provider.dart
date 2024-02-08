@@ -1,35 +1,48 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:be_fast/api/google_maps.dart';
-import 'package:be_fast/models/location.dart';
-import 'package:be_fast/screens/home/home/helpers/location_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:be_fast/screens/home/home/helpers/location_helper.dart';
+import 'package:be_fast/models/location.dart';
+import 'package:be_fast/models/delivery.dart';
+import 'package:be_fast/api/google_maps.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapProvider extends ChangeNotifier {
-  Location _origin = Location(coordinates: [], title: '', subtitle: '');
-  Location _destination = Location(coordinates: [], title: '', subtitle: '');
+  LocationModel _origin =
+      LocationModel(coordinates: [], title: '', subtitle: '');
+  LocationModel _destination =
+      LocationModel(coordinates: [], title: '', subtitle: '');
+  final int _price = 0;
+
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
   final Completer<GoogleMapController> _controller = Completer();
   CameraPosition? _initialCameraPosition;
   bool _isUpdatingLocation = false;
+  bool _isSearchingDeliveries = false;
+  late Delivery _createDeliveryResponse;
 
-  Location get origin => _origin;
-  Location get destination => _destination;
+  LocationModel get origin => _origin;
+  LocationModel get destination => _destination;
+  int get price => _price;
+
   Set<Marker>? get markers => _markers;
   Set<Polyline> get polylines => _polylines;
   Completer<GoogleMapController> get controller => _controller;
   CameraPosition? get initialCameraPosition => _initialCameraPosition;
+
   bool get isUpdatingLocation => _isUpdatingLocation;
+  bool get isSearchingDeliveries => _isSearchingDeliveries;
+  Delivery get createDeliveryResponse => _createDeliveryResponse;
 
   Future<void> initializeMap() async {
     try {
       Position position = await LocationHelper.determinePosition();
       updateCameraPosition(position);
     } catch (e) {
-      debugPrint('Error al obtener ubicación: $e');
+      debugPrint('initializeMap: $e');
     }
   }
 
@@ -47,18 +60,18 @@ class MapProvider extends ChangeNotifier {
 
   Future<void> getAddressLocation() async {
     Position position = await LocationHelper.determinePosition();
-    String titlePlace = await GoogleMapsApi()
-        .getAddressFromLatLng(position.latitude, position.longitude);
-    String subtitlePlace = await LocationHelper.getLongPlace(position);
+    Placemark placemark = await LocationHelper.getPlacemarks(position);
 
-    _origin = Location(
+    _origin = LocationModel(
         coordinates: [position.latitude, position.longitude],
-        title: titlePlace,
-        subtitle: subtitlePlace);
+        title: "${placemark.name}",
+        subtitle: "${placemark.locality},${placemark.postalCode}");
+
+    notifyListeners();
   }
 
   void updateOrigin(LatLng latlng, String title, String subtitle) {
-    _origin = Location(
+    _origin = LocationModel(
         coordinates: [latlng.latitude, latlng.longitude],
         title: title,
         subtitle: subtitle);
@@ -70,11 +83,12 @@ class MapProvider extends ChangeNotifier {
       position: latlng,
       icon: BitmapDescriptor.defaultMarkerWithHue(200),
     ));
+    notifyListeners();
     _checkRouteAndAdjustCamera();
   }
 
   void updateDestination(LatLng latlng, String title, String subtitle) {
-    _destination = Location(
+    _destination = LocationModel(
         coordinates: [latlng.latitude, latlng.longitude],
         title: title,
         subtitle: subtitle);
@@ -100,21 +114,21 @@ class MapProvider extends ChangeNotifier {
       GoogleMapsApi mapsApi = GoogleMapsApi();
 
       try {
-        List<LatLng> routeCoords =
+        List<LatLng> routeCoordinates =
             await mapsApi.getRouteCoordinates(originLatLng, destinationLatLng);
 
         _polylines.clear();
 
         _polylines.add(Polyline(
           polylineId: const PolylineId('route'),
-          points: routeCoords,
+          points: routeCoordinates,
           color: Colors.blueAccent,
           width: 5,
         ));
-
+        notifyListeners();
         _fitRoute();
       } catch (e) {
-        debugPrint("Error al obtener la ruta: $e");
+        debugPrint("_checkRouteAndAdjustCamera: $e");
       }
     }
   }
@@ -141,6 +155,16 @@ class MapProvider extends ChangeNotifier {
 
   void setIsUpdatingLocation(bool isUpdating) {
     _isUpdatingLocation = isUpdating;
+    notifyListeners();
+  }
+
+  void setIsSearchingDeliveries(bool isSearching) {
+    _isSearchingDeliveries = isSearching;
+    notifyListeners();
+  }
+
+  void setCreateDeliveryResponse(Delivery delivery) {
+    _createDeliveryResponse = delivery;
     notifyListeners();
   }
 }

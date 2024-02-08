@@ -23,7 +23,7 @@ class _RegisterState extends State<Register> {
         });
       }
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("_pickImage: $e");
     }
   }
 
