@@ -1,3 +1,4 @@
+import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';

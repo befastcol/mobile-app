@@ -5,6 +5,7 @@ class Delivery {
   final String? courier;
   final int price;
   final LocationModel origin, destination;
+  final List<double> currentLocation;
   final DateTime requestedDate;
   final DateTime? deliveredDate;
 
@@ -13,6 +14,7 @@ class Delivery {
       required this.requestedDate,
       required this.origin,
       required this.destination,
+      required this.currentLocation,
       required this.price,
       required this.status,
       this.deliveredDate,
@@ -24,6 +26,7 @@ class Delivery {
       requestedDate: DateTime.parse(json['requestedDate']),
       origin: LocationModel.fromJson(json['origin']),
       destination: LocationModel.fromJson(json['destination']),
+      currentLocation: List<double>.from(json['currentLocation']),
       price: json['price'],
       status: json['status'],
       courier: json['courier'],

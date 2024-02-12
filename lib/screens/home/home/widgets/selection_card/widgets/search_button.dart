@@ -1,4 +1,4 @@
-import 'package:be_fast/api/delivery.dart';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/providers/map_provider.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +24,12 @@ class _SearchButtonWidgetState extends State<SearchButtonWidget> {
           try {
             setState(() => isLoading = true);
             mapProvider.setIsSearchingDeliveries(true);
-            Delivery response = await createDelivery(
+
+            Delivery response = await DeliveriesAPI().createDelivery(
                 origin: mapProvider.origin,
-                destination: mapProvider.destination);
+                destination: mapProvider.destination,
+                price: 50);
+
             mapProvider.setCreateDeliveryResponse(response);
           } finally {
             if (mounted) {

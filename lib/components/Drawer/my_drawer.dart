@@ -1,6 +1,6 @@
-import "package:be_fast/screens/home/courier_requests/main.dart";
-import "package:be_fast/screens/home/couriers/main.dart";
-import "package:be_fast/screens/home/deliveries/main.dart";
+import 'package:be_fast/screens/home/requests/requests.dart';
+import 'package:be_fast/screens/home/couriers/couriers.dart';
+import 'package:be_fast/screens/home/deliveries/deliveries.dart';
 import 'package:be_fast/providers/user_provider.dart';
 import "package:be_fast/screens/home/profile/main.dart";
 import "package:be_fast/screens/home/register/main.dart";
@@ -124,7 +124,7 @@ class MyDrawer extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const CourierRequests()),
+                              builder: (context) => const Requests()),
                         );
                       },
                     ),

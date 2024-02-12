@@ -1,36 +1,32 @@
-import 'package:be_fast/api/delivery.dart';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
 import 'package:flutter/material.dart';
 
 class CourierDeliveries extends StatefulWidget {
-  final String userId;
-  final String name;
+  final String courierId, name;
 
   const CourierDeliveries(
-      {super.key, required this.userId, required this.name});
+      {super.key, required this.courierId, required this.name});
 
   @override
   State<CourierDeliveries> createState() => _CourierDeliveriesState();
 }
 
 class _CourierDeliveriesState extends State<CourierDeliveries> {
-  List<Delivery> deliveries = [];
-  bool isLoading = false;
+  List<Delivery> _deliveries = [];
+  bool _isLoading = false;
 
   void loadCourierDeliveries() async {
-    setState(() {
-      isLoading = true;
-    });
     try {
-      deliveries = await getUserDeliveries(widget.userId);
+      setState(() => _isLoading = true);
+      _deliveries = await DeliveriesAPI()
+          .getCourierDeliveries(courierId: widget.courierId);
     } catch (error) {
-      debugPrint('loadCourierDeliveries: $error');
+      debugPrint('loadCourierDeliveries: $error ${widget.courierId}');
     } finally {
       if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -51,18 +47,20 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.teal[600],
+        backgroundColor: Colors.amber,
         title: Text(widget.name),
       ),
       body: RefreshIndicator(
         onRefresh: _refreshList,
-        child: isLoading
+        child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : ListView.builder(
-                itemCount: deliveries.length,
+                itemCount: _deliveries.length,
                 itemBuilder: (context, index) {
-                  final delivery = deliveries[index];
+                  final delivery = _deliveries[index];
                   return DeliveryCard(
+                    deliveyId: delivery.id,
+                    status: delivery.status,
                     date: delivery.requestedDate,
                     destination: delivery.destination.title,
                     origin: delivery.origin.title,

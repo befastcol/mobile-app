@@ -3,24 +3,24 @@ import 'package:be_fast/models/user.dart';
 import 'package:be_fast/screens/home/couriers/courier_deliveries_screen.dart';
 import 'package:flutter/material.dart';
 
-class CourierRequests extends StatefulWidget {
-  const CourierRequests({super.key});
+class Requests extends StatefulWidget {
+  const Requests({super.key});
 
   @override
-  State<CourierRequests> createState() => _CourierRequestsState();
+  State<Requests> createState() => _RequestsState();
 }
 
-class _CourierRequestsState extends State<CourierRequests> {
-  List<UserModel> pendingCouriers = [];
-  bool isLoading = false;
+class _RequestsState extends State<Requests> {
+  List<UserModel> _pendingCouriers = [];
+  bool _isLoading = false;
 
   Future _loadPendingCouriers() async {
     try {
-      setState(() => isLoading = true);
-      pendingCouriers = await getPendingCouriers();
+      setState(() => _isLoading = true);
+      _pendingCouriers = await getPendingCouriers();
     } finally {
       if (mounted) {
-        setState(() => isLoading = false);
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -46,9 +46,9 @@ class _CourierRequestsState extends State<CourierRequests> {
         ),
         body: RefreshIndicator(
           onRefresh: _refreshList,
-          child: isLoading
+          child: _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : pendingCouriers.isEmpty
+              : _pendingCouriers.isEmpty
                   ? ListView(
                       children: [
                         const SizedBox(height: 180),
@@ -65,9 +65,9 @@ class _CourierRequestsState extends State<CourierRequests> {
                       ],
                     )
                   : ListView.builder(
-                      itemCount: pendingCouriers.length,
+                      itemCount: _pendingCouriers.length,
                       itemBuilder: (context, index) {
-                        final courier = pendingCouriers[index];
+                        final courier = _pendingCouriers[index];
                         return ListTile(
                           leading: const Icon(Icons.person),
                           trailing: const Icon(Icons.navigate_next),
@@ -79,7 +79,7 @@ class _CourierRequestsState extends State<CourierRequests> {
                                 MaterialPageRoute(
                                     builder: (context) => CourierDeliveries(
                                           name: courier.name,
-                                          userId: courier.id,
+                                          courierId: courier.id,
                                         )));
                           },
                         );

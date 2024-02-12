@@ -3,13 +3,6 @@ import 'package:be_fast/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class CreateUserResponse {
-  final String userId;
-  final bool alreadyExists;
-
-  CreateUserResponse({required this.userId, required this.alreadyExists});
-}
-
 Future<CreateUserResponse> createUser({String? name, String? phone}) async {
   final url = Uri.parse('$baseUrl/users/create');
 
@@ -84,7 +77,7 @@ Future<List<UserModel>> getAllUsers() async {
 }
 
 Future<List<UserModel>> getAcceptedCouriers() async {
-  final url = Uri.parse('$baseUrl/couriers/accepted');
+  final url = Uri.parse('$baseUrl/users/couriers/accepted');
 
   try {
     final response = await http.get(url);
@@ -100,7 +93,7 @@ Future<List<UserModel>> getAcceptedCouriers() async {
 }
 
 Future<List<UserModel>> getPendingCouriers() async {
-  final url = Uri.parse('$baseUrl/couriers/pending');
+  final url = Uri.parse('$baseUrl/users/couriers/pending');
 
   try {
     final response = await http.get(url);

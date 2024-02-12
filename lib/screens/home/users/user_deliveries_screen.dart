@@ -1,4 +1,4 @@
-import 'package:be_fast/api/delivery.dart';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,8 @@ class _UserDeliveriesState extends State<UserDeliveries> {
   Future _handleGetUserDeliveries() async {
     setState(() => isLoading = true);
     try {
-      deliveries = await getUserDeliveries(widget.userId);
+      deliveries =
+          await DeliveriesAPI().getUserDeliveries(userId: widget.userId);
     } finally {
       if (mounted) {
         setState(() {
@@ -69,6 +70,8 @@ class _UserDeliveriesState extends State<UserDeliveries> {
                     itemBuilder: (context, index) {
                       final delivery = deliveries[index];
                       return DeliveryCard(
+                        deliveyId: delivery.id,
+                        status: delivery.status,
                         date: delivery.requestedDate,
                         destination: delivery.destination.title,
                         origin: delivery.origin.title,

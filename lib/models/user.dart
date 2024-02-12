@@ -16,3 +16,10 @@ class UserModel {
     );
   }
 }
+
+class CreateUserResponse {
+  final String userId;
+  final bool alreadyExists;
+
+  CreateUserResponse({required this.userId, required this.alreadyExists});
+}
