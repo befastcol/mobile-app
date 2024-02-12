@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:be_fast/providers/map_provider.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -20,17 +18,17 @@ class _SearchingCardState extends State<SearchingCard> {
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://tu_servidor:puerto'),
-    );
+    // channel = WebSocketChannel.connect(
+    //   Uri.parse('ws://tu_servidor:puerto'),
+    // );
 
-    channel.stream.listen((message) {
-      final data = jsonDecode(message);
+    // channel.stream.listen((message) {
+    //   final data = jsonDecode(message);
 
-      if (data['courier'] != null) {
-        setState(() => isCourierAssigned = true);
-      }
-    });
+    //   if (data['courier'] != null) {
+    //     setState(() => isCourierAssigned = true);
+    //   }
+    // });
   }
 
   @override

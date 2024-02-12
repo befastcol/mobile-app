@@ -90,41 +90,4 @@ class GoogleMapsApi {
       throw Exception('Failed to fetch place details');
     }
   }
-
-  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
-    final String url =
-        '$_baseUrl/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        if (responseData['results'] != null &&
-            responseData['results'].length > 0) {
-          var addressComponents =
-              responseData['results'][0]['address_components'];
-
-          String streetNumber = '';
-          String route = '';
-
-          for (var component in addressComponents) {
-            if (component['types'].contains('street_number')) {
-              streetNumber = component['long_name'];
-            }
-            if (component['types'].contains('route')) {
-              route = component['long_name'];
-            }
-          }
-
-          return '$route $streetNumber';
-        } else {
-          throw Exception('No se encontraron resultados.');
-        }
-      } else {
-        throw Exception('Error al contactar con el servidor de Google Maps.');
-      }
-    } catch (e) {
-      throw Exception('Error al obtener la dirección: $e');
-    }
-  }
 }

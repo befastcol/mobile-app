@@ -1,4 +1,4 @@
-import 'package:be_fast/api/delivery.dart';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
 import 'package:be_fast/utils/user_session.dart';
@@ -21,7 +21,8 @@ class _DeliveriesState extends State<Deliveries> {
     });
     try {
       String? userId = await UserSession.getUserId();
-      deliveries = await getUserDeliveries(userId);
+      deliveries =
+          await DeliveriesAPI().getUserDeliveries(userId: userId.toString());
     } catch (error) {
       debugPrint('loadUserDeliveries: $error');
     } finally {
@@ -61,6 +62,8 @@ class _DeliveriesState extends State<Deliveries> {
                 itemBuilder: (context, index) {
                   final delivery = deliveries[index];
                   return DeliveryCard(
+                    deliveyId: delivery.id,
+                    status: delivery.status,
                     date: delivery.requestedDate,
                     destination: delivery.destination.title,
                     origin: delivery.origin.title,
