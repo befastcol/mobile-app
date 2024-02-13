@@ -1,6 +1,6 @@
-import 'package:be_fast/components/Drawer/my_drawer.dart';
-import 'package:be_fast/providers/map_provider.dart';
-import 'package:be_fast/providers/user_provider.dart';
+import 'package:be_fast/screens/home/home/widgets/drawer/my_drawer.dart';
+import 'package:be_fast/providers/map.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/home/widgets/searching_card/searching_card.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/selection_card.dart';
 import 'package:flutter/material.dart';

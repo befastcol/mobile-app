@@ -1,7 +1,7 @@
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
-import '../../../api/user.dart';
 import 'package:be_fast/screens/home/home/home.dart';
 
 class Name extends StatefulWidget {
@@ -27,7 +27,7 @@ class _NameState extends State<Name> {
 
     try {
       String? userId = await UserSession.getUserId();
-      await updateUser(name: _nameController.text, userId: userId);
+      await UsersAPI().updateUser(name: _nameController.text, userId: userId);
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,

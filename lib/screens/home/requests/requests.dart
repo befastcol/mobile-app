@@ -1,6 +1,6 @@
-import 'package:be_fast/api/user.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/screens/home/couriers/courier_deliveries_screen.dart';
+import 'package:be_fast/screens/home/couriers/deliveries.dart';
 import 'package:flutter/material.dart';
 
 class Requests extends StatefulWidget {
@@ -17,7 +17,7 @@ class _RequestsState extends State<Requests> {
   Future _loadPendingCouriers() async {
     try {
       setState(() => _isLoading = true);
-      _pendingCouriers = await getPendingCouriers();
+      _pendingCouriers = await UsersAPI().getPendingCouriers();
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -1,5 +1,5 @@
+import 'package:be_fast/api/users.dart';
 import 'package:flutter/material.dart';
-import 'package:be_fast/api/user.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/user_session.dart';
 
@@ -10,7 +10,7 @@ class UserProvider extends ChangeNotifier {
   Future initializeUser() async {
     try {
       String? userId = await UserSession.getUserId();
-      _user = await getUserById(userId);
+      _user = await UsersAPI().getUserById(userId: userId);
       notifyListeners();
     } catch (e) {
       debugPrint("initializeUser: $e");

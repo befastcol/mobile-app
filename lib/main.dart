@@ -1,5 +1,5 @@
-import 'package:be_fast/providers/map_provider.dart';
-import 'package:be_fast/providers/user_provider.dart';
+import 'package:be_fast/providers/map.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';

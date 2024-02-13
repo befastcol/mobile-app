@@ -111,7 +111,7 @@ class MapProvider extends ChangeNotifier {
       LatLng destinationLatLng =
           LatLng(_destination.coordinates[0], _destination.coordinates[1]);
 
-      GoogleMapsApi mapsApi = GoogleMapsApi();
+      GoogleMapsAPI mapsApi = GoogleMapsAPI();
 
       try {
         List<LatLng> routeCoordinates =

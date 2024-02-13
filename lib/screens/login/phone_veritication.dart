@@ -1,10 +1,10 @@
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import 'package:be_fast/api/user.dart';
 import 'package:be_fast/utils/auth_service.dart';
 
 import 'package:be_fast/screens/home/home/home.dart';
@@ -70,7 +70,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         return;
       }
 
-      CreateUserResponse user = await createUser(phone: widget.phone);
+      CreateUserResponse user =
+          await UsersAPI().createUser(phone: widget.phone);
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,

@@ -1,4 +1,4 @@
-import 'package:be_fast/providers/map_provider.dart';
+import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,5 +1,5 @@
-import 'package:be_fast/api/user.dart';
-import 'package:be_fast/providers/user_provider.dart';
+import 'package:be_fast/api/users.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -123,7 +123,8 @@ class _ProfileState extends State<Profile> {
   void _saveUser(UserProvider userProvider) async {
     setState(() => _isLoading = true);
     try {
-      await updateUser(userId: widget.id, name: _nameController.text);
+      await UsersAPI()
+          .updateUser(userId: widget.id, name: _nameController.text);
       userProvider.updateUserName(_nameController.text);
       if (mounted) showSnackBar(context, "Nombre guardado correctamente");
     } finally {

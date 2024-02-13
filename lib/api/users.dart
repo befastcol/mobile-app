@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 
-import 'package:be_fast/constants/api.dart';
 import 'package:be_fast/models/user.dart';
+import 'package:be_fast/api/constants/base_url.dart';
 
-class UsersApi {
-  Future<CreateUserResponse> createUser(
-      {required String name, required String phone}) async {
+class UsersAPI {
+  Future<CreateUserResponse> createUser({required String phone}) async {
     try {
       Response response = await post(
         Uri.parse('$baseUrl/users/create'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'name': name, 'phone': phone}),
+        body: json.encode({'phone': phone}),
       );
 
       return CreateUserResponse(
@@ -23,7 +22,7 @@ class UsersApi {
     }
   }
 
-  Future<UserModel> getUserById({required String userId}) async {
+  Future<UserModel> getUserById({required String? userId}) async {
     try {
       Response response = await get(Uri.parse('$baseUrl/users/$userId'));
       if (response.statusCode == 200) {
@@ -37,7 +36,7 @@ class UsersApi {
   }
 
   Future<void> updateUser(
-      {required String userId, required String name}) async {
+      {required String? userId, required String name}) async {
     try {
       Response response = await put(
         Uri.parse('$baseUrl/users/update/$userId'),
