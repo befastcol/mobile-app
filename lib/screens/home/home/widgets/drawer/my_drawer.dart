@@ -1,14 +1,14 @@
 import 'package:be_fast/screens/home/requests/requests.dart';
 import 'package:be_fast/screens/home/couriers/couriers.dart';
 import 'package:be_fast/screens/home/deliveries/deliveries.dart';
-import 'package:be_fast/providers/user_provider.dart';
+import 'package:be_fast/providers/user.dart';
 import "package:be_fast/screens/home/profile/main.dart";
 import "package:be_fast/screens/home/register/main.dart";
 import "package:be_fast/screens/home/users/main.dart";
 import "package:be_fast/utils/auth_service.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "utils/phone_format.dart";
+import '../../../../../utils/format_phone.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({

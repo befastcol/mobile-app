@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class GoogleMapsApi {
+class GoogleMapsAPI {
   static const String _baseUrl = 'https://maps.googleapis.com/maps/api';
   String? apiKey = dotenv.env['GOOGLE_API_KEY'];
 

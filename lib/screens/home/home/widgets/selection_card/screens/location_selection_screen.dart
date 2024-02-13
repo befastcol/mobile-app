@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
-import 'package:be_fast/providers/map_provider.dart';
+import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/utils/debounce.dart';
 import 'package:be_fast/screens/home/home/helpers/location_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -44,7 +44,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
     _debounce.run(() async {
       Position position = await LocationHelper.determinePosition();
       List<dynamic> results =
-          await GoogleMapsApi().getAutocompleteResults(value, position);
+          await GoogleMapsAPI().getAutocompleteResults(value, position);
 
       setState(() => _originAutocompleteResults = results.take(4).toList());
     });
@@ -55,7 +55,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
     _debounce.run(() async {
       Position position = await LocationHelper.determinePosition();
       List<dynamic> results =
-          await GoogleMapsApi().getAutocompleteResults(value, position);
+          await GoogleMapsAPI().getAutocompleteResults(value, position);
 
       setState(
           () => _destinationAutocompleteResults = results.take(4).toList());
@@ -133,7 +133,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             return ListTile(
                               onTap: () async {
                                 Navigator.pop(context);
-                                LatLng latLng = await GoogleMapsApi()
+                                LatLng latLng = await GoogleMapsAPI()
                                     .getPlaceLatLng(placeId);
                                 mapProvider.updateOrigin(
                                     latLng, title, subtitle);
@@ -166,7 +166,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                                 try {
                                   mapProvider.setIsUpdatingLocation(true);
                                   Navigator.pop(context);
-                                  LatLng latLng = await GoogleMapsApi()
+                                  LatLng latLng = await GoogleMapsAPI()
                                       .getPlaceLatLng(placeId);
                                   mapProvider.updateDestination(
                                       latLng, title, subtitle);

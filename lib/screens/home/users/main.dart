@@ -1,4 +1,4 @@
-import 'package:be_fast/api/user.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/screens/home/users/user_deliveries_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _UsersState extends State<Users> {
   Future _handleGetAllUsers() async {
     try {
       setState(() => isLoading = true);
-      users = await getAllUsers();
+      users = await UsersAPI().getAllUsers();
     } finally {
       if (mounted) {
         setState(() => isLoading = false);

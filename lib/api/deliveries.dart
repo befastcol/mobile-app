@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 
-import 'package:be_fast/constants/api.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/models/location.dart';
+import 'package:be_fast/api/constants/base_url.dart';
 
 class DeliveriesAPI {
   Future<List<Delivery>> getUserDeliveries({required String userId}) async {

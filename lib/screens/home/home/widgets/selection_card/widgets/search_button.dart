@@ -1,6 +1,6 @@
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/providers/map_provider.dart';
+import 'package:be_fast/providers/map.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
