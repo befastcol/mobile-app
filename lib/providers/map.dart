@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:be_fast/api/deliveries.dart';
+import 'package:be_fast/utils/location_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:be_fast/screens/home/home/helpers/location_helper.dart';
 import 'package:be_fast/models/location.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/api/google_maps.dart';

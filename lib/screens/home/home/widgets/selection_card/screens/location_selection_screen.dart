@@ -1,11 +1,11 @@
 import 'package:be_fast/api/google_maps.dart';
+import 'package:be_fast/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/utils/debounce.dart';
-import 'package:be_fast/screens/home/home/helpers/location_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationSelectionScreen extends StatefulWidget {

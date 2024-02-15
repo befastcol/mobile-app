@@ -1,4 +1,3 @@
-import 'package:be_fast/screens/home/home/cards/where_to_go.dart';
 import 'package:be_fast/screens/home/home/widgets/drawer/my_drawer.dart';
 import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/providers/user.dart';
@@ -59,7 +58,6 @@ class _HomeState extends State<Home> {
                                   }
                                 },
                               ),
-                              // const WhereToGoCard(),
                               Visibility(
                                 visible: !value.isSearchingDeliveries,
                                 child: const Positioned(
