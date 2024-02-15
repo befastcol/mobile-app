@@ -78,9 +78,8 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => user.alreadyExists
-                  ? const Home()
-                  : Name(phone: widget.phone)),
+              builder: (context) =>
+                  user.alreadyExists ? const Home() : const Name()),
           (Route<dynamic> route) => false,
         );
       }

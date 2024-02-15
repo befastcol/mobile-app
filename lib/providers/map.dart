@@ -71,9 +71,10 @@ class MapProvider extends ChangeNotifier {
 
   void updateOrigin(LatLng latlng, String title, String subtitle) {
     _origin = LocationModel(
-        coordinates: [latlng.latitude, latlng.longitude],
+        coordinates: [latlng.longitude, latlng.latitude],
         title: title,
         subtitle: subtitle);
+    notifyListeners();
 
     _markers.removeWhere((m) => m.markerId == const MarkerId('origin'));
 
@@ -99,7 +100,7 @@ class MapProvider extends ChangeNotifier {
 
   void updateDestination(LatLng latlng, String title, String subtitle) {
     _destination = LocationModel(
-        coordinates: [latlng.latitude, latlng.longitude],
+        coordinates: [latlng.longitude, latlng.latitude],
         title: title,
         subtitle: subtitle);
 

@@ -1,13 +1,10 @@
 import 'package:be_fast/api/users.dart';
+import 'package:be_fast/screens/login/location.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
-import 'package:be_fast/screens/home/home/home.dart';
-
 class Name extends StatefulWidget {
-  final String phone;
-
-  const Name({super.key, required this.phone});
+  const Name({super.key});
 
   @override
   State<Name> createState() => _NameState();
@@ -17,30 +14,6 @@ class _NameState extends State<Name> {
   late GlobalKey<FormState> _formKey;
   late TextEditingController _nameController;
   late bool _isLoading;
-
-  void _registerUser() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (mounted) {
-      setState(() => _isLoading = true);
-    }
-
-    try {
-      String? userId = await UserSession.getUserId();
-      await UsersAPI().updateUser(name: _nameController.text, userId: userId);
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const Home()),
-          (Route<dynamic> route) => false,
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -54,6 +27,28 @@ class _NameState extends State<Name> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  Future _updateUserName() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    try {
+      setState(() => _isLoading = true);
+      String? userId = await UserSession.getUserId();
+      await UsersAPI()
+          .updateUserName(name: _nameController.text, userId: userId);
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Location()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -110,7 +105,7 @@ class _NameState extends State<Name> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _registerUser,
+                          onPressed: _updateUserName,
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(

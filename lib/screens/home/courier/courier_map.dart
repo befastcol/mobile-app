@@ -62,7 +62,9 @@ class _CourierMapState extends State<CourierMap> {
         desiredAccuracy: LocationAccuracy.high);
 
     _initialCameraPosition = CameraPosition(
-        target: LatLng(position.latitude, position.longitude), zoom: 19);
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 19,
+        tilt: 60);
     _updateMarker(position);
   }
 
@@ -108,9 +110,10 @@ class _CourierMapState extends State<CourierMap> {
       setState(() {
         _markers = {
           Marker(
-              markerId: const MarkerId('currentLocation'),
-              position: LatLng(position.latitude, position.longitude),
-              icon: motoIcon),
+            markerId: const MarkerId('currentLocation'),
+            position: LatLng(position.latitude, position.longitude),
+            icon: motoIcon,
+          ),
         };
         _googleMapController?.animateCamera(
           CameraUpdate.newLatLng(

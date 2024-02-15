@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:be_fast/models/location.dart';
 import 'package:http/http.dart';
 
 import 'package:be_fast/models/user.dart';
@@ -35,13 +36,37 @@ class UsersAPI {
     }
   }
 
-  Future<void> updateUser(
+  Future<void> updateUserName(
       {required String? userId, required String name}) async {
     try {
       Response response = await put(
         Uri.parse('$baseUrl/users/update/$userId'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'name': name}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<void> saveUserLocation(
+      {required String? userId, required LocationModel originLocation}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrl/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'originLocation': {
+            'type': 'Point',
+            'title': originLocation.title,
+            'subtitle': originLocation.subtitle,
+            'coordinates': originLocation.coordinates
+          }
+        }),
       );
 
       if (response.statusCode != 200) {

@@ -1,9 +1,10 @@
 import "package:be_fast/screens/home/courier/courier_map.dart";
+import 'package:be_fast/screens/home/location/location.dart';
 import 'package:be_fast/screens/home/requests/requests.dart';
 import 'package:be_fast/screens/home/couriers/couriers.dart';
 import 'package:be_fast/screens/home/deliveries/deliveries.dart';
 import 'package:be_fast/providers/user.dart';
-import "package:be_fast/screens/home/profile/main.dart";
+import 'package:be_fast/screens/home/profile/profile.dart';
 import "package:be_fast/screens/home/register/main.dart";
 import "package:be_fast/screens/home/trips/trips.dart";
 import "package:be_fast/screens/home/users/main.dart";
@@ -43,6 +44,18 @@ class MyDrawer extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => Profile(
                                 name: value.user.name, id: value.user.id)),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.location_on),
+                    trailing: const Icon(Icons.navigate_next),
+                    title: const Text('Mi ubicación'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Location(id: value.user.id)),
                       );
                     },
                   ),
