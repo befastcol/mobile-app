@@ -1,46 +1,53 @@
-// import 'package:be_fast/api/users.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/providers/user.dart';
-// import 'package:be_fast/utils/debounce.dart';
+import 'package:be_fast/screens/login/autocomplete.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
+import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 
-class Location extends StatefulWidget {
-  final String id;
-  const Location({super.key, required this.id});
+class LocationScreen extends StatefulWidget {
+  const LocationScreen({super.key});
 
   @override
-  State<Location> createState() => _LocationState();
+  State<LocationScreen> createState() => _LocationScreenState();
 }
 
-class _LocationState extends State<Location> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _originController = TextEditingController();
-  // final Debounce _debounce = Debounce(milliseconds: 500);
-  bool _isLoading = false;
+class _LocationScreenState extends State<LocationScreen> {
+  bool _isSaving = false;
+  bool _isLoadingLocation = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _originController.dispose();
+  setIsLoadingLocation(bool isLoading) {
+    setState(() => _isLoadingLocation = isLoading);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Consumer<UserProvider>(builder: (context, provider, child) {
+      Future saveUserLocation() async {
+        try {
+          setState(() => _isSaving = true);
+          String? userId = await UserSession.getUserId();
+
+          await UsersAPI().saveUserLocation(
+              userId: userId, originLocation: provider.origin);
+          if (mounted) {
+            showSnackBar(context, "Ubicación guardada correctamente");
+          }
+        } finally {
+          if (mounted) {
+            setState(() => _isSaving = false);
+          }
+        }
+      }
+
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+        ),
         backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-      ),
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
+        body: SafeArea(
           child: Center(
               child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -63,41 +70,59 @@ class _LocationState extends State<Location> {
                     ),
                   ),
                   const Text(
-                    '¿Dónde podemos ubicarte?',
+                    '¿Dónde podemos encontrarte?',
                     style: TextStyle(
                       color: Colors.black54,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _originController,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Ubicación',
-                        hintText: 'Ubicación'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Introduce tu ubicación por favor';
-                      }
-                      return null;
-                    },
+                  Hero(
+                    tag: 'location',
+                    child: Material(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(10),
+                      child: _isLoadingLocation
+                          ? Container(height: 56)
+                          : InkWell(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AutocompleteScreen(
+                                      originTitle: provider.origin.title,
+                                      setIsLoadingLocation:
+                                          setIsLoadingLocation),
+                                ),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.location_on,
+                                        color: Colors.blue),
+                                    const SizedBox(width: 10),
+                                    Text(provider.origin.title.isEmpty
+                                        ? 'Ubicación'
+                                        : provider.origin.title),
+                                  ],
+                                ),
+                              ),
+                            ),
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  _isLoading
+                  _isSaving
                       ? const Center(child: CircularProgressIndicator())
                       : SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                final userProvider =
-                                    context.read<UserProvider>();
-                                _saveUser(userProvider);
-                              }
-                            },
+                            onPressed: provider.origin.coordinates.isNotEmpty &&
+                                    !_isLoadingLocation
+                                ? saveUserLocation
+                                : null,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                               shape: RoundedRectangleBorder(
@@ -116,20 +141,7 @@ class _LocationState extends State<Location> {
             ),
           )),
         ),
-      ),
-    );
-  }
-
-  void _saveUser(UserProvider userProvider) async {
-    setState(() => _isLoading = true);
-    try {
-      // await UsersAPI().updateUserLocation(
-      //     userId: widget.id, originLocation: _originController.text);
-      if (mounted) {
-        showSnackBar(context, "Ubicación guardada correctamente");
-      }
-    } finally {
-      setState(() => _isLoading = false);
-    }
+      );
+    });
   }
 }

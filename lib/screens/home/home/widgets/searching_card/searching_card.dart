@@ -1,4 +1,4 @@
-import 'package:be_fast/providers/map.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,10 +36,10 @@ class _SearchingCardState extends State<SearchingCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MapProvider>(builder: (context, mapProvider, child) {
+    return Consumer<UserProvider>(builder: (context, provider, child) {
       Future cancelService() async {
         try {} finally {
-          mapProvider.setIsSearchingDeliveries(false);
+          provider.setIsSearchingDeliveries(false);
           showSnackBar(context, "Servicio cancelado");
         }
       }

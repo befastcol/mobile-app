@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:be_fast/models/location.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -20,35 +21,39 @@ class GoogleMapsAPI {
   String? apiKey = dotenv.env['GOOGLE_API_KEY'];
 
   Future<RouteDetails> getRouteCoordinates(
-      LatLng origin, LatLng destination) async {
-    final response = await http.get(
-      Uri.parse(
-        '$_baseUrl'
-        '/directions/json?'
-        'origin=${origin.latitude},${origin.longitude}&'
-        'destination=${destination.latitude},${destination.longitude}&'
-        'key=$apiKey',
-      ),
-    );
+      LocationModel origin, LocationModel destination) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          '$_baseUrl'
+          '/directions/json?'
+          'origin=${origin.coordinates[1]},${origin.coordinates[0]}&'
+          'destination=${destination.coordinates[1]},${destination.coordinates[0]}&'
+          'key=$apiKey',
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['routes'] != null && data['routes'].isNotEmpty) {
-        final route = data['routes'][0];
-        final encodedPoly = route['overview_polyline']['points'];
-        final List<LatLng> polylinePoints = _decodePolyline(encodedPoly);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final route = data['routes'][0];
+          final encodedPoly = route['overview_polyline']['points'];
+          final List<LatLng> polylinePoints = _decodePolyline(encodedPoly);
 
-        final int distance = route['legs'][0]['distance']['value'];
-        final int duration = route['legs'][0]['duration']['value'];
+          final int distance = route['legs'][0]['distance']['value'];
+          final int duration = route['legs'][0]['duration']['value'];
 
-        return RouteDetails(
-          polylinePoints: polylinePoints,
-          distance: distance,
-          duration: duration,
-        );
+          return RouteDetails(
+            polylinePoints: polylinePoints,
+            distance: distance,
+            duration: duration,
+          );
+        }
       }
+      throw Exception('Failed to fetch directions');
+    } catch (e) {
+      throw Exception(e);
     }
-    throw Exception('Failed to fetch directions');
   }
 
   List<LatLng> _decodePolyline(String encoded) {

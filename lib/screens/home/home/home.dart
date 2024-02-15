@@ -1,5 +1,4 @@
 import 'package:be_fast/screens/home/home/widgets/drawer/my_drawer.dart';
-import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/home/widgets/searching_card/searching_card.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/selection_card.dart';
@@ -20,13 +19,12 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userMapProvider = Provider.of<MapProvider>(context, listen: false);
 
     return FutureBuilder(
         future: Future.wait(
-            [userProvider.initializeUser(), userMapProvider.initializeMap()]),
+            [userProvider.initializeUser(), userProvider.initializeMap()]),
         builder: (context, snapshot) {
-          return Consumer<MapProvider>(
+          return Consumer<UserProvider>(
               builder: (context, value, child) => Scaffold(
                     key: _scaffoldKey,
                     resizeToAvoidBottomInset: false,

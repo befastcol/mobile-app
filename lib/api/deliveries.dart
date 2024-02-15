@@ -7,13 +7,16 @@ import 'package:be_fast/models/location.dart';
 import 'package:be_fast/api/constants/base_url.dart';
 
 class DeliveriesAPI {
-  Future<List<Delivery>> getUserDeliveries({required String userId}) async {
+  Future<List<DeliveryModel>> getUserDeliveries(
+      {required String userId}) async {
     try {
       Response response =
           await get(Uri.parse('$baseUrl/deliveries/users/$userId'));
       if (response.statusCode == 200) {
         List<dynamic> deliveryList = json.decode(response.body);
-        return deliveryList.map((json) => Delivery.fromJson(json)).toList();
+        return deliveryList
+            .map((json) => DeliveryModel.fromJson(json))
+            .toList();
       }
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {
@@ -21,14 +24,16 @@ class DeliveriesAPI {
     }
   }
 
-  Future<List<Delivery>> getCourierDeliveries(
+  Future<List<DeliveryModel>> getCourierDeliveries(
       {required String courierId}) async {
     try {
       Response response =
           await get(Uri.parse('$baseUrl/deliveries/couriers/$courierId'));
       if (response.statusCode == 200) {
         List<dynamic> deliveryList = json.decode(response.body);
-        return deliveryList.map((json) => Delivery.fromJson(json)).toList();
+        return deliveryList
+            .map((json) => DeliveryModel.fromJson(json))
+            .toList();
       }
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {
@@ -36,7 +41,7 @@ class DeliveriesAPI {
     }
   }
 
-  Future<Delivery> createDelivery({
+  Future<DeliveryModel> createDelivery({
     required LocationModel origin,
     required LocationModel destination,
     required int price,
@@ -56,7 +61,7 @@ class DeliveriesAPI {
 
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
-        return Delivery.fromJson(responseData);
+        return DeliveryModel.fromJson(responseData);
       }
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {
@@ -64,13 +69,13 @@ class DeliveriesAPI {
     }
   }
 
-  Future<Delivery> getDeliveryById({required String deliveryId}) async {
+  Future<DeliveryModel> getDeliveryById({required String deliveryId}) async {
     try {
       Response response =
           await get(Uri.parse('$baseUrl/deliveries/$deliveryId'));
       if (response.statusCode == 200) {
         dynamic delivery = json.decode(response.body);
-        return Delivery.fromJson(delivery);
+        return DeliveryModel.fromJson(delivery);
       }
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {

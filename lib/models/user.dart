@@ -2,14 +2,14 @@ import 'package:be_fast/models/location.dart';
 
 class UserModel {
   final String id, name, phone, role;
-  final LocationModel? originLocation;
+  final LocationModel originLocation;
 
   UserModel(
       {required this.id,
       required this.name,
       required this.phone,
       required this.role,
-      this.originLocation});
+      required this.originLocation});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

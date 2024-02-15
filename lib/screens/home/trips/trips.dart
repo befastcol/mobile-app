@@ -12,7 +12,7 @@ class Trips extends StatefulWidget {
 }
 
 class _TripsState extends State<Trips> {
-  List<Delivery> _deliveries = [];
+  List<DeliveryModel> _deliveries = [];
   bool _isLoading = false;
 
   void loadUserDeliveries() async {

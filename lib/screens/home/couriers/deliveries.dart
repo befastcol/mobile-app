@@ -14,7 +14,7 @@ class CourierDeliveries extends StatefulWidget {
 }
 
 class _CourierDeliveriesState extends State<CourierDeliveries> {
-  List<Delivery> _deliveries = [];
+  List<DeliveryModel> _deliveries = [];
   bool _isLoading = false;
 
   void loadCourierDeliveries() async {

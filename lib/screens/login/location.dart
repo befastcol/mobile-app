@@ -1,5 +1,5 @@
 import 'package:be_fast/api/users.dart';
-import 'package:be_fast/providers/map.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/autocomplete.dart';
 import 'package:be_fast/utils/user_session.dart';
@@ -24,7 +24,7 @@ class _LocationState extends State<Location> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MapProvider>(builder: (context, provider, child) {
+    return Consumer<UserProvider>(builder: (context, provider, child) {
       Future saveUserLocation() async {
         try {
           setState(() => _isSaving = true);

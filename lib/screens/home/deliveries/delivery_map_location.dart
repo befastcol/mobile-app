@@ -33,7 +33,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
 
   Future<void> _getDeliveryData() async {
     try {
-      Delivery delivery =
+      DeliveryModel delivery =
           await DeliveriesAPI().getDeliveryById(deliveryId: widget.deliveryId);
       _setupMap(delivery);
     } catch (e) {
@@ -41,7 +41,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     }
   }
 
-  void _setupMap(Delivery delivery) async {
+  void _setupMap(DeliveryModel delivery) async {
     final originLatLng =
         LatLng(delivery.origin.coordinates[0], delivery.origin.coordinates[1]);
     final destinationLatLng = LatLng(delivery.destination.coordinates[0],

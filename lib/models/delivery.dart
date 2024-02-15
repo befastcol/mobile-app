@@ -1,6 +1,6 @@
 import 'package:be_fast/models/location.dart';
 
-class Delivery {
+class DeliveryModel {
   final String id, status;
   final String? courier;
   final int price;
@@ -9,7 +9,7 @@ class Delivery {
   final DateTime requestedDate;
   final DateTime? deliveredDate;
 
-  Delivery(
+  DeliveryModel(
       {required this.id,
       required this.requestedDate,
       required this.origin,
@@ -20,8 +20,8 @@ class Delivery {
       this.deliveredDate,
       this.courier});
 
-  factory Delivery.fromJson(Map<String, dynamic> json) {
-    return Delivery(
+  factory DeliveryModel.fromJson(Map<String, dynamic> json) {
+    return DeliveryModel(
       id: json['_id'],
       requestedDate: DateTime.parse(json['requestedDate']),
       origin: LocationModel.fromJson(json['origin']),

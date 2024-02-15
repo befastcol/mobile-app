@@ -1,4 +1,3 @@
-import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +26,6 @@ void main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => UserProvider()),
-          ChangeNotifierProvider(create: (context) => MapProvider()),
         ],
         child: const BeFast(),
       ),

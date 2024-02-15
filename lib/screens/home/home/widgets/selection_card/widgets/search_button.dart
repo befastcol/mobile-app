@@ -1,4 +1,4 @@
-import 'package:be_fast/providers/map.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,17 +7,17 @@ class SearchButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MapProvider>(
-      builder: (context, userMapProvider, child) {
+    return Consumer<UserProvider>(
+      builder: (context, provider, child) {
         return Visibility(
-          visible: userMapProvider.origin.coordinates.isNotEmpty &&
-              userMapProvider.destination.coordinates.isNotEmpty,
+          visible: provider.origin.coordinates.isNotEmpty &&
+              provider.destination.coordinates.isNotEmpty,
           child: Container(
             margin: const EdgeInsets.only(top: 10),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: userMapProvider.createDelivery,
+                onPressed: provider.createDelivery,
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
@@ -32,9 +32,9 @@ class SearchButtonWidget extends StatelessWidget {
                       width: 20,
                     ),
                     Visibility(
-                      visible: userMapProvider.price > 0,
+                      visible: provider.price > 0,
                       child: Text(
-                        '\$${userMapProvider.price}',
+                        '\$${provider.price}',
                         style: const TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),

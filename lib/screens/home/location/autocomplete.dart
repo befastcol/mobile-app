@@ -58,25 +58,28 @@ class _AutocompleteScreenState extends State<AutocompleteScreen> {
               body: SafeArea(
                 child: Column(
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      child: TextFormField(
-                        autofocus: true,
-                        controller: _locationController,
-                        decoration: InputDecoration(
-                          prefixIcon:
-                              const Icon(Icons.location_on, color: Colors.blue),
-                          hintText: 'Ubicación',
-                          fillColor: Colors.grey[100],
-                          filled: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
+                    Hero(
+                      tag: 'location',
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        child: TextFormField(
+                          autofocus: true,
+                          controller: _locationController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.location_on,
+                                color: Colors.blue),
+                            hintText: 'Ubicación',
+                            fillColor: Colors.grey[100],
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(12, 16, 12, 16),
                           ),
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                          onChanged: _onLocationChanged,
                         ),
-                        onChanged: _onLocationChanged,
                       ),
                     ),
                     const SizedBox(height: 20),

@@ -1,10 +1,10 @@
 import 'package:be_fast/api/google_maps.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
-import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/utils/debounce.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -64,8 +64,8 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MapProvider>(
-        builder: (context, mapProvider, child) => Scaffold(
+    return Consumer<UserProvider>(
+        builder: (context, provider, child) => Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 title: const Text('Ubicación'),
@@ -133,11 +133,10 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             return ListTile(
                               onTap: () async {
                                 Navigator.pop(context);
-                                mapProvider.setIsUpdatingLocation(true);
+                                provider.setIsUpdatingLocation(true);
                                 LatLng latLng = await GoogleMapsAPI()
                                     .getPlaceLatLng(placeId);
-                                mapProvider.updateOrigin(
-                                    latLng, title, subtitle);
+                                provider.updateOrigin(latLng, title, subtitle);
                               },
                               leading: const Icon(Icons.location_on,
                                   color: Colors.blue),
@@ -166,10 +165,10 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                               onTap: () async {
                                 try {
                                   Navigator.pop(context);
-                                  mapProvider.setIsUpdatingLocation(true);
+                                  provider.setIsUpdatingLocation(true);
                                   LatLng latLng = await GoogleMapsAPI()
                                       .getPlaceLatLng(placeId);
-                                  mapProvider.updateDestination(
+                                  provider.updateDestination(
                                       latLng, title, subtitle);
                                 } catch (e) {
                                   debugPrint("$e");

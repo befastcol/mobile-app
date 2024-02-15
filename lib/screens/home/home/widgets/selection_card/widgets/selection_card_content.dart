@@ -1,4 +1,4 @@
-import 'package:be_fast/providers/map.dart';
+import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/widgets/destination_location.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/widgets/loading_skeleton.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/widgets/origin_location.dart';
@@ -13,15 +13,15 @@ class SelectionCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MapProvider>(
-        builder: (context, mapProvider, value) => Column(
+    return Consumer<UserProvider>(
+        builder: (context, provider, value) => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Visibility(
-                    visible: mapProvider.isUpdatingLocation,
+                    visible: provider.isUpdatingLocation,
                     child: const LoadingSkeleton()),
                 Visibility(
-                    visible: !mapProvider.isUpdatingLocation,
+                    visible: !provider.isUpdatingLocation,
                     child: const Column(
                       children: [
                         OriginLocation(),

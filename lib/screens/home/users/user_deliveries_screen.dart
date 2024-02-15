@@ -13,7 +13,7 @@ class UserDeliveries extends StatefulWidget {
 }
 
 class _UserDeliveriesState extends State<UserDeliveries> {
-  List<Delivery> deliveries = [];
+  List<DeliveryModel> deliveries = [];
   bool isLoading = false;
 
   Future _handleGetUserDeliveries() async {
