@@ -4,11 +4,22 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+class RouteDetails {
+  final List<LatLng> polylinePoints;
+  final int distance;
+  final int duration;
+
+  RouteDetails(
+      {required this.polylinePoints,
+      required this.distance,
+      required this.duration});
+}
+
 class GoogleMapsAPI {
   static const String _baseUrl = 'https://maps.googleapis.com/maps/api';
   String? apiKey = dotenv.env['GOOGLE_API_KEY'];
 
-  Future<List<LatLng>> getRouteCoordinates(
+  Future<RouteDetails> getRouteCoordinates(
       LatLng origin, LatLng destination) async {
     final response = await http.get(
       Uri.parse(
@@ -26,7 +37,15 @@ class GoogleMapsAPI {
         final route = data['routes'][0];
         final encodedPoly = route['overview_polyline']['points'];
         final List<LatLng> polylinePoints = _decodePolyline(encodedPoly);
-        return polylinePoints;
+
+        final int distance = route['legs'][0]['distance']['value'];
+        final int duration = route['legs'][0]['duration']['value'];
+
+        return RouteDetails(
+          polylinePoints: polylinePoints,
+          distance: distance,
+          duration: duration,
+        );
       }
     }
     throw Exception('Failed to fetch directions');

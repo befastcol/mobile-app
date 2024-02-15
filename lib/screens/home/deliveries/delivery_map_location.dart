@@ -1,9 +1,8 @@
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
+import 'package:be_fast/utils/bytes_from_asset.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:ui' as ui;
 
 class DeliveryMapLocation extends StatefulWidget {
   final String deliveryId;
@@ -50,7 +49,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     final currentLocationLatLng =
         LatLng(delivery.currentLocation[0], delivery.currentLocation[1]);
 
-    final motoIcon = await _getBytesFromAsset('assets/moto_icon.png', 100);
+    final motoIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
 
     setState(() {
       _initialCameraPosition =
@@ -62,15 +61,6 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
       _addMarker('currentLocation', currentLocationLatLng, motoIcon);
       _updateCameraBounds(currentLocationLatLng, destinationLatLng);
     });
-  }
-
-  Future<BitmapDescriptor> _getBytesFromAsset(String path, int width) async {
-    ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    final byteData = await fi.image.toByteData(format: ui.ImageByteFormat.png);
-    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
   }
 
   void _addMarker(String id, LatLng latLng, BitmapDescriptor icon) {

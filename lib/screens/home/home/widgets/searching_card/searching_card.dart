@@ -2,7 +2,6 @@ import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class SearchingCard extends StatefulWidget {
   const SearchingCard({super.key});
@@ -12,7 +11,6 @@ class SearchingCard extends StatefulWidget {
 }
 
 class _SearchingCardState extends State<SearchingCard> {
-  late WebSocketChannel channel;
   bool isCourierAssigned = false;
 
   @override
@@ -34,7 +32,6 @@ class _SearchingCardState extends State<SearchingCard> {
   @override
   void dispose() {
     super.dispose();
-    channel.sink.close();
   }
 
   @override

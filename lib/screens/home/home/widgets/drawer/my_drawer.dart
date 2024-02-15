@@ -1,11 +1,12 @@
+import "package:be_fast/screens/home/courier/courier_map.dart";
 import 'package:be_fast/screens/home/requests/requests.dart';
 import 'package:be_fast/screens/home/couriers/couriers.dart';
 import 'package:be_fast/screens/home/deliveries/deliveries.dart';
 import 'package:be_fast/providers/user.dart';
 import "package:be_fast/screens/home/profile/main.dart";
 import "package:be_fast/screens/home/register/main.dart";
+import "package:be_fast/screens/home/trips/trips.dart";
 import "package:be_fast/screens/home/users/main.dart";
-import "package:be_fast/utils/auth_service.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import '../../../../../utils/format_phone.dart';
@@ -78,9 +79,28 @@ class MyDrawer extends StatelessWidget {
                     child: ListTile(
                       leading: const Icon(Icons.motorcycle),
                       trailing: const Icon(Icons.navigate_next),
+                      title: const Text('Mapa'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CourierMap()),
+                        );
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: value.user.role == 'courier',
+                    child: ListTile(
+                      leading: const Icon(Icons.list),
+                      trailing: const Icon(Icons.navigate_next),
                       title: const Text('Mis viajes'),
                       onTap: () {
-                        // Acción al presionar
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Trips()),
+                        );
                       },
                     ),
                   ),
@@ -128,19 +148,6 @@ class MyDrawer extends StatelessWidget {
                         );
                       },
                     ),
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.logout,
-                      color: Colors.red,
-                    ),
-                    title: const Text(
-                      'Cerrar sesión',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    onTap: () {
-                      AuthService.logout();
-                    },
                   ),
                 ],
               ),
