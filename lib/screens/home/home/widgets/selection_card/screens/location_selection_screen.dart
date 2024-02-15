@@ -133,6 +133,7 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             return ListTile(
                               onTap: () async {
                                 Navigator.pop(context);
+                                mapProvider.setIsUpdatingLocation(true);
                                 LatLng latLng = await GoogleMapsAPI()
                                     .getPlaceLatLng(placeId);
                                 mapProvider.updateOrigin(
@@ -164,14 +165,14 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             return ListTile(
                               onTap: () async {
                                 try {
-                                  mapProvider.setIsUpdatingLocation(true);
                                   Navigator.pop(context);
+                                  mapProvider.setIsUpdatingLocation(true);
                                   LatLng latLng = await GoogleMapsAPI()
                                       .getPlaceLatLng(placeId);
                                   mapProvider.updateDestination(
                                       latLng, title, subtitle);
-                                } finally {
-                                  mapProvider.setIsUpdatingLocation(false);
+                                } catch (e) {
+                                  debugPrint("$e");
                                 }
                               },
                               leading: const Icon(Icons.location_on,

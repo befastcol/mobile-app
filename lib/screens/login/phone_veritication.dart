@@ -1,6 +1,7 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
+import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -72,6 +73,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
 
       CreateUserResponse user =
           await UsersAPI().createUser(phone: widget.phone);
+      await UserSession.storeUserId(userId: user.userId);
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,

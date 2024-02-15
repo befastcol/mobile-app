@@ -77,4 +77,20 @@ class DeliveriesAPI {
       throw Exception(e);
     }
   }
+
+  Future<int> getDeliveryPrice({
+    required int distance,
+    required int duration,
+  }) async {
+    try {
+      Response response = await get(Uri.parse(
+          '$baseUrl/deliveries/price?distance=$distance&duration=$duration'));
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      }
+      throw Exception(json.decode(response.body)['message']);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

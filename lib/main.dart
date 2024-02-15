@@ -1,7 +1,7 @@
 import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/providers/user.dart';
+import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -29,14 +29,14 @@ void main() async {
           ChangeNotifierProvider(create: (context) => UserProvider()),
           ChangeNotifierProvider(create: (context) => MapProvider()),
         ],
-        child: const MyApp(),
+        child: const BeFast(),
       ),
     );
   });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BeFast extends StatelessWidget {
+  const BeFast({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +62,12 @@ class AuthenticationWrapper extends StatefulWidget {
 class AuthenticationWrapperState extends State<AuthenticationWrapper> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+    return FutureBuilder<String?>(
+      future: UserSession.getUserId(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          User? user = snapshot.data;
-          if (user == null) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          String? userId = snapshot.data;
+          if (userId == null) {
             return const Login();
           }
           return const Home();

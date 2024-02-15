@@ -126,7 +126,9 @@ class _ProfileState extends State<Profile> {
       await UsersAPI()
           .updateUser(userId: widget.id, name: _nameController.text);
       userProvider.updateUserName(_nameController.text);
-      if (mounted) showSnackBar(context, "Nombre guardado correctamente");
+      if (mounted) {
+        showSnackBar(context, "Nombre guardado correctamente");
+      }
     } finally {
       setState(() => _isLoading = false);
     }

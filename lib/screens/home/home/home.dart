@@ -1,3 +1,4 @@
+import 'package:be_fast/screens/home/home/cards/where_to_go.dart';
 import 'package:be_fast/screens/home/home/widgets/drawer/my_drawer.dart';
 import 'package:be_fast/providers/map.dart';
 import 'package:be_fast/providers/user.dart';
@@ -20,13 +21,11 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final mapProvider = Provider.of<MapProvider>(context, listen: false);
+    final userMapProvider = Provider.of<MapProvider>(context, listen: false);
 
     return FutureBuilder(
-        future: Future.wait([
-          userProvider.initializeUser(),
-          mapProvider.initializeMap(),
-        ]),
+        future: Future.wait(
+            [userProvider.initializeUser(), userMapProvider.initializeMap()]),
         builder: (context, snapshot) {
           return Consumer<MapProvider>(
               builder: (context, value, child) => Scaffold(
@@ -47,7 +46,9 @@ class _HomeState extends State<Home> {
                               GoogleMap(
                                 mapType: MapType.normal,
                                 myLocationEnabled: true,
-                                markers: value.markers!,
+                                markers: value.markers!.length > 1
+                                    ? value.markers!
+                                    : {},
                                 polylines: value.polylines,
                                 initialCameraPosition:
                                     value.initialCameraPosition!,
@@ -58,6 +59,7 @@ class _HomeState extends State<Home> {
                                   }
                                 },
                               ),
+                              // const WhereToGoCard(),
                               Visibility(
                                 visible: !value.isSearchingDeliveries,
                                 child: const Positioned(

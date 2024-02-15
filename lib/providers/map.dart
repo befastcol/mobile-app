@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:flutter/material.dart';
 import 'package:be_fast/screens/home/home/helpers/location_helper.dart';
 import 'package:be_fast/models/location.dart';
@@ -14,7 +15,7 @@ class MapProvider extends ChangeNotifier {
       LocationModel(coordinates: [], title: '', subtitle: '');
   LocationModel _destination =
       LocationModel(coordinates: [], title: '', subtitle: '');
-  final int _price = 0;
+  int _price = 0;
 
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
@@ -22,7 +23,7 @@ class MapProvider extends ChangeNotifier {
   CameraPosition? _initialCameraPosition;
   bool _isUpdatingLocation = false;
   bool _isSearchingDeliveries = false;
-  late Delivery _createDeliveryResponse;
+  late Delivery _delivery;
 
   LocationModel get origin => _origin;
   LocationModel get destination => _destination;
@@ -35,7 +36,7 @@ class MapProvider extends ChangeNotifier {
 
   bool get isUpdatingLocation => _isUpdatingLocation;
   bool get isSearchingDeliveries => _isSearchingDeliveries;
-  Delivery get createDeliveryResponse => _createDeliveryResponse;
+  Delivery get delivery => _delivery;
 
   Future<void> initializeMap() async {
     try {
@@ -62,12 +63,10 @@ class MapProvider extends ChangeNotifier {
     Position position = await LocationHelper.determinePosition();
     Placemark placemark = await LocationHelper.getPlacemarks(position);
 
-    _origin = LocationModel(
-        coordinates: [position.latitude, position.longitude],
-        title: "${placemark.name}",
-        subtitle: "${placemark.locality},${placemark.postalCode}");
-
-    notifyListeners();
+    updateOrigin(
+        LatLng(position.latitude, position.longitude),
+        "${placemark.name}",
+        "${placemark.locality}, ${placemark.administrativeArea}, ${placemark.country}");
   }
 
   void updateOrigin(LatLng latlng, String title, String subtitle) {
@@ -83,8 +82,19 @@ class MapProvider extends ChangeNotifier {
       position: latlng,
       icon: BitmapDescriptor.defaultMarkerWithHue(200),
     ));
-    notifyListeners();
     _checkRouteAndAdjustCamera();
+  }
+
+  Future createDelivery() async {
+    try {
+      _isSearchingDeliveries = true;
+      notifyListeners();
+      _delivery = await DeliveriesAPI().createDelivery(
+          origin: _origin, destination: _destination, price: _price);
+    } finally {
+      _isSearchingDeliveries = true;
+      notifyListeners();
+    }
   }
 
   void updateDestination(LatLng latlng, String title, String subtitle) {
@@ -100,7 +110,6 @@ class MapProvider extends ChangeNotifier {
       position: latlng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     ));
-    notifyListeners();
     _checkRouteAndAdjustCamera();
   }
 
@@ -114,18 +123,20 @@ class MapProvider extends ChangeNotifier {
       GoogleMapsAPI mapsApi = GoogleMapsAPI();
 
       try {
-        List<LatLng> routeCoordinates =
+        RouteDetails routeDetails =
             await mapsApi.getRouteCoordinates(originLatLng, destinationLatLng);
+
+        _price = await DeliveriesAPI().getDeliveryPrice(
+            distance: routeDetails.distance, duration: routeDetails.duration);
 
         _polylines.clear();
 
         _polylines.add(Polyline(
           polylineId: const PolylineId('route'),
-          points: routeCoordinates,
+          points: routeDetails.polylinePoints,
           color: Colors.blueAccent,
           width: 5,
         ));
-        notifyListeners();
         _fitRoute();
       } catch (e) {
         debugPrint("_checkRouteAndAdjustCamera: $e");
@@ -150,7 +161,7 @@ class MapProvider extends ChangeNotifier {
 
     await mapController
         .animateCamera(CameraUpdate.newLatLngBounds(bounds, 120.0));
-    notifyListeners();
+    setIsUpdatingLocation(false);
   }
 
   void setIsUpdatingLocation(bool isUpdating) {
@@ -160,11 +171,6 @@ class MapProvider extends ChangeNotifier {
 
   void setIsSearchingDeliveries(bool isSearching) {
     _isSearchingDeliveries = isSearching;
-    notifyListeners();
-  }
-
-  void setCreateDeliveryResponse(Delivery delivery) {
-    _createDeliveryResponse = delivery;
     notifyListeners();
   }
 }
