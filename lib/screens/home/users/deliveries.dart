@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/models/location.dart';
@@ -46,30 +44,12 @@ class _UserDeliveriesState extends State<UserDeliveries> {
   }
 
   void _launchGoogleMaps() async {
-    final latitude = widget.originLocation.coordinates[1];
-    final longitude = widget.originLocation.coordinates[0];
-    String googleMapsUrl;
+    if (widget.originLocation.coordinates.isEmpty) return;
+    String googleMapsUrl =
+        'https://www.google.com/maps/dir/?api=1&destination=${widget.originLocation.coordinates[1]},${widget.originLocation.coordinates[0]}&travelmode=driving';
 
-    if (Platform.isAndroid) {
-      googleMapsUrl = 'geo:$latitude,$longitude?q=$latitude,$longitude';
-    } else if (Platform.isIOS) {
-      googleMapsUrl =
-          'comgooglemaps://?daddr=$latitude,$longitude&directionsmode=driving';
-    } else {
-      googleMapsUrl =
-          'https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=driving';
-    }
-
-    final Uri uri = Uri.parse(googleMapsUrl);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      final Uri fallbackUri = Uri.parse(
-          'https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=driving');
-      if (await canLaunchUrl(fallbackUri)) {
-        await launchUrl(fallbackUri);
-      }
+    if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+      await launchUrl(Uri.parse(googleMapsUrl));
     }
   }
 
@@ -78,18 +58,36 @@ class _UserDeliveriesState extends State<UserDeliveries> {
     return Scaffold(
       backgroundColor: deliveries.isEmpty ? Colors.white : Colors.grey[100],
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.amber,
-        title: Text(widget.name),
-        actions: widget.originLocation.coordinates.isNotEmpty
-            ? [
-                IconButton(
-                  icon: const Icon(Icons.location_on),
-                  onPressed: _launchGoogleMaps,
-                ),
-              ]
-            : [],
-      ),
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.amber,
+          title: Text(widget.name),
+          actions: [
+            PopupMenuButton(
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
+              onSelected: (String value) {
+                switch (value) {
+                  case 'map':
+                    _launchGoogleMaps();
+                    break;
+                  case 'delete':
+                    break;
+                  default:
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                if (widget.originLocation.coordinates.isNotEmpty)
+                  const PopupMenuItem(value: 'map', child: Text('Visitar')),
+                const PopupMenuItem(
+                    value: 'delete',
+                    child: Text(
+                      'Eliminar',
+                      style: TextStyle(color: Colors.red),
+                    ))
+              ],
+            )
+          ]),
       body: RefreshIndicator(
         onRefresh: _handleGetUserDeliveries,
         child: isLoading

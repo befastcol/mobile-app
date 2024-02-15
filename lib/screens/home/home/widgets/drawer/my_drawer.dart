@@ -5,7 +5,7 @@ import 'package:be_fast/screens/home/couriers/couriers.dart';
 import 'package:be_fast/screens/home/deliveries/deliveries.dart';
 import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/profile/profile.dart';
-import "package:be_fast/screens/home/register/main.dart";
+import 'package:be_fast/screens/home/register/register.dart';
 import "package:be_fast/screens/home/trips/trips.dart";
 import 'package:be_fast/screens/home/users/users.dart';
 import "package:flutter/material.dart";

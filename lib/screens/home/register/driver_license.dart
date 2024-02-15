@@ -1,30 +1,44 @@
 import 'dart:io';
+import 'package:be_fast/screens/home/register/waiting_approval.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+class DriverLicenseScreen extends StatefulWidget {
+  const DriverLicenseScreen({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<DriverLicenseScreen> createState() => _DriverLicenseScreenState();
 }
 
-class _RegisterState extends State<Register> {
+class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
+  bool _imageSelected = false;
 
   Future<void> _pickImage() async {
     try {
-      final XFile? pickedFile =
-          await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? pickedFile = await _picker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 1000,
+          maxHeight: 1000,
+          imageQuality: 50);
       if (pickedFile != null) {
         setState(() {
           _image = pickedFile;
+          _imageSelected = true;
         });
       }
     } catch (e) {
       debugPrint("_pickImage: $e");
     }
+  }
+
+  void _continue() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const WaitingApprovalScreen()),
+      (_) => false,
+    );
   }
 
   @override
@@ -48,11 +62,11 @@ class _RegisterState extends State<Register> {
                     Image.file(File(_image!.path))
                   else
                     const Image(
-                      image: AssetImage('assets/name.png'),
+                      image: AssetImage('assets/license.png'),
                     ),
                   const SizedBox(height: 50),
                   const Text(
-                    'INE',
+                    'Licencia de conducir',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: Colors.black87,
@@ -61,7 +75,7 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                   const Text(
-                    'Necesitamos tu INE para verificar tu identidad',
+                    'Agrega una foto de tu licencia de conducir mostrando la cara frontal.',
                     style: TextStyle(
                       color: Colors.black54,
                     ),
@@ -70,7 +84,7 @@ class _RegisterState extends State<Register> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _pickImage,
+                      onPressed: _imageSelected ? _continue : _pickImage,
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
@@ -78,9 +92,9 @@ class _RegisterState extends State<Register> {
                         ),
                         backgroundColor: Colors.blue,
                       ),
-                      child: const Text(
-                        'Agregar foto',
-                        style: TextStyle(color: Colors.white),
+                      child: Text(
+                        _imageSelected ? 'Continuar' : 'Agregar foto',
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

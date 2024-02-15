@@ -60,7 +60,7 @@ class DeliveryCard extends StatelessWidget {
                         Visibility(
                           visible: status == "in_progress",
                           child: const Text(
-                            "En proceso",
+                            "En camino",
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),
