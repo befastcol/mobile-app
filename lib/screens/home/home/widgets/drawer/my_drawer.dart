@@ -7,7 +7,7 @@ import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/profile/profile.dart';
 import "package:be_fast/screens/home/register/main.dart";
 import "package:be_fast/screens/home/trips/trips.dart";
-import "package:be_fast/screens/home/users/main.dart";
+import 'package:be_fast/screens/home/users/users.dart';
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import '../../../../../utils/format_phone.dart';

@@ -12,12 +12,17 @@ class UserModel {
       required this.originLocation});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    var originLocationJson = json['originLocation'];
+    var originLocation = originLocationJson != null
+        ? LocationModel.fromJson(originLocationJson)
+        : LocationModel(title: '', subtitle: '', coordinates: []);
+
     return UserModel(
-      id: json['_id'],
-      name: json['name'],
-      phone: json['phone'],
-      role: json['role'],
-      originLocation: LocationModel.fromJson(json['originLocation']),
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
+      phone: json['phone'] ?? '',
+      role: json['role'] ?? '',
+      originLocation: originLocation,
     );
   }
 }

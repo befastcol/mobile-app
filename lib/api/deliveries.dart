@@ -72,7 +72,7 @@ class DeliveriesAPI {
   Future<DeliveryModel> getDeliveryById({required String deliveryId}) async {
     try {
       Response response =
-          await get(Uri.parse('$baseUrl/deliveries/$deliveryId'));
+          await get(Uri.parse('$baseUrl/deliveries/get/$deliveryId'));
       if (response.statusCode == 200) {
         dynamic delivery = json.decode(response.body);
         return DeliveryModel.fromJson(delivery);

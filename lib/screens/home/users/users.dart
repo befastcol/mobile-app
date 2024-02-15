@@ -1,6 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/screens/home/users/user_deliveries_screen.dart';
+import 'package:be_fast/screens/home/users/deliveries.dart';
 import 'package:flutter/material.dart';
 
 class Users extends StatefulWidget {
@@ -58,6 +58,7 @@ class _UsersState extends State<Users> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => UserDeliveries(
+                                    originLocation: user.originLocation,
                                     name: user.name,
                                     userId: user.id,
                                   )));
