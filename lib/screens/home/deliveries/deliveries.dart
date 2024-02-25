@@ -47,7 +47,7 @@ class _DeliveriesState extends State<Deliveries> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.teal[600],
@@ -57,20 +57,36 @@ class _DeliveriesState extends State<Deliveries> {
         onRefresh: _refreshList,
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: deliveries.length,
-                itemBuilder: (context, index) {
-                  final delivery = deliveries[index];
-                  return DeliveryCard(
-                    deliveyId: delivery.id,
-                    status: delivery.status,
-                    date: delivery.requestedDate,
-                    destination: delivery.destination.title,
-                    origin: delivery.origin.title,
-                    price: delivery.price,
-                  );
-                },
-              ),
+            : deliveries.isEmpty
+                ? ListView(
+                    children: [
+                      const SizedBox(height: 180),
+                      Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 50),
+                          child: Image.asset('assets/empty.png')),
+                      const Center(
+                          child: Text(
+                        'No hay pedidos',
+                        style: TextStyle(
+                          color: Colors.black54,
+                        ),
+                      )),
+                    ],
+                  )
+                : ListView.builder(
+                    itemCount: deliveries.length,
+                    itemBuilder: (context, index) {
+                      final delivery = deliveries[index];
+                      return DeliveryCard(
+                        deliveyId: delivery.id,
+                        status: delivery.status,
+                        date: delivery.requestedDate,
+                        destination: delivery.destination.title,
+                        origin: delivery.origin.title,
+                        price: delivery.price,
+                      );
+                    },
+                  ),
       ),
     );
   }

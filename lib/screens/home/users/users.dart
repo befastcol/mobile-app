@@ -34,7 +34,7 @@ class _UsersState extends State<Users> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.amber,
@@ -44,28 +44,44 @@ class _UsersState extends State<Users> {
         onRefresh: _handleGetAllUsers,
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  return ListTile(
-                    leading: const Icon(Icons.person),
-                    trailing: const Icon(Icons.navigate_next),
-                    title: Text(user.name),
-                    subtitle: Text(user.phone),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UserDeliveries(
-                                    originLocation: user.originLocation,
-                                    name: user.name,
-                                    userId: user.id,
-                                  )));
+            : users.isEmpty
+                ? ListView(
+                    children: [
+                      const SizedBox(height: 180),
+                      Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 50),
+                          child: Image.asset('assets/empty.png')),
+                      const Center(
+                          child: Text(
+                        'No hay usuarios',
+                        style: TextStyle(
+                          color: Colors.black54,
+                        ),
+                      )),
+                    ],
+                  )
+                : ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final user = users[index];
+                      return ListTile(
+                        leading: const Icon(Icons.person),
+                        trailing: const Icon(Icons.navigate_next),
+                        title: Text(user.name),
+                        subtitle: Text(user.phone),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserDeliveries(
+                                        originLocation: user.originLocation,
+                                        name: user.name,
+                                        userId: user.id,
+                                      )));
+                        },
+                      );
                     },
-                  );
-                },
-              ),
+                  ),
       ),
     );
   }

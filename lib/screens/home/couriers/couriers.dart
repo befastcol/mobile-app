@@ -70,7 +70,12 @@ class _CouriersState extends State<Couriers> {
                     itemBuilder: (context, index) {
                       final courier = _couriers[index];
                       return ListTile(
-                        leading: const Icon(Icons.person),
+                        leading: Icon(Icons.person,
+                            color: courier.status == "active"
+                                ? Colors.teal
+                                : courier.status == "busy"
+                                    ? Colors.orange
+                                    : Colors.blueGrey),
                         trailing: const Icon(Icons.navigate_next),
                         title: Text(courier.name),
                         subtitle: Text(courier.phone),
