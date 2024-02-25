@@ -46,10 +46,35 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.amber,
-        title: Text(widget.name),
-      ),
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.amber,
+          title: Text(widget.name),
+          actions: [
+            PopupMenuButton(
+              color: Colors.white,
+              surfaceTintColor: Colors.white,
+              onSelected: (String value) {
+                switch (value) {
+                  case 'disable':
+                    break;
+                  case 'payed':
+                    break;
+                  default:
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(value: 'call', child: Text('📞 Llamar')),
+                const PopupMenuItem(value: 'call', child: Text('✅ Pagado')),
+                const PopupMenuItem(
+                    value: 'disable',
+                    child: Text(
+                      '🔒 Deshabilitar',
+                      style: TextStyle(color: Colors.red),
+                    )),
+              ],
+            )
+          ]),
       body: RefreshIndicator(
         onRefresh: _refreshList,
         child: _isLoading

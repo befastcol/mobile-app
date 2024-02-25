@@ -128,7 +128,7 @@ class _LocationState extends State<Location> {
                               backgroundColor: Colors.blue,
                             ),
                             child: const Text(
-                              'Guardar',
+                              'Continuar',
                               style: TextStyle(color: Colors.white),
                             ),
                           ),

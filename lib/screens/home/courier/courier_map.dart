@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:be_fast/api/constants/base_url.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -47,7 +48,7 @@ class _CourierMapState extends State<CourierMap> {
 
   Future _initSocket() async {
     try {
-      socket = io('http://192.168.1.71:3000', <String, dynamic>{
+      socket = io(baseUrl, <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
       });

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:be_fast/models/location.dart';
+import 'package:be_fast/models/custom/custom.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -21,7 +21,7 @@ class GoogleMapsAPI {
   String? apiKey = dotenv.env['GOOGLE_API_KEY'];
 
   Future<RouteDetails> getRouteCoordinates(
-      LocationModel origin, LocationModel destination) async {
+      Point origin, Point destination) async {
     try {
       final response = await http.get(
         Uri.parse(

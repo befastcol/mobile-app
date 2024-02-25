@@ -1,35 +1,66 @@
-import 'package:be_fast/models/location.dart';
+import 'package:be_fast/models/custom/custom.dart';
 
 class UserModel {
-  final String id, name, phone, role;
-  final LocationModel originLocation;
+  final String name, phone, status, vehicle, role, id;
+  final Documents documents;
+  final Point currentLocation, originLocation;
+  final bool isDisabled, hasPayed;
 
-  UserModel(
-      {required this.id,
-      required this.name,
-      required this.phone,
-      required this.role,
-      required this.originLocation});
+  UserModel({
+    required this.id,
+    this.name = '',
+    required this.phone,
+    this.role = 'user',
+    required this.documents,
+    required this.currentLocation,
+    required this.originLocation,
+    this.isDisabled = false,
+    this.hasPayed = true,
+    this.status = 'inactive',
+    this.vehicle = 'motorcycle',
+  });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    var originLocationJson = json['originLocation'];
-    var originLocation = originLocationJson != null
-        ? LocationModel.fromJson(originLocationJson)
-        : LocationModel(title: '', subtitle: '', coordinates: []);
-
+  factory UserModel.fromJson(dynamic json) {
     return UserModel(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
-      role: json['role'] ?? '',
-      originLocation: originLocation,
+      role: json['role'] ?? 'user',
+      documents: Documents.fromJson(json['documents']),
+      currentLocation: Point.fromJson(json['currentLocation']),
+      originLocation: Point.fromJson(json['originLocation']),
+      isDisabled: json['isDisabled'] ?? false,
+      hasPayed: json['hasPayed'] ?? true,
+      status: json['status'] ?? 'inactive',
+      vehicle: json['vehicle'] ?? 'none',
     );
   }
-}
 
-class CreateUserResponse {
-  final String userId;
-  final bool alreadyExists;
-
-  CreateUserResponse({required this.userId, required this.alreadyExists});
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? role,
+    Documents? documents,
+    Point? currentLocation,
+    Point? originLocation,
+    bool? isDisabled,
+    bool? hasPayed,
+    String? status,
+    String? vehicle,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      role: role ?? this.role,
+      documents: documents ?? this.documents,
+      currentLocation: currentLocation ?? this.currentLocation,
+      originLocation: originLocation ?? this.originLocation,
+      isDisabled: isDisabled ?? this.isDisabled,
+      hasPayed: hasPayed ?? this.hasPayed,
+      status: status ?? this.status,
+      vehicle: vehicle ?? this.vehicle,
+    );
+  }
 }

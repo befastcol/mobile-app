@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:be_fast/models/custom/custom.dart';
 import 'package:http/http.dart';
 
 import 'package:be_fast/utils/user_session.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/models/location.dart';
 import 'package:be_fast/api/constants/base_url.dart';
 
 class DeliveriesAPI {
@@ -11,7 +11,8 @@ class DeliveriesAPI {
       {required String userId}) async {
     try {
       Response response =
-          await get(Uri.parse('$baseUrl/deliveries/users/$userId'));
+          await get(Uri.parse('$baseUrlApi/deliveries/users/$userId'));
+
       if (response.statusCode == 200) {
         List<dynamic> deliveryList = json.decode(response.body);
         return deliveryList
@@ -28,7 +29,7 @@ class DeliveriesAPI {
       {required String courierId}) async {
     try {
       Response response =
-          await get(Uri.parse('$baseUrl/deliveries/couriers/$courierId'));
+          await get(Uri.parse('$baseUrlApi/deliveries/couriers/$courierId'));
       if (response.statusCode == 200) {
         List<dynamic> deliveryList = json.decode(response.body);
         return deliveryList
@@ -42,15 +43,15 @@ class DeliveriesAPI {
   }
 
   Future<DeliveryModel> createDelivery({
-    required LocationModel origin,
-    required LocationModel destination,
+    required Point origin,
+    required Point destination,
     required int price,
   }) async {
     String? userId = await UserSession.getUserId();
 
     try {
       Response response = await post(
-        Uri.parse('$baseUrl/deliveries/create/$userId'),
+        Uri.parse('$baseUrlApi/deliveries/create/$userId'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "origin": origin,
@@ -72,7 +73,7 @@ class DeliveriesAPI {
   Future<DeliveryModel> getDeliveryById({required String deliveryId}) async {
     try {
       Response response =
-          await get(Uri.parse('$baseUrl/deliveries/get/$deliveryId'));
+          await get(Uri.parse('$baseUrlApi/deliveries/get/$deliveryId'));
       if (response.statusCode == 200) {
         dynamic delivery = json.decode(response.body);
         return DeliveryModel.fromJson(delivery);
@@ -89,7 +90,7 @@ class DeliveriesAPI {
   }) async {
     try {
       Response response = await get(Uri.parse(
-          '$baseUrl/deliveries/price?distance=$distance&duration=$duration'));
+          '$baseUrlApi/deliveries/price?distance=$distance&duration=$duration'));
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }

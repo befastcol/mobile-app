@@ -3,28 +3,29 @@ import 'dart:math';
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/api/users.dart';
+import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/models/location.dart';
+import 'package:be_fast/utils/bytes_from_asset.dart';
 import 'package:be_fast/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/user_session.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class UserProvider extends ChangeNotifier {
   UserModel _user = UserModel(
-      id: '',
-      name: '',
-      phone: '',
-      role: '',
-      originLocation: LocationModel(title: '', subtitle: '', coordinates: []));
+    id: '',
+    phone: '',
+    documents: Documents(driverLicense: Document(), ine: Document()),
+    currentLocation: Point(),
+    isDisabled: false,
+    hasPayed: true,
+    originLocation: Point(),
+  );
 
-  LocationModel _origin =
-      LocationModel(coordinates: [], title: '', subtitle: '');
-  LocationModel _destination =
-      LocationModel(coordinates: [], title: '', subtitle: '');
+  Point _origin = Point();
+  Point _destination = Point();
   int _price = 0;
 
   final Set<Marker> _markers = {};
@@ -38,9 +39,10 @@ class UserProvider extends ChangeNotifier {
   late DeliveryModel _delivery;
 
   UserModel get user => _user;
-  LocationModel get origin => _origin;
-  LocationModel get destination => _destination;
+  Point get origin => _origin;
+  Point get destination => _destination;
   int get price => _price;
+  DeliveryModel get delivery => _delivery;
 
   Set<Marker>? get markers => _markers;
   Set<Polyline> get polylines => _polylines;
@@ -49,7 +51,6 @@ class UserProvider extends ChangeNotifier {
 
   bool get isUpdatingLocation => _isUpdatingLocation;
   bool get isSearchingDeliveries => _isSearchingDeliveries;
-  DeliveryModel get delivery => _delivery;
 
   Future<void> initializeMap() async {
     try {
@@ -63,7 +64,9 @@ class UserProvider extends ChangeNotifier {
   Future initializeUser() async {
     try {
       String? userId = await UserSession.getUserId();
-      _user = await UsersAPI().getUserById(userId: userId);
+
+      _user = await UsersAPI().getUser(userId: userId);
+
       updateOrigin(
           LatLng(_user.originLocation.coordinates[1],
               _user.originLocation.coordinates[0]),
@@ -75,13 +78,40 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future initializeCouriers() async {
+    try {
+      List<UserModel> couriers = await UsersAPI().getActiveCouriers();
+      final motoIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
+      final carIcon = await getBytesFromAsset('assets/car_icon.png', 100);
+
+      for (var courier in couriers) {
+        LatLng position = LatLng(courier.currentLocation.coordinates[1],
+            courier.currentLocation.coordinates[0]);
+
+        if (courier.vehicle == "motorcycle") {
+          _markers.add(Marker(
+            markerId: MarkerId(courier.id),
+            position: position,
+            icon: motoIcon,
+          ));
+        }
+        if (courier.vehicle == "car") {
+          _markers.add(Marker(
+            markerId: MarkerId(courier.id),
+            position: position,
+            icon: carIcon,
+          ));
+        }
+        notifyListeners();
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint("initializeCouriers: $e");
+    }
+  }
+
   void updateUserName(String newName) {
-    _user = UserModel(
-        id: _user.id,
-        name: newName,
-        phone: _user.phone,
-        role: _user.role,
-        originLocation: _user.originLocation);
+    _user = _user.copyWith(name: newName);
     notifyListeners();
   }
 
@@ -97,18 +127,8 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getAddressLocation() async {
-    Position position = await LocationHelper.determinePosition();
-    Placemark placemark = await LocationHelper.getPlacemarks(position);
-
-    updateOrigin(
-        LatLng(position.latitude, position.longitude),
-        "${placemark.name}",
-        "${placemark.locality}, ${placemark.administrativeArea}, ${placemark.country}");
-  }
-
   void updateOrigin(LatLng latlng, String title, String subtitle) {
-    _origin = LocationModel(
+    _origin = Point(
         coordinates: [latlng.longitude, latlng.latitude],
         title: title,
         subtitle: subtitle);
@@ -137,7 +157,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void updateDestination(LatLng latlng, String title, String subtitle) {
-    _destination = LocationModel(
+    _destination = Point(
         coordinates: [latlng.longitude, latlng.latitude],
         title: title,
         subtitle: subtitle);

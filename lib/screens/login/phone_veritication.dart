@@ -1,5 +1,5 @@
 import 'package:be_fast/api/users.dart';
-import 'package:be_fast/models/user.dart';
+import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';

@@ -1,13 +1,13 @@
 import 'package:be_fast/api/deliveries.dart';
+import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/models/location.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserDeliveries extends StatefulWidget {
   final String userId, name;
-  final LocationModel originLocation;
+  final Point originLocation;
 
   const UserDeliveries(
       {super.key,
@@ -67,10 +67,12 @@ class _UserDeliveriesState extends State<UserDeliveries> {
               surfaceTintColor: Colors.white,
               onSelected: (String value) {
                 switch (value) {
-                  case 'map':
+                  case 'googleMaps':
                     _launchGoogleMaps();
                     break;
-                  case 'delete':
+                  case 'disable':
+                    break;
+                  case 'payed':
                     break;
                   default:
                     break;
@@ -78,11 +80,13 @@ class _UserDeliveriesState extends State<UserDeliveries> {
               },
               itemBuilder: (BuildContext context) => [
                 if (widget.originLocation.coordinates.isNotEmpty)
-                  const PopupMenuItem(value: 'map', child: Text('Visitar')),
+                  const PopupMenuItem(
+                      value: 'googleMaps', child: Text('Visitar')),
+                const PopupMenuItem(value: 'googleMaps', child: Text('Pagado')),
                 const PopupMenuItem(
-                    value: 'delete',
+                    value: 'disable',
                     child: Text(
-                      'Eliminar',
+                      'Deshabilitar',
                       style: TextStyle(color: Colors.red),
                     ))
               ],

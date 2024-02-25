@@ -21,8 +21,11 @@ class _HomeState extends State<Home> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return FutureBuilder(
-        future: Future.wait(
-            [userProvider.initializeUser(), userProvider.initializeMap()]),
+        future: Future.wait([
+          userProvider.initializeUser(),
+          userProvider.initializeMap(),
+          userProvider.initializeCouriers()
+        ]),
         builder: (context, snapshot) {
           return Consumer<UserProvider>(
               builder: (context, value, child) => Scaffold(
@@ -43,9 +46,7 @@ class _HomeState extends State<Home> {
                               GoogleMap(
                                 mapType: MapType.normal,
                                 myLocationEnabled: true,
-                                markers: value.markers!.length > 1
-                                    ? value.markers!
-                                    : {},
+                                markers: value.markers!,
                                 polylines: value.polylines,
                                 initialCameraPosition:
                                     value.initialCameraPosition!,
