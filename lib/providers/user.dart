@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/api/users.dart';
@@ -7,7 +8,6 @@ import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/utils/bytes_from_asset.dart';
 import 'package:be_fast/utils/location_helper.dart';
-import 'package:flutter/material.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:geolocator/geolocator.dart';
@@ -20,7 +20,6 @@ class UserProvider extends ChangeNotifier {
     documents: Documents(driverLicense: Document(), ine: Document()),
     currentLocation: Point(),
     isDisabled: false,
-    hasPayed: true,
     originLocation: Point(),
   );
 
@@ -64,6 +63,7 @@ class UserProvider extends ChangeNotifier {
   Future initializeUser() async {
     try {
       String? userId = await UserSession.getUserId();
+      print(userId);
 
       _user = await UsersAPI().getUser(userId: userId);
 
@@ -150,9 +150,21 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       _delivery = await DeliveriesAPI().createDelivery(
           origin: _origin, destination: _destination, price: _price);
-    } finally {
-      _isSearchingDeliveries = true;
-      notifyListeners();
+    } catch (e) {
+      debugPrint("createDelivery: $e");
+    }
+  }
+
+  Future<void> cancelDelivery({
+    required Function onSuccess,
+    required Function onError,
+  }) async {
+    try {
+      await DeliveriesAPI().cancelDelivery(deliveryId: _delivery.id);
+      onSuccess();
+    } catch (e) {
+      onError();
+      debugPrint("cancelDelivery: $e");
     }
   }
 

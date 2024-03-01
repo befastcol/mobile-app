@@ -57,15 +57,13 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
                 switch (value) {
                   case 'disable':
                     break;
-                  case 'payed':
-                    break;
+
                   default:
                     break;
                 }
               },
               itemBuilder: (BuildContext context) => [
                 const PopupMenuItem(value: 'call', child: Text('📞 Llamar')),
-                const PopupMenuItem(value: 'call', child: Text('✅ Pagado')),
                 const PopupMenuItem(
                     value: 'disable',
                     child: Text(

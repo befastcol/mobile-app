@@ -1,5 +1,7 @@
 import 'package:be_fast/api/deliveries.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/delivery.dart';
+import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/bytes_from_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -22,7 +24,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
   @override
   void initState() {
     super.initState();
-    _getDeliveryData();
+    _initialize();
   }
 
   @override
@@ -31,25 +33,36 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     super.dispose();
   }
 
-  Future<void> _getDeliveryData() async {
+  Future<void> _initialize() async {
     try {
       DeliveryModel delivery =
           await DeliveriesAPI().getDeliveryById(deliveryId: widget.deliveryId);
-      _setupMap(delivery);
+      UserModel courier = await UsersAPI().getUser(userId: delivery.courier);
+      LatLng currentLocationLatLng = LatLng(
+          courier.currentLocation.coordinates[1],
+          courier.currentLocation.coordinates[0]);
+      _setupMap(delivery, courier, currentLocationLatLng);
     } catch (e) {
-      debugPrint('Error fetching delivery data: $e');
+      debugPrint('Error fetching data: $e');
     }
   }
 
-  void _setupMap(DeliveryModel delivery) async {
+  void _setupMap(DeliveryModel delivery, UserModel courier,
+      LatLng currentLocationLatLng) async {
     final originLatLng =
-        LatLng(delivery.origin.coordinates[0], delivery.origin.coordinates[1]);
-    final destinationLatLng = LatLng(delivery.destination.coordinates[0],
-        delivery.destination.coordinates[1]);
-    final currentLocationLatLng =
-        LatLng(delivery.currentLocation[0], delivery.currentLocation[1]);
+        LatLng(delivery.origin.coordinates[1], delivery.origin.coordinates[0]);
+    final destinationLatLng = LatLng(delivery.destination.coordinates[1],
+        delivery.destination.coordinates[0]);
 
-    final motoIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
+    // Determinar el ícono en base al tipo de vehículo del courier
+    BitmapDescriptor vehicleIcon;
+    if (courier.vehicle == "motorcycle") {
+      vehicleIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
+    } else if (courier.vehicle == "car") {
+      vehicleIcon = await getBytesFromAsset('assets/car_icon.png', 100);
+    } else {
+      vehicleIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
+    }
 
     setState(() {
       _initialCameraPosition =
@@ -58,7 +71,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
           'origin', originLatLng, BitmapDescriptor.defaultMarkerWithHue(200));
       _addMarker('destination', destinationLatLng,
           BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed));
-      _addMarker('currentLocation', currentLocationLatLng, motoIcon);
+      _addMarker('currentLocation', currentLocationLatLng, vehicleIcon);
       _updateCameraBounds(currentLocationLatLng, destinationLatLng);
     });
   }
@@ -75,13 +88,11 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
         (currentLocationLatLng.longitude + destinationLatLng.longitude) / 2;
     LatLng middlePoint = LatLng(middleLat, middleLng);
 
-    if (_googleMapController != null) {
-      _googleMapController!
-          .moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: middlePoint,
-        zoom: 12,
-      )));
-    }
+    _googleMapController
+        ?.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: middlePoint,
+      zoom: 12,
+    )));
   }
 
   @override

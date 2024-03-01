@@ -105,13 +105,19 @@ class GoogleMapsAPI {
     final String url =
         '$_baseUrl/place/details/json?place_id=$placeId&key=$apiKey';
 
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final locationData = data['result']['geometry']['location'];
-      return LatLng(locationData['lat'], locationData['lng']);
-    } else {
-      throw Exception('Failed to fetch place details');
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final locationData = data['result']['geometry']['location'];
+        return LatLng(locationData['lat'], locationData['lng']);
+      } else {
+        throw Exception(
+            'Failed to fetch place details with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch place details: $e');
     }
   }
 }

@@ -4,7 +4,7 @@ class UserModel {
   final String name, phone, status, vehicle, role, id;
   final Documents documents;
   final Point currentLocation, originLocation;
-  final bool isDisabled, hasPayed;
+  final bool isDisabled;
 
   UserModel({
     required this.id,
@@ -15,7 +15,6 @@ class UserModel {
     required this.currentLocation,
     required this.originLocation,
     this.isDisabled = false,
-    this.hasPayed = true,
     this.status = 'inactive',
     this.vehicle = 'motorcycle',
   });
@@ -30,7 +29,6 @@ class UserModel {
       currentLocation: Point.fromJson(json['currentLocation']),
       originLocation: Point.fromJson(json['originLocation']),
       isDisabled: json['isDisabled'] ?? false,
-      hasPayed: json['hasPayed'] ?? true,
       status: json['status'] ?? 'inactive',
       vehicle: json['vehicle'] ?? 'none',
     );
@@ -45,7 +43,6 @@ class UserModel {
     Point? currentLocation,
     Point? originLocation,
     bool? isDisabled,
-    bool? hasPayed,
     String? status,
     String? vehicle,
   }) {
@@ -58,7 +55,6 @@ class UserModel {
       currentLocation: currentLocation ?? this.currentLocation,
       originLocation: originLocation ?? this.originLocation,
       isDisabled: isDisabled ?? this.isDisabled,
-      hasPayed: hasPayed ?? this.hasPayed,
       status: status ?? this.status,
       vehicle: vehicle ?? this.vehicle,
     );

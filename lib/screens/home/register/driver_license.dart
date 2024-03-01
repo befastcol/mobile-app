@@ -1,10 +1,17 @@
 import 'dart:io';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/screens/home/register/waiting_approval.dart';
+import 'package:be_fast/utils/user_session.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DriverLicenseScreen extends StatefulWidget {
-  const DriverLicenseScreen({super.key});
+  final XFile? ineFront;
+  final XFile? ineBack;
+
+  const DriverLicenseScreen(
+      {super.key, required this.ineFront, required this.ineBack});
 
   @override
   State<DriverLicenseScreen> createState() => _DriverLicenseScreenState();
@@ -13,19 +20,19 @@ class DriverLicenseScreen extends StatefulWidget {
 class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-  bool _imageSelected = false;
+  bool _isLoading = false; // Variable para controlar el indicador de carga
 
   Future<void> _pickImage() async {
     try {
       final XFile? pickedFile = await _picker.pickImage(
-          source: ImageSource.gallery,
-          maxWidth: 1000,
-          maxHeight: 1000,
-          imageQuality: 50);
+        source: ImageSource.gallery,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        imageQuality: 50,
+      );
       if (pickedFile != null) {
         setState(() {
           _image = pickedFile;
-          _imageSelected = true;
         });
       }
     } catch (e) {
@@ -33,12 +40,47 @@ class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
     }
   }
 
-  void _continue() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const WaitingApprovalScreen()),
-      (_) => false,
-    );
+  Future<String?> _uploadFile(XFile file, String path) async {
+    try {
+      final ref = FirebaseStorage.instance.ref().child(path);
+      final result = await ref.putFile(File(file.path));
+      return await result.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint("_uploadFile: $e");
+      return null;
+    }
+  }
+
+  Future<void> _continue() async {
+    try {
+      setState(() => _isLoading = true);
+
+      final ineFrontUrl = await _uploadFile(
+          widget.ineFront!, 'ineFront/${widget.ineFront!.name}');
+      final ineBackUrl =
+          await _uploadFile(widget.ineBack!, 'ineBack/${widget.ineBack!.name}');
+      final licenseUrl =
+          await _uploadFile(_image!, 'driverLicense/${_image!.name}');
+
+      String? userId = await UserSession.getUserId();
+      await UsersAPI().updateUserDocuments(
+          userId: userId,
+          ineFront: ineFrontUrl,
+          ineBack: ineBackUrl,
+          license: licenseUrl);
+
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const WaitingApprovalScreen()),
+          (_) => false,
+        );
+      }
+    } catch (e) {
+      print("Error uploading: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -83,20 +125,22 @@ class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _imageSelected ? _continue : _pickImage,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: Colors.blue,
-                      ),
-                      child: Text(
-                        _imageSelected ? 'Continuar' : 'Agregar foto',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            onPressed: _image != null ? _continue : _pickImage,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: Colors.blue,
+                            ),
+                            child: Text(
+                              _image != null ? 'Continuar' : 'Agregar foto',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
                   ),
                 ],
               ),

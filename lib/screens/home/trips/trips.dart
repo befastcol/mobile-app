@@ -15,7 +15,7 @@ class _TripsState extends State<Trips> {
   List<DeliveryModel> _deliveries = [];
   bool _isLoading = false;
 
-  void loadUserDeliveries() async {
+  void loadCourierTrips() async {
     setState(() {
       _isLoading = true;
     });
@@ -24,7 +24,7 @@ class _TripsState extends State<Trips> {
       _deliveries = await DeliveriesAPI()
           .getCourierDeliveries(courierId: userId.toString());
     } catch (error) {
-      debugPrint('loadUserDeliveries: $error');
+      debugPrint('loadCourierTrips: $error');
     } finally {
       if (mounted) {
         setState(() {
@@ -35,13 +35,13 @@ class _TripsState extends State<Trips> {
   }
 
   Future<void> _refreshList() async {
-    loadUserDeliveries();
+    loadCourierTrips();
   }
 
   @override
   void initState() {
     super.initState();
-    loadUserDeliveries();
+    loadCourierTrips();
   }
 
   @override

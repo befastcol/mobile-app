@@ -67,7 +67,14 @@ class DeliveryCard extends StatelessWidget {
                         Visibility(
                           visible: status == "completed",
                           child: const Text(
-                            "Completado",
+                            "Entregado",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        Visibility(
+                          visible: status == "pending",
+                          child: const Text(
+                            "Pendiente",
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),

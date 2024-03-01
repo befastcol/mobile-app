@@ -35,7 +35,11 @@ class _RegisterState extends State<Register> {
 
   void _continue() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (_) => const INEBackScreen()));
+        context,
+        MaterialPageRoute(
+            builder: (_) => INEBackScreen(
+                  ineFront: _image,
+                )));
   }
 
   @override

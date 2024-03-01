@@ -53,6 +53,23 @@ class UsersAPI {
     }
   }
 
+  Future<void> updateUserRole(
+      {required String? userId, required String role}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'role': role}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<void> saveUserLocation(
       {required String? userId, required Point originLocation}) async {
     try {
@@ -65,6 +82,33 @@ class UsersAPI {
             'title': originLocation.title,
             'subtitle': originLocation.subtitle,
             'coordinates': originLocation.coordinates
+          }
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<void> updateUserDocuments(
+      {required String? userId,
+      required String? ineFront,
+      required String? ineBack,
+      required String? license}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'documents': {
+            'INE': {'front': ineFront, 'back': ineBack},
+            "driverLicense": {
+              'front': license,
+            }
           }
         }),
       );

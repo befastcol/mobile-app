@@ -12,12 +12,15 @@ class Couriers extends StatefulWidget {
 
 class _CouriersState extends State<Couriers> {
   List<UserModel> _couriers = [];
+  List<UserModel> _filteredCouriers = [];
   bool _isLoading = false;
+  String _currentFilter = 'all';
 
   void _loadAcceptedCouriers() async {
     try {
       setState(() => _isLoading = true);
       _couriers = await UsersAPI().getAcceptedCouriers();
+      _applyFilter();
     } catch (error) {
       debugPrint('_loadAcceptedCouriers: $error');
     } finally {
@@ -25,6 +28,22 @@ class _CouriersState extends State<Couriers> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  void _applyFilter() {
+    if (_currentFilter == 'all') {
+      _filteredCouriers = List.from(_couriers);
+    } else {
+      _filteredCouriers = _couriers
+          .where((courier) => courier.status == _currentFilter)
+          .toList();
+    }
+    setState(() {});
+  }
+
+  void _filterCouriers(String status) {
+    _currentFilter = status;
+    _applyFilter();
   }
 
   Future<void> _refreshList() async {
@@ -44,12 +63,28 @@ class _CouriersState extends State<Couriers> {
       appBar: AppBar(
         backgroundColor: Colors.amber,
         title: const Text("Repartidores"),
+        actions: [
+          PopupMenuButton(
+            icon: const Icon(Icons.filter_alt),
+            color: Colors.white,
+            surfaceTintColor: Colors.white,
+            onSelected: (String value) {
+              _filterCouriers(value);
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem(value: 'all', child: Text('Todos')),
+              const PopupMenuItem(value: 'active', child: Text('Activos')),
+              const PopupMenuItem(value: 'inactive', child: Text('Inactivos')),
+              const PopupMenuItem(value: 'busy', child: Text('Ocupados')),
+            ],
+          )
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refreshList,
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : _couriers.isEmpty
+            : _filteredCouriers.isEmpty
                 ? ListView(
                     children: [
                       const SizedBox(height: 180),
@@ -66,9 +101,9 @@ class _CouriersState extends State<Couriers> {
                     ],
                   )
                 : ListView.builder(
-                    itemCount: _couriers.length,
+                    itemCount: _filteredCouriers.length,
                     itemBuilder: (context, index) {
-                      final courier = _couriers[index];
+                      final courier = _filteredCouriers[index];
                       return ListTile(
                         leading: Icon(Icons.person,
                             color: courier.status == "active"

@@ -12,6 +12,7 @@ class SearchingCard extends StatefulWidget {
 
 class _SearchingCardState extends State<SearchingCard> {
   bool isCourierAssigned = false;
+  bool isCancelingService = false;
 
   @override
   void initState() {
@@ -38,9 +39,23 @@ class _SearchingCardState extends State<SearchingCard> {
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(builder: (context, provider, child) {
       Future cancelService() async {
-        try {} finally {
-          provider.setIsSearchingDeliveries(false);
-          showSnackBar(context, "Servicio cancelado");
+        try {
+          setState(() => isCancelingService = true);
+          await provider.cancelDelivery(
+            onSuccess: () {
+              if (mounted) {
+                showSnackBar(context, "Servicio cancelado");
+                provider.setIsSearchingDeliveries(false);
+              }
+            },
+            onError: (String errorMessage) {
+              if (mounted) {
+                showSnackBar(context, "Error al cancelar el servicio");
+              }
+            },
+          );
+        } finally {
+          setState(() => isCancelingService = false);
         }
       }
 
@@ -63,17 +78,20 @@ class _SearchingCardState extends State<SearchingCard> {
                   height: 80,
                   margin: const EdgeInsets.symmetric(vertical: 26),
                   child: const CircularProgressIndicator()),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: cancelService,
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      backgroundColor: Colors.red),
-                  child: const Text('Cancelar servicio',
-                      style: TextStyle(color: Colors.white)),
+              Visibility(
+                visible: !isCancelingService,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: cancelService,
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        backgroundColor: Colors.red),
+                    child: const Text('Cancelar servicio',
+                        style: TextStyle(color: Colors.white)),
+                  ),
                 ),
               ),
             ],

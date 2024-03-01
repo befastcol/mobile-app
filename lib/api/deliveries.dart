@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:be_fast/models/custom/custom.dart';
 import 'package:http/http.dart';
 
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
+
+import 'package:be_fast/utils/user_session.dart';
 import 'package:be_fast/api/constants/base_url.dart';
 
 class DeliveriesAPI {
@@ -14,8 +15,9 @@ class DeliveriesAPI {
           await get(Uri.parse('$baseUrlApi/deliveries/users/$userId'));
 
       if (response.statusCode == 200) {
-        List<dynamic> deliveryList = json.decode(response.body);
-        return deliveryList
+        List<dynamic> deliveryListJson = json.decode(response.body);
+
+        return deliveryListJson
             .map((json) => DeliveryModel.fromJson(json))
             .toList();
       }
@@ -54,8 +56,8 @@ class DeliveriesAPI {
         Uri.parse('$baseUrlApi/deliveries/create/$userId'),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
-          "origin": origin,
-          "destination": destination,
+          "origin": origin.toJson(),
+          "destination": destination.toJson(),
           "price": price,
         }),
       );
@@ -81,6 +83,14 @@ class DeliveriesAPI {
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  Future cancelDelivery({required String deliveryId}) async {
+    try {
+      await delete(Uri.parse('$baseUrlApi/deliveries/delete/$deliveryId'));
+    } catch (e) {
+      throw Exception("cancelDelivery: $e");
     }
   }
 

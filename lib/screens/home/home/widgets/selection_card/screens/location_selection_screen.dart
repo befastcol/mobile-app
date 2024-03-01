@@ -172,6 +172,8 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                                       latLng, title, subtitle);
                                 } catch (e) {
                                   debugPrint("$e");
+                                } finally {
+                                  provider.setIsUpdatingLocation(true);
                                 }
                               },
                               leading: const Icon(Icons.location_on,

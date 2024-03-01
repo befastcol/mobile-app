@@ -1,6 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/screens/home/couriers/deliveries.dart';
+import 'package:be_fast/screens/home/requests/request_details.dart';
 import 'package:flutter/material.dart';
 
 class Requests extends StatefulWidget {
@@ -73,14 +73,21 @@ class _RequestsState extends State<Requests> {
                           trailing: const Icon(Icons.navigate_next),
                           title: Text(courier.name),
                           subtitle: Text(courier.phone),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CourierDeliveries(
-                                          name: courier.name,
-                                          courierId: courier.id,
-                                        )));
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RequestDetails(
+                                  name: courier.name,
+                                  courierId: courier.id,
+                                  documents: courier.documents,
+                                ),
+                              ),
+                            );
+
+                            if (result == true) {
+                              _loadPendingCouriers();
+                            }
                           },
                         );
                       },

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class INEBackScreen extends StatefulWidget {
-  const INEBackScreen({super.key});
+  final XFile? ineFront;
+  const INEBackScreen({super.key, required this.ineFront});
 
   @override
   State<INEBackScreen> createState() => _INEBackScreenState();
@@ -34,8 +35,13 @@ class _INEBackScreenState extends State<INEBackScreen> {
   }
 
   void _continue() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (_) => const DriverLicenseScreen()));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => DriverLicenseScreen(
+                  ineFront: widget.ineFront,
+                  ineBack: _image,
+                )));
   }
 
   @override

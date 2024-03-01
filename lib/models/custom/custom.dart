@@ -49,6 +49,13 @@ class Point {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'coordinates': coordinates,
+        'title': title,
+        'subtitle': subtitle,
+        'type': type,
+      };
+
   Point copyWith({
     String? type,
     List<double>? coordinates,

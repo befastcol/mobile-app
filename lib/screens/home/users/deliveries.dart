@@ -72,8 +72,7 @@ class _UserDeliveriesState extends State<UserDeliveries> {
                     break;
                   case 'disable':
                     break;
-                  case 'payed':
-                    break;
+
                   default:
                     break;
                 }
@@ -82,7 +81,6 @@ class _UserDeliveriesState extends State<UserDeliveries> {
                 if (widget.originLocation.coordinates.isNotEmpty)
                   const PopupMenuItem(
                       value: 'googleMaps', child: Text('Visitar')),
-                const PopupMenuItem(value: 'googleMaps', child: Text('Pagado')),
                 const PopupMenuItem(
                     value: 'disable',
                     child: Text(

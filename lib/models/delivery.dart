@@ -5,7 +5,6 @@ class DeliveryModel {
   final String? courier;
   final int price;
   final Point origin, destination;
-  final List<double> currentLocation;
   final DateTime requestedDate;
   final DateTime? deliveredDate;
 
@@ -14,22 +13,20 @@ class DeliveryModel {
       required this.requestedDate,
       required this.origin,
       required this.destination,
-      required this.currentLocation,
       required this.price,
       required this.status,
       this.deliveredDate,
       this.courier});
 
-  factory DeliveryModel.fromJson(Map<String, dynamic> json) {
+  factory DeliveryModel.fromJson(dynamic json) {
     return DeliveryModel(
       id: json['_id'],
       requestedDate: DateTime.parse(json['requestedDate']),
       origin: Point.fromJson(json['origin']),
       destination: Point.fromJson(json['destination']),
-      currentLocation: List<double>.from(json['currentLocation']),
       price: json['price'],
       status: json['status'],
-      courier: json['courier'],
+      courier: json['courier'] ?? '',
       deliveredDate: json['deliveredDate'] != null
           ? DateTime.parse(json['deliveredDate'])
           : null,

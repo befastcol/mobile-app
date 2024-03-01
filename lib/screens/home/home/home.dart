@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:be_fast/screens/home/home/widgets/drawer/my_drawer.dart';
 import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/home/widgets/searching_card/searching_card.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/selection_card.dart';
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
