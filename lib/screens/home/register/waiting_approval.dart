@@ -23,7 +23,7 @@ class _WaitingApprovalScreenState extends State<WaitingApprovalScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Image(
-                    image: AssetImage('assets/waiting.png'),
+                    image: AssetImage('assets/images/waiting.png'),
                   ),
                   const SizedBox(height: 50),
                   const Text(

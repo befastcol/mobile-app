@@ -58,7 +58,7 @@ class _LocationState extends State<Location> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Image(
-                    image: AssetImage('assets/location.png'),
+                    image: AssetImage('assets/images/location.png'),
                   ),
                   const SizedBox(height: 40),
                   const Text(

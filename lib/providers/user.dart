@@ -63,7 +63,7 @@ class UserProvider extends ChangeNotifier {
   Future initializeUser() async {
     try {
       String? userId = await UserSession.getUserId();
-      print(userId);
+      debugPrint(userId);
 
       _user = await UsersAPI().getUser(userId: userId);
 
@@ -81,8 +81,10 @@ class UserProvider extends ChangeNotifier {
   Future initializeCouriers() async {
     try {
       List<UserModel> couriers = await UsersAPI().getActiveCouriers();
-      final motoIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
-      final carIcon = await getBytesFromAsset('assets/car_icon.png', 100);
+      final motoIcon =
+          await getBytesFromAsset('assets/images/moto_icon.png', 100);
+      final carIcon =
+          await getBytesFromAsset('assets/images/car_icon.png', 100);
 
       for (var courier in couriers) {
         LatLng position = LatLng(courier.currentLocation.coordinates[1],

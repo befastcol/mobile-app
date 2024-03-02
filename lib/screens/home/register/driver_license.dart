@@ -77,7 +77,7 @@ class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
         );
       }
     } catch (e) {
-      print("Error uploading: $e");
+      debugPrint("Error uploading: $e");
     } finally {
       setState(() => _isLoading = false);
     }
@@ -104,7 +104,7 @@ class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
                     Image.file(File(_image!.path))
                   else
                     const Image(
-                      image: AssetImage('assets/license.png'),
+                      image: AssetImage('assets/images/license.png'),
                     ),
                   const SizedBox(height: 50),
                   const Text(

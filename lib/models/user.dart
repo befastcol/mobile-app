@@ -16,7 +16,7 @@ class UserModel {
     required this.originLocation,
     this.isDisabled = false,
     this.status = 'inactive',
-    this.vehicle = 'motorcycle',
+    this.vehicle = 'none',
   });
 
   factory UserModel.fromJson(dynamic json) {

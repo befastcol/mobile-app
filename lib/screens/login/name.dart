@@ -67,7 +67,7 @@ class _NameState extends State<Name> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Image(
-                      image: AssetImage('assets/name.png'),
+                      image: AssetImage('assets/images/name.png'),
                     ),
                     const SizedBox(height: 50),
                     const Text(

@@ -105,7 +105,7 @@ class _CourierMapState extends State<CourierMap> {
 
   void _updateMarker(Position position) async {
     final BitmapDescriptor motoIcon =
-        await getBytesFromAsset('assets/moto_icon.png', 100);
+        await getBytesFromAsset('assets/images/moto_icon.png', 100);
 
     if (mounted) {
       setState(() {

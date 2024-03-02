@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Image(
-                      image: AssetImage('assets/login.png'),
+                      image: AssetImage('assets/images/login.png'),
                     ),
                     const SizedBox(height: 50),
                     const Text(

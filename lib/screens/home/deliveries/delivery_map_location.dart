@@ -54,14 +54,14 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     final destinationLatLng = LatLng(delivery.destination.coordinates[1],
         delivery.destination.coordinates[0]);
 
-    // Determinar el ícono en base al tipo de vehículo del courier
+    // Determinar el ícono en base al tipo de ehículo del courier
     BitmapDescriptor vehicleIcon;
     if (courier.vehicle == "motorcycle") {
-      vehicleIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
+      vehicleIcon = await getBytesFromAsset('assets/images/moto_icon.png', 100);
     } else if (courier.vehicle == "car") {
-      vehicleIcon = await getBytesFromAsset('assets/car_icon.png', 100);
+      vehicleIcon = await getBytesFromAsset('assets/images/car_icon.png', 100);
     } else {
-      vehicleIcon = await getBytesFromAsset('assets/moto_icon.png', 100);
+      vehicleIcon = await getBytesFromAsset('assets/images/moto_icon.png', 100);
     }
 
     setState(() {

@@ -50,7 +50,7 @@ class _ProfileState extends State<Profile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Image(
-                    image: AssetImage('assets/profile.png'),
+                    image: AssetImage('assets/images/profile.png'),
                   ),
                   const SizedBox(height: 40),
                   Text(

@@ -63,7 +63,7 @@ class _TripsState extends State<Trips> {
                       const SizedBox(height: 180),
                       Container(
                           margin: const EdgeInsets.symmetric(horizontal: 50),
-                          child: Image.asset('assets/empty.png')),
+                          child: Image.asset('assets/images/empty.png')),
                       const Center(
                           child: Text(
                         'No hay viajes realizados',

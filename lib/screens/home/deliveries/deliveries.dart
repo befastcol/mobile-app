@@ -65,7 +65,8 @@ class _DeliveriesState extends State<Deliveries> {
   @override
   Widget build(BuildContext context) {
     int totalDeliveries = filteredDeliveries.length;
-    int totalAmount = totalDeliveries * 8; // $8 por entrega
+    int totalAmount = totalDeliveries * 8;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -81,20 +82,12 @@ class _DeliveriesState extends State<Deliveries> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: const Text("Detalle del pago"),
+                          title: const Text("¿Cómo se calcula el cobro?"),
                           content: RichText(
                             text: TextSpan(
                               style: const TextStyle(
                                   color: Colors.black, fontSize: 16),
                               children: <TextSpan>[
-                                const TextSpan(
-                                    text:
-                                        'El total a pagar por los pedidos de esta semana es de '),
-                                TextSpan(
-                                  text: '\$$totalAmount MXN.',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
-                                ),
                                 const TextSpan(
                                   text: 'Se cobran ',
                                 ),
@@ -104,6 +97,21 @@ class _DeliveriesState extends State<Deliveries> {
                                 ),
                                 const TextSpan(
                                   text: ' pesos por cada pedido realizado.',
+                                ),
+                                const TextSpan(
+                                    text:
+                                        ' Por lo que el total a pagar por los '),
+                                TextSpan(
+                                  text: '$totalDeliveries',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const TextSpan(
+                                    text: ' pedidos de esta semana es de '),
+                                TextSpan(
+                                  text: '\$$totalAmount MXN.',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -192,7 +200,7 @@ class _DeliveriesState extends State<Deliveries> {
         const SizedBox(height: 180),
         Container(
             margin: const EdgeInsets.symmetric(horizontal: 50),
-            child: Image.asset('assets/empty.png')),
+            child: Image.asset('assets/images/empty.png')),
         const Center(
             child: Text(
           'Sin pedidos esta semana',
@@ -205,10 +213,41 @@ class _DeliveriesState extends State<Deliveries> {
   }
 
   Widget buildDeliveriesListView() {
+    int totalDeliveries = filteredDeliveries.length;
+    // Usamos la variable totalAmount existente para calcular el total
+    int totalAmount =
+        totalDeliveries * 8; // Suponiendo que $8 es el precio por entrega
+
     return ListView.builder(
-      itemCount: filteredDeliveries.length,
+      itemCount: totalDeliveries > 0
+          ? totalDeliveries + 1
+          : totalDeliveries, // Ajusta el itemCount
       itemBuilder: (context, index) {
-        final delivery = filteredDeliveries[index];
+        if (index == 0 && totalDeliveries > 0) {
+          // Si es el primer ítem y hay pedidos, muestra la Card del total a pagar
+          return Card(
+            surfaceTintColor: Colors.white,
+            margin: const EdgeInsets.all(8.0),
+            child: ListTile(
+              title: Text(
+                "Total semanal a pagar",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18.0, color: Colors.grey[600]),
+              ),
+              subtitle: Text(
+                "\$$totalAmount MXN",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+          );
+        }
+
+        final deliveryIndex =
+            index - 1; // Ajusta el índice para acceder a filteredDeliveries
+        final delivery = filteredDeliveries[deliveryIndex];
+
         return DeliveryCard(
           deliveyId: delivery.id,
           status: delivery.status,

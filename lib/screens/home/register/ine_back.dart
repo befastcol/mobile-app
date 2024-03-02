@@ -65,7 +65,7 @@ class _INEBackScreenState extends State<INEBackScreen> {
                     Image.file(File(_image!.path))
                   else
                     const Image(
-                      image: AssetImage('assets/ine_back.png'),
+                      image: AssetImage('assets/images/ine_back.png'),
                     ),
                   const SizedBox(height: 50),
                   const Text(

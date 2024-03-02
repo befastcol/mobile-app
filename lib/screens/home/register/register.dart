@@ -63,7 +63,7 @@ class _RegisterState extends State<Register> {
                     Image.file(File(_image!.path))
                   else
                     const Image(
-                      image: AssetImage('assets/ine_front.png'),
+                      image: AssetImage('assets/images/ine_front.png'),
                     ),
                   const SizedBox(height: 50),
                   const Text(

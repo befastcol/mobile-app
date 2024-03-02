@@ -28,6 +28,7 @@ dependencies:
   socket_io_client: ^2.0.3+1
   url_launcher: ^6.2.4
   firebase_storage: ^11.6.7
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -39,16 +40,17 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon.png"
+  image_path: "assets/images/icon.png"
   min_sdk_android: 21
 
 flutter_native_splash:
-  image: assets/icon.png
+  image: assets/images/icon.png
   color: "#FCDC19"
 
 flutter:
   uses-material-design: true
 
   assets:
-    - assets/
+    - assets/images/
+    - assets/sounds/
     - .env

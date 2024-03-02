@@ -120,7 +120,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: const Image(
-                  image: AssetImage('assets/pin.png'),
+                  image: AssetImage('assets/images/pin.png'),
                 ),
               ),
             ),
