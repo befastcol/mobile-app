@@ -106,9 +106,6 @@ class _AutocompleteScreenState extends State<AutocompleteScreen> {
                                   final LatLng latLng = result['latLng'];
                                   final String city = result['city'];
 
-                                  print(city);
-                                  print(latLng);
-
                                   provider.updateOrigin(
                                       latLng, title, subtitle, city);
                                 } finally {

@@ -65,7 +65,7 @@ class UserProvider extends ChangeNotifier {
       String? userId = await UserSession.getUserId();
       debugPrint(userId);
 
-      _user = await UsersAPI().getUser(userId: userId);
+      _user = await UsersAPI.getUser(userId: userId);
 
       updateOrigin(
           LatLng(_user.originLocation.coordinates[1],
@@ -88,8 +88,8 @@ class UserProvider extends ChangeNotifier {
           await getBytesFromAsset('assets/images/car_icon.png', 100);
 
       for (var courier in couriers) {
-        LatLng position = LatLng(courier.currentLocation.coordinates[1],
-            courier.currentLocation.coordinates[0]);
+        LatLng position = LatLng(courier.currentLocation?.coordinates[1] ?? 0,
+            courier.currentLocation?.coordinates[0] ?? 0);
 
         if (courier.vehicle == "motorcycle") {
           _markers.add(Marker(
@@ -115,6 +115,11 @@ class UserProvider extends ChangeNotifier {
 
   void updateUserName(String newName) {
     _user = _user.copyWith(name: newName);
+    notifyListeners();
+  }
+
+  void updateUserVehicle(String vehicle) {
+    _user = _user.copyWith(vehicle: vehicle);
     notifyListeners();
   }
 

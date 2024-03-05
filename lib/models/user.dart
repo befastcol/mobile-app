@@ -3,7 +3,8 @@ import 'package:be_fast/models/custom/custom.dart';
 class UserModel {
   final String name, phone, status, vehicle, role, id;
   final Documents documents;
-  final Point currentLocation, originLocation;
+  final Point? currentLocation;
+  final Point originLocation;
   final bool isDisabled;
 
   UserModel({
@@ -12,7 +13,7 @@ class UserModel {
     required this.phone,
     this.role = 'user',
     required this.documents,
-    required this.currentLocation,
+    this.currentLocation,
     required this.originLocation,
     this.isDisabled = false,
     this.status = 'inactive',

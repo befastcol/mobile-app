@@ -1,4 +1,4 @@
-import "package:be_fast/screens/home/courier/courier_map.dart";
+import 'package:be_fast/screens/home/courier/courier_map.dart';
 import 'package:be_fast/screens/home/location/location.dart';
 import 'package:be_fast/screens/home/requests/requests.dart';
 import 'package:be_fast/screens/home/couriers/couriers.dart';
@@ -8,6 +8,7 @@ import 'package:be_fast/screens/home/profile/profile.dart';
 import 'package:be_fast/screens/home/register/register.dart';
 import "package:be_fast/screens/home/trips/trips.dart";
 import 'package:be_fast/screens/home/users/users.dart';
+import 'package:be_fast/screens/home/vehicle/vehicle.dart';
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import '../../../../../utils/format_phone.dart';
@@ -90,7 +91,7 @@ class MyDrawer extends StatelessWidget {
                   Visibility(
                     visible: value.user.role == 'courier',
                     child: ListTile(
-                      leading: const Icon(Icons.motorcycle),
+                      leading: const Icon(Icons.maps_home_work),
                       trailing: const Icon(Icons.navigate_next),
                       title: const Text('Mapa'),
                       onTap: () {
@@ -98,6 +99,23 @@ class MyDrawer extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const CourierMap()),
+                        );
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: value.user.role == 'courier',
+                    child: ListTile(
+                      leading: const Icon(Icons.motorcycle),
+                      trailing: const Icon(Icons.navigate_next),
+                      title: const Text('Mi vehiculo'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Vehicle(
+                                  vehicle: value.user.vehicle,
+                                  id: value.user.id)),
                         );
                       },
                     ),

@@ -37,10 +37,10 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     try {
       DeliveryModel delivery =
           await DeliveriesAPI().getDeliveryById(deliveryId: widget.deliveryId);
-      UserModel courier = await UsersAPI().getUser(userId: delivery.courier);
+      UserModel courier = await UsersAPI.getUser(userId: delivery.courier);
       LatLng currentLocationLatLng = LatLng(
-          courier.currentLocation.coordinates[1],
-          courier.currentLocation.coordinates[0]);
+          courier.currentLocation?.coordinates[1] ?? 0,
+          courier.currentLocation?.coordinates[0] ?? 0);
       _setupMap(delivery, courier, currentLocationLatLng);
     } catch (e) {
       debugPrint('Error fetching data: $e');

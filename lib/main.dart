@@ -1,4 +1,7 @@
 import 'package:be_fast/providers/user.dart';
+import 'package:be_fast/screens/home/courier/providers/courier_map_provider.dart';
+import 'package:be_fast/screens/home/courier/providers/courier_state_provider.dart';
+import 'package:be_fast/screens/home/courier/providers/courier_stream_provider.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,7 +28,10 @@ void main() async {
     runApp(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => CourierStreamProvider()),
+          ChangeNotifierProvider(create: (_) => CourierMapProvider()),
+          ChangeNotifierProvider(create: (_) => CourierStateProvider()),
         ],
         child: const BeFast(),
       ),

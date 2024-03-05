@@ -23,7 +23,7 @@ class UsersAPI {
     }
   }
 
-  Future<UserModel> getUser({required String? userId}) async {
+  static Future<UserModel> getUser({required String? userId}) async {
     try {
       Response response = await get(Uri.parse('$baseUrlApi/users/$userId'));
       if (response.statusCode == 200) {
@@ -70,7 +70,26 @@ class UsersAPI {
     }
   }
 
-  Future<void> updateUserVehicle(
+  static Future<UserModel> updateCourierStatus(
+      {required String? userId, required String status}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'status': status}),
+      );
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+
+      dynamic user = json.decode(response.body);
+      return UserModel.fromJson(user);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  static Future<void> updateUserVehicle(
       {required String? userId, required String vehicle}) async {
     try {
       Response response = await put(
