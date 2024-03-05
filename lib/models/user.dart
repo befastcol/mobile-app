@@ -16,7 +16,7 @@ class UserModel {
     required this.originLocation,
     this.isDisabled = false,
     this.status = 'inactive',
-    this.vehicle = 'none',
+    this.vehicle = 'motorcycle',
   });
 
   factory UserModel.fromJson(dynamic json) {
@@ -30,7 +30,7 @@ class UserModel {
       originLocation: Point.fromJson(json['originLocation']),
       isDisabled: json['isDisabled'] ?? false,
       status: json['status'] ?? 'inactive',
-      vehicle: json['vehicle'] ?? 'none',
+      vehicle: json['vehicle'] ?? 'motorcycle',
     );
   }
 

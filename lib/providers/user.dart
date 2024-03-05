@@ -71,7 +71,8 @@ class UserProvider extends ChangeNotifier {
           LatLng(_user.originLocation.coordinates[1],
               _user.originLocation.coordinates[0]),
           _user.originLocation.title,
-          _user.originLocation.subtitle);
+          _user.originLocation.subtitle,
+          _user.originLocation.city);
       notifyListeners();
     } catch (e) {
       debugPrint("initializeUser: $e");
@@ -80,7 +81,7 @@ class UserProvider extends ChangeNotifier {
 
   Future initializeCouriers() async {
     try {
-      List<UserModel> couriers = await UsersAPI().getActiveCouriers();
+      List<UserModel> couriers = await UsersAPI().getAvailableCouriers();
       final motoIcon =
           await getBytesFromAsset('assets/images/moto_icon.png', 100);
       final carIcon =
@@ -129,9 +130,10 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateOrigin(LatLng latlng, String title, String subtitle) {
+  void updateOrigin(LatLng latlng, String title, String subtitle, String city) {
     _origin = Point(
         coordinates: [latlng.longitude, latlng.latitude],
+        city: city,
         title: title,
         subtitle: subtitle);
     notifyListeners();
@@ -170,9 +172,11 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  void updateDestination(LatLng latlng, String title, String subtitle) {
+  void updateDestination(
+      LatLng latlng, String title, String subtitle, String city) {
     _destination = Point(
         coordinates: [latlng.longitude, latlng.latitude],
+        city: city,
         title: title,
         subtitle: subtitle);
 

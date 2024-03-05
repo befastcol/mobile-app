@@ -101,10 +101,16 @@ class _AutocompleteScreenState extends State<AutocompleteScreen> {
                                 try {
                                   widget.setIsLoadingLocation(true);
                                   Navigator.pop(context);
-                                  LatLng latLng = await GoogleMapsAPI()
+                                  final result = await GoogleMapsAPI()
                                       .getPlaceLatLng(placeId);
+                                  final LatLng latLng = result['latLng'];
+                                  final String city = result['city'];
+
+                                  print(city);
+                                  print(latLng);
+
                                   provider.updateOrigin(
-                                      latLng, title, subtitle);
+                                      latLng, title, subtitle, city);
                                 } finally {
                                   widget.setIsLoadingLocation(false);
                                 }

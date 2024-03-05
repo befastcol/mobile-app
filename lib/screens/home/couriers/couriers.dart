@@ -73,7 +73,8 @@ class _CouriersState extends State<Couriers> {
             },
             itemBuilder: (BuildContext context) => [
               const PopupMenuItem(value: 'all', child: Text('Todos')),
-              const PopupMenuItem(value: 'active', child: Text('Activos')),
+              const PopupMenuItem(
+                  value: 'available', child: Text('Disponibles')),
               const PopupMenuItem(value: 'inactive', child: Text('Inactivos')),
               const PopupMenuItem(value: 'busy', child: Text('Ocupados')),
             ],
@@ -106,7 +107,7 @@ class _CouriersState extends State<Couriers> {
                       final courier = _filteredCouriers[index];
                       return ListTile(
                         leading: Icon(Icons.person,
-                            color: courier.status == "active"
+                            color: courier.status == "available"
                                 ? Colors.teal
                                 : courier.status == "busy"
                                     ? Colors.orange

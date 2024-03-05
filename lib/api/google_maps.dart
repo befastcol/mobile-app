@@ -101,7 +101,7 @@ class GoogleMapsAPI {
     }
   }
 
-  Future<LatLng> getPlaceLatLng(String placeId) async {
+  Future<Map<String, dynamic>> getPlaceLatLng(String placeId) async {
     final String url =
         '$_baseUrl/place/details/json?place_id=$placeId&key=$apiKey';
 
@@ -111,7 +111,25 @@ class GoogleMapsAPI {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final locationData = data['result']['geometry']['location'];
-        return LatLng(locationData['lat'], locationData['lng']);
+
+        // Cambio aquí: Asegurarse de que 'address_components' es una lista
+        final List<dynamic> addressComponents =
+            data['result']['address_components'];
+        final city = addressComponents.firstWhere(
+          (component) {
+            // Asegurándose de que 'component' es un Map y 'types' es una lista
+            final List<dynamic> types = component['types'];
+            return types.contains('locality');
+          },
+          orElse: () => {
+            'long_name': 'Unknown'
+          }, // Proporcionar un valor predeterminado como Map
+        )['long_name'];
+
+        return {
+          'latLng': LatLng(locationData['lat'], locationData['lng']),
+          'city': city,
+        };
       } else {
         throw Exception(
             'Failed to fetch place details with status code: ${response.statusCode}');

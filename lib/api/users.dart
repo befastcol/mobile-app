@@ -70,6 +70,23 @@ class UsersAPI {
     }
   }
 
+  Future<void> updateUserVehicle(
+      {required String? userId, required String vehicle}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'vehicle': vehicle}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<void> saveUserLocation(
       {required String? userId, required Point originLocation}) async {
     try {
@@ -81,7 +98,8 @@ class UsersAPI {
             'type': 'Point',
             'title': originLocation.title,
             'subtitle': originLocation.subtitle,
-            'coordinates': originLocation.coordinates
+            'coordinates': originLocation.coordinates,
+            'city': originLocation.city
           }
         }),
       );
@@ -162,10 +180,10 @@ class UsersAPI {
     }
   }
 
-  Future<List<UserModel>> getActiveCouriers() async {
+  Future<List<UserModel>> getAvailableCouriers() async {
     try {
       final response =
-          await get(Uri.parse('$baseUrlApi/users/couriers/active'));
+          await get(Uri.parse('$baseUrlApi/users/couriers/available'));
       if (response.statusCode == 200) {
         List<dynamic> jsonList = json.decode(response.body);
 
@@ -173,7 +191,7 @@ class UsersAPI {
       }
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {
-      throw Exception(e);
+      return [];
     }
   }
 }

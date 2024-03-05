@@ -134,9 +134,13 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                               onTap: () async {
                                 Navigator.pop(context);
                                 provider.setIsUpdatingLocation(true);
-                                LatLng latLng = await GoogleMapsAPI()
+                                final result = await GoogleMapsAPI()
                                     .getPlaceLatLng(placeId);
-                                provider.updateOrigin(latLng, title, subtitle);
+                                final LatLng latLng = result['latLng'];
+                                final String city = result['city'];
+
+                                provider.updateOrigin(
+                                    latLng, title, subtitle, city);
                               },
                               leading: const Icon(Icons.location_on,
                                   color: Colors.blue),
@@ -166,10 +170,12 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                                 try {
                                   Navigator.pop(context);
                                   provider.setIsUpdatingLocation(true);
-                                  LatLng latLng = await GoogleMapsAPI()
+                                  final result = await GoogleMapsAPI()
                                       .getPlaceLatLng(placeId);
+                                  final LatLng latLng = result['latLng'];
+                                  final String city = result['city'];
                                   provider.updateDestination(
-                                      latLng, title, subtitle);
+                                      latLng, title, subtitle, city);
                                 } catch (e) {
                                   debugPrint("$e");
                                 } finally {

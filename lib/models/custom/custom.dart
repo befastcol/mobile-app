@@ -31,21 +31,24 @@ class Point {
   final List<double> coordinates;
   final String title;
   final String subtitle;
+  final String city;
 
-  Point({
-    this.type = 'Point',
-    this.coordinates = const [],
-    this.title = '',
-    this.subtitle = '',
-  });
+  Point(
+      {this.type = 'Point',
+      this.coordinates = const [],
+      this.title = '',
+      this.subtitle = '',
+      this.city = ''});
 
   factory Point.fromJson(dynamic json) {
     if (json == null) return Point();
+
     return Point(
       type: json['type'] ?? 'Point',
       coordinates: List<double>.from(json['coordinates']),
       title: json['title'] ?? '',
       subtitle: json['subtitle'] ?? '',
+      city: json['city'] ?? '',
     );
   }
 
@@ -54,19 +57,21 @@ class Point {
         'title': title,
         'subtitle': subtitle,
         'type': type,
+        'city': city
       };
 
-  Point copyWith({
-    String? type,
-    List<double>? coordinates,
-    String? title,
-    String? subtitle,
-  }) {
+  Point copyWith(
+      {String? type,
+      List<double>? coordinates,
+      String? title,
+      String? subtitle,
+      String? city}) {
     return Point(
       type: type ?? this.type,
       coordinates: coordinates ?? this.coordinates,
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
+      city: city ?? this.city,
     );
   }
 }

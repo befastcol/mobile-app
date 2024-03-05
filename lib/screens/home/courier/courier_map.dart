@@ -1,12 +1,14 @@
 import 'dart:async';
-
-import 'package:be_fast/api/constants/base_url.dart';
+import 'package:be_fast/api/users.dart';
+import 'package:be_fast/models/user.dart';
+import 'package:be_fast/utils/show_snack_bar.dart';
+import 'package:be_fast/utils/socket_service.dart';
 import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:be_fast/utils/bytes_from_asset.dart';
-import 'package:socket_io_client/socket_io_client.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class CourierMap extends StatefulWidget {
   const CourierMap({super.key});
@@ -19,42 +21,79 @@ class _CourierMapState extends State<CourierMap> {
   GoogleMapController? _googleMapController;
   CameraPosition? _initialCameraPosition;
   Set<Marker> _markers = {};
+  final SocketService _socketService = SocketService();
+
+  UserModel? _courier;
   bool _isServiceAvailable = false;
-  StreamSubscription<Position>? _positionStreamSubscription;
-  late Socket socket;
-  late String? courierId;
+  Timer? _locationTimer;
+  Position? _lastPosition;
+  String? _currentVehicle = 'motorcycle';
 
   @override
   void initState() {
     super.initState();
-    _initCourierId();
-    _initSocket();
-    _setupMap();
-    _listenToLocationChanges();
+    _socketService.initSocket();
+    _initCourier();
     _listenToDeliveryUpdates();
+    _startLocationTimer();
   }
 
   @override
   void dispose() {
     _googleMapController?.dispose();
-    _positionStreamSubscription?.cancel();
-    socket.disconnect();
+    _socketService.dispose();
+    _locationTimer?.cancel();
+
     super.dispose();
   }
 
-  Future _initCourierId() async {
-    courierId = await UserSession.getUserId();
+  Future _initCourier() async {
+    _initCurrentLocation();
+    _setupMap();
+
+    setIcon(_courier?.vehicle);
   }
 
-  Future _initSocket() async {
+  Future _initCurrentLocation() async {
     try {
-      socket = io(baseUrl, <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': false,
+      String? courierId = await UserSession.getUserId();
+      _courier = await UsersAPI().getUser(userId: courierId);
+
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      _socketService.emit('updateLocation', {
+        'courierId': courierId,
+        'latitude': position.latitude,
+        'longitude': position.longitude,
       });
-      socket.connect();
     } catch (e) {
-      debugPrint("_initSocket $e");
+      debugPrint('Error sending location update: $e');
+    }
+  }
+
+  Future<void> setIcon(String? vehicle) async {
+    String iconPath = vehicle == 'motorcycle'
+        ? 'assets/images/moto_icon.png'
+        : 'assets/images/car_icon.png';
+    BitmapDescriptor icon = await getBytesFromAsset(iconPath, 100);
+
+    setState(() {
+      _currentVehicle = vehicle;
+    });
+
+    Position? currentPosition = await Geolocator.getLastKnownPosition();
+    if (currentPosition != null) {
+      updateMarker(currentPosition, icon);
+    }
+
+    try {
+      await UsersAPI()
+          .updateUserVehicle(userId: _courier?.id, vehicle: vehicle!);
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, "Error al actualizar el vehiculo.");
+      }
     }
   }
 
@@ -66,54 +105,59 @@ class _CourierMapState extends State<CourierMap> {
         target: LatLng(position.latitude, position.longitude),
         zoom: 19,
         tilt: 60);
-    _updateMarker(position);
+    updateMarker(position);
   }
 
-  void _listenToLocationChanges() {
-    const locationOptions =
-        LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 20);
+  void _startLocationTimer() {
+    const duration = Duration(seconds: 1);
+    _locationTimer = Timer.periodic(duration, (Timer t) async {
+      Position currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      double distanceInMeters = Geolocator.distanceBetween(
+        _lastPosition?.latitude ?? 0,
+        _lastPosition?.longitude ?? 0,
+        currentPosition.latitude,
+        currentPosition.longitude,
+      );
+      print(distanceInMeters);
 
-    _positionStreamSubscription =
-        Geolocator.getPositionStream(locationSettings: locationOptions)
-            .listen((Position position) {
-      _updateMarker(position);
-      try {
-        socket.emit('updateLocation', {
-          'courierId': courierId,
-          'latitude': position.latitude,
-          'longitude': position.longitude
-        });
-      } catch (e) {
-        debugPrint('Error sending location update: $e');
-      }
-    });
-  }
+      if (_lastPosition == null || distanceInMeters > 50) {
+        _lastPosition = currentPosition;
+        updateMarker(currentPosition);
 
-  void _listenToDeliveryUpdates() {
-    socket.on('newDelivery', (data) {
-      if (data['courier'] == courierId) {
-        if (mounted) {
-          setState(() => _isServiceAvailable = true);
-        }
-      } else {
-        if (mounted) {
-          setState(() => _isServiceAvailable = false);
+        try {
+          _socketService.emit('updateLocation', {
+            'courierId': _courier?.id,
+            'latitude': currentPosition.latitude,
+            'longitude': currentPosition.longitude,
+          });
+        } catch (e) {
+          debugPrint('Error sending location update: $e');
         }
       }
     });
   }
 
-  void _updateMarker(Position position) async {
-    final BitmapDescriptor motoIcon =
-        await getBytesFromAsset('assets/images/moto_icon.png', 100);
+  Future _listenToDeliveryUpdates() async {
+    String? courierId = await UserSession.getUserId();
+    final player = AudioPlayer();
 
+    _socketService.on("$courierId", (data) async {
+      if (mounted) {
+        setState(() => _isServiceAvailable = true);
+        await player.play(AssetSource('sounds/notification_sound.wav'));
+      }
+    });
+  }
+
+  void updateMarker(Position position, icon) {
     if (mounted) {
       setState(() {
         _markers = {
           Marker(
             markerId: const MarkerId('currentLocation'),
             position: LatLng(position.latitude, position.longitude),
-            icon: motoIcon,
+            icon: icon,
           ),
         };
         _googleMapController?.animateCamera(
@@ -129,6 +173,18 @@ class _CourierMapState extends State<CourierMap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(_currentVehicle == 'motorcycle'
+                  ? Icons.motorcycle
+                  : Icons.directions_car),
+              onPressed: () {
+                String newVehicle =
+                    _currentVehicle == 'motorcycle' ? 'car' : 'motorcycle';
+                setIcon(newVehicle);
+              },
+            ),
+          ],
           title: Text(_isServiceAvailable
               ? 'Servicio encontrado'
               : 'Esperando servicios...')),
