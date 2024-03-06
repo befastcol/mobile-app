@@ -11,6 +11,7 @@ class Users extends StatefulWidget {
 }
 
 class _UsersState extends State<Users> {
+  String _currentFilter = 'all';
   List<UserModel> users = [];
   bool isLoading = false;
 
@@ -24,6 +25,7 @@ class _UsersState extends State<Users> {
     try {
       setState(() => isLoading = true);
       users = await UsersAPI().getAllUsers();
+      _applyFilter();
     } finally {
       if (mounted) {
         setState(() => isLoading = false);
@@ -31,11 +33,49 @@ class _UsersState extends State<Users> {
     }
   }
 
+  void _applyFilter() {
+    List<UserModel> filteredUsers;
+    switch (_currentFilter) {
+      case 'enabled':
+        filteredUsers = users.where((user) => !user.isDisabled).toList();
+        break;
+      case 'disabled':
+        filteredUsers = users.where((user) => user.isDisabled).toList();
+        break;
+      case 'all':
+      default:
+        filteredUsers = List.from(users);
+    }
+    setState(() {
+      users = filteredUsers;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        actions: [
+          PopupMenuButton<String>(
+            color: Colors.white,
+            surfaceTintColor: Colors.white,
+            icon: const Icon(Icons.filter_alt),
+            onSelected: (String value) {
+              setState(() {
+                _currentFilter = value;
+              });
+              _applyFilter();
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(value: 'all', child: Text('Todos')),
+              const PopupMenuItem<String>(
+                  value: 'enabled', child: Text('Habilitados')),
+              const PopupMenuItem<String>(
+                  value: 'disabled', child: Text('Deshabilitados')),
+            ],
+          ),
+        ],
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.amber,
         title: const Text("Usuarios"),
@@ -65,7 +105,10 @@ class _UsersState extends State<Users> {
                     itemBuilder: (context, index) {
                       final user = users[index];
                       return ListTile(
-                        leading: const Icon(Icons.person),
+                        leading: Icon(
+                          Icons.person,
+                          color: user.isDisabled ? Colors.red : Colors.blueGrey,
+                        ),
                         trailing: const Icon(Icons.navigate_next),
                         title: Text(user.name),
                         subtitle: Text(user.phone),
@@ -74,10 +117,11 @@ class _UsersState extends State<Users> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => UserDeliveries(
+                                        isDisabled: user.isDisabled,
                                         originLocation: user.originLocation,
                                         name: user.name,
                                         userId: user.id,
-                                      )));
+                                      ))).then((value) => _handleGetAllUsers());
                         },
                       );
                     },

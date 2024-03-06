@@ -29,13 +29,13 @@ dependencies:
   url_launcher: ^6.2.4
   firebase_storage: ^11.6.7
   audioplayers: ^5.2.1
+  flutter_native_splash: ^2.3.9
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.13.1"
   flutter_lints: ^2.0.0
-  flutter_native_splash: ^2.3.9
 
 flutter_launcher_icons:
   android: "launcher_icon"

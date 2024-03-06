@@ -11,6 +11,7 @@ class DestinationLocation extends StatelessWidget {
     return Consumer<UserProvider>(builder: (context, provider, child) {
       bool isDestinationEmpty = provider.destination.title.isEmpty;
       return LocationItem(
+        isDisabled: provider.user.isDisabled,
         isSelectingOrigin: false,
         iconData: isDestinationEmpty ? Icons.search : Icons.location_on,
         iconColor: isDestinationEmpty ? Colors.black54 : Colors.red,

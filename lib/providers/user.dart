@@ -10,6 +10,7 @@ import 'package:be_fast/utils/bytes_from_asset.dart';
 import 'package:be_fast/utils/location_helper.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/utils/user_session.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -66,14 +67,14 @@ class UserProvider extends ChangeNotifier {
       debugPrint(userId);
 
       _user = await UsersAPI.getUser(userId: userId);
-
+      FlutterNativeSplash.remove();
+      notifyListeners();
       updateOrigin(
           LatLng(_user.originLocation.coordinates[1],
               _user.originLocation.coordinates[0]),
           _user.originLocation.title,
           _user.originLocation.subtitle,
           _user.originLocation.city);
-      notifyListeners();
     } catch (e) {
       debugPrint("initializeUser: $e");
     }

@@ -106,6 +106,23 @@ class UsersAPI {
     }
   }
 
+  static Future<void> disableUser(
+      {required String? userId, required bool isDisabled}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'isDisabled': isDisabled}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
   Future<void> saveUserLocation(
       {required String? userId, required Point originLocation}) async {
     try {

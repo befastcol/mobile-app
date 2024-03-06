@@ -14,6 +14,7 @@ class OriginLocation extends StatelessWidget {
               child: Column(
                 children: [
                   LocationItem(
+                    isDisabled: false,
                     isSelectingOrigin: true,
                     iconData: Icons.location_on,
                     iconColor: Colors.blue,

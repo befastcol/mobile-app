@@ -6,6 +6,7 @@ import 'package:be_fast/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -16,10 +17,11 @@ import 'package:be_fast/screens/login/login.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await initializeDateFormatting();
   await dotenv.load(fileName: ".env");

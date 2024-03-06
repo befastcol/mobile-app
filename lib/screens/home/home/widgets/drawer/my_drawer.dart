@@ -9,6 +9,7 @@ import 'package:be_fast/screens/home/register/register.dart';
 import "package:be_fast/screens/home/trips/trips.dart";
 import 'package:be_fast/screens/home/users/users.dart';
 import 'package:be_fast/screens/home/vehicle/vehicle.dart';
+import 'package:be_fast/utils/show_snack_bar.dart';
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import '../../../../../utils/format_phone.dart';
@@ -95,11 +96,17 @@ class MyDrawer extends StatelessWidget {
                       trailing: const Icon(Icons.navigate_next),
                       title: const Text('Mapa'),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CourierMap()),
-                        );
+                        if (value.user.isDisabled) {
+                          Navigator.pop(context);
+                          showSnackBar(context,
+                              "No puedes acceder al mapa porque tu cuenta ha sido deshabilitada.");
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CourierMap()),
+                          );
+                        }
                       },
                     ),
                   ),

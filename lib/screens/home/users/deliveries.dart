@@ -1,19 +1,23 @@
 import 'package:be_fast/api/deliveries.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
+import 'package:be_fast/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserDeliveries extends StatefulWidget {
   final String userId, name;
   final Point originLocation;
+  final bool isDisabled;
 
   const UserDeliveries(
       {super.key,
       required this.userId,
       required this.name,
-      required this.originLocation});
+      required this.originLocation,
+      required this.isDisabled});
 
   @override
   State<UserDeliveries> createState() => _UserDeliveriesState();
@@ -70,9 +74,12 @@ class _UserDeliveriesState extends State<UserDeliveries> {
                   case 'googleMaps':
                     _launchGoogleMaps();
                     break;
-                  case 'disable':
+                  case 'enable':
+                    _showEnableConfirmDialog();
                     break;
-
+                  case 'disable':
+                    _showDisableConfirmDialog();
+                    break;
                   default:
                     break;
                 }
@@ -80,13 +87,20 @@ class _UserDeliveriesState extends State<UserDeliveries> {
               itemBuilder: (BuildContext context) => [
                 if (widget.originLocation.coordinates.isNotEmpty)
                   const PopupMenuItem(
-                      value: 'googleMaps', child: Text('Visitar')),
-                const PopupMenuItem(
-                    value: 'disable',
-                    child: Text(
-                      'Deshabilitar',
-                      style: TextStyle(color: Colors.red),
-                    ))
+                      value: 'googleMaps', child: Text('📍 Visitar')),
+                widget.isDisabled
+                    ? const PopupMenuItem(
+                        value: 'enable',
+                        child: Text(
+                          '✅ Habilitar',
+                          style: TextStyle(color: Colors.teal),
+                        ))
+                    : const PopupMenuItem(
+                        value: 'disable',
+                        child: Text(
+                          '🔒 Deshabilitar',
+                          style: TextStyle(color: Colors.red),
+                        ))
               ],
             )
           ]),
@@ -126,5 +140,79 @@ class _UserDeliveriesState extends State<UserDeliveries> {
                   ),
       ),
     );
+  }
+
+  void _showDisableConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmación'),
+          content: Text(
+              '¿Estás seguro de que deseas deshabilitar a ${widget.name}?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Deshabilitar'),
+              onPressed: () {
+                _disableUser(true);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEnableConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmación'),
+          content:
+              Text('¿Estás seguro de que deseas habilitar a ${widget.name}?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Habilitar'),
+              onPressed: () {
+                _disableUser(false);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _disableUser(bool isDisabled) async {
+    try {
+      await UsersAPI.disableUser(userId: widget.userId, isDisabled: isDisabled);
+      if (mounted) {
+        Navigator.pop(context);
+        if (isDisabled) {
+          showSnackBar(context, "Usuario deshabilitado correctamente");
+        } else {
+          showSnackBar(context, "Usuario habilitado correctamente");
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, "Error deshabilitando el usuario");
+      }
+    }
   }
 }

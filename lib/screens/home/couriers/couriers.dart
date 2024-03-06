@@ -33,11 +33,16 @@ class _CouriersState extends State<Couriers> {
   void _applyFilter() {
     if (_currentFilter == 'all') {
       _filteredCouriers = List.from(_couriers);
+    } else if (_currentFilter == 'disabled') {
+      _filteredCouriers =
+          _couriers.where((courier) => courier.isDisabled).toList();
     } else {
       _filteredCouriers = _couriers
-          .where((courier) => courier.status == _currentFilter)
+          .where((courier) =>
+              !courier.isDisabled && courier.status == _currentFilter)
           .toList();
     }
+
     setState(() {});
   }
 
@@ -77,6 +82,8 @@ class _CouriersState extends State<Couriers> {
                   value: 'available', child: Text('Disponibles')),
               const PopupMenuItem(value: 'inactive', child: Text('Inactivos')),
               const PopupMenuItem(value: 'busy', child: Text('Ocupados')),
+              const PopupMenuItem(
+                  value: 'disabled', child: Text('Desactivados')),
             ],
           )
         ],
@@ -94,7 +101,7 @@ class _CouriersState extends State<Couriers> {
                           child: Image.asset('assets/images/empty.png')),
                       const Center(
                           child: Text(
-                        'No hay repartidores todavía',
+                        'Lista de repartidores vacía',
                         style: TextStyle(
                           color: Colors.black54,
                         ),
@@ -106,23 +113,29 @@ class _CouriersState extends State<Couriers> {
                     itemBuilder: (context, index) {
                       final courier = _filteredCouriers[index];
                       return ListTile(
-                        leading: Icon(Icons.person,
-                            color: courier.status == "available"
-                                ? Colors.teal
-                                : courier.status == "busy"
-                                    ? Colors.orange
-                                    : Colors.blueGrey),
+                        leading: Icon(
+                          Icons.person,
+                          color: courier.isDisabled
+                              ? Colors.red
+                              : courier.status == "available"
+                                  ? Colors.teal
+                                  : courier.status == "busy"
+                                      ? Colors.orange
+                                      : Colors.blueGrey,
+                        ),
                         trailing: const Icon(Icons.navigate_next),
                         title: Text(courier.name),
                         subtitle: Text(courier.phone),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CourierDeliveries(
-                                        name: courier.name,
-                                        courierId: courier.id,
-                                      )));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CourierDeliveries(
+                                            isDisabled: courier.isDisabled,
+                                            name: courier.name,
+                                            courierId: courier.id,
+                                          )))
+                              .then((value) => _loadAcceptedCouriers());
                         },
                       );
                     },
