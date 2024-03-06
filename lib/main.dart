@@ -2,7 +2,7 @@ import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_map_provider.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_state_provider.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_stream_provider.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +10,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:be_fast/utils/firebase_options.dart';
+import 'package:be_fast/shared/utils/firebase_options.dart';
 
 import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/login.dart';

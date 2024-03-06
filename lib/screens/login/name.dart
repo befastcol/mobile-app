@@ -1,6 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/screens/login/location.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
 class Name extends StatefulWidget {

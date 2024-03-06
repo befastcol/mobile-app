@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_map_provider.dart';
-import 'package:be_fast/utils/traveled_distance.dart';
-import 'package:be_fast/utils/socket_service.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/traveled_distance.dart';
+import 'package:be_fast/shared/utils/socket_service.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';

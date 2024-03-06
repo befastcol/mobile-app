@@ -1,7 +1,7 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/utils/icon_helper.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/icon_helper.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

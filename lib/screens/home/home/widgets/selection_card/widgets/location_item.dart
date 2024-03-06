@@ -1,6 +1,6 @@
 import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/home/widgets/selection_card/screens/location_selection_screen.dart';
-import 'package:be_fast/utils/show_snack_bar.dart';
+import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

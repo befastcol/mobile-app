@@ -1,12 +1,12 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
-import 'package:be_fast/utils/show_snack_bar.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/show_snack_bar.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-import 'package:be_fast/utils/auth_service.dart';
+import 'package:be_fast/shared/utils/auth_service.dart';
 
 import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/name.dart';

@@ -2,7 +2,7 @@ import 'package:be_fast/screens/home/courier/providers/courier_map_provider.dart
 import 'package:be_fast/screens/home/courier/providers/courier_state_provider.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_stream_provider.dart';
 import 'package:be_fast/screens/home/courier/widgets/service_found_card.dart';
-import 'package:be_fast/utils/determine_title.dart';
+import 'package:be_fast/shared/utils/determine_title.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';

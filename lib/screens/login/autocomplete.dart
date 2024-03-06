@@ -1,11 +1,11 @@
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/providers/user.dart';
-import 'package:be_fast/utils/location_helper.dart';
+import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
-import 'package:be_fast/utils/debounce.dart';
+import 'package:be_fast/shared/utils/debounce.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AutocompleteScreen extends StatefulWidget {

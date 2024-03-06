@@ -2,7 +2,7 @@ import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/utils/bytes_from_asset.dart';
+import 'package:be_fast/shared/utils/bytes_from_asset.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

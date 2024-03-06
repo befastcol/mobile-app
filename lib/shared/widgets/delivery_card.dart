@@ -1,6 +1,6 @@
-import 'package:be_fast/screens/home/deliveries/delivery_map_location.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'delivery_map_location.dart';
 
 class DeliveryCard extends StatelessWidget {
   final DateTime date;

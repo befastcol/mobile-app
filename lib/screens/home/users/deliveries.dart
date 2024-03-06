@@ -2,9 +2,10 @@ import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
-import 'package:be_fast/utils/show_snack_bar.dart';
+import 'package:be_fast/shared/widgets/delivery_card.dart';
+import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserDeliveries extends StatefulWidget {
@@ -24,19 +25,20 @@ class UserDeliveries extends StatefulWidget {
 }
 
 class _UserDeliveriesState extends State<UserDeliveries> {
-  List<DeliveryModel> deliveries = [];
+  List<DeliveryModel> _deliveries = [];
   bool isLoading = false;
+  DateTime selectedWeek = DateTime.now();
+  List<DeliveryModel> _filteredDeliveries = [];
 
   Future _handleGetUserDeliveries() async {
     setState(() => isLoading = true);
     try {
-      deliveries =
-          await DeliveriesAPI().getUserDeliveries(userId: widget.userId);
+      _deliveries =
+          await DeliveriesAPI.getUserDeliveries(userId: widget.userId);
+      filterDeliveriesByWeek();
     } finally {
       if (mounted) {
-        setState(() {
-          setState(() => isLoading = false);
-        });
+        setState(() => isLoading = false);
       }
     }
   }
@@ -60,7 +62,7 @@ class _UserDeliveriesState extends State<UserDeliveries> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: deliveries.isEmpty ? Colors.white : Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
           surfaceTintColor: Colors.transparent,
           backgroundColor: Colors.amber,
@@ -104,40 +106,25 @@ class _UserDeliveriesState extends State<UserDeliveries> {
               ],
             )
           ]),
-      body: RefreshIndicator(
-        onRefresh: _handleGetUserDeliveries,
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : deliveries.isEmpty
-                ? ListView(
-                    children: [
-                      const SizedBox(height: 180),
-                      Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 50),
-                          child: Image.asset('assets/images/empty.png')),
-                      const Center(
-                          child: Text(
-                        'Usuario sin servicios',
-                        style: TextStyle(
-                          color: Colors.black54,
-                        ),
-                      )),
-                    ],
-                  )
-                : ListView.builder(
-                    itemCount: deliveries.length,
-                    itemBuilder: (context, index) {
-                      final delivery = deliveries[index];
-                      return DeliveryCard(
-                        deliveyId: delivery.id,
-                        status: delivery.status,
-                        date: delivery.requestedDate,
-                        destination: delivery.destination.title,
-                        origin: delivery.origin.title,
-                        price: delivery.price,
-                      );
-                    },
-                  ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: _handleGetUserDeliveries,
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _filteredDeliveries.isEmpty
+                      ? buildEmptyListView()
+                      : buildDeliveriesListView(),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: weekSelectorWidget(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -214,5 +201,120 @@ class _UserDeliveriesState extends State<UserDeliveries> {
         showSnackBar(context, "Error deshabilitando el usuario");
       }
     }
+  }
+
+  void filterDeliveriesByWeek() {
+    DateTime startOfWeek = startOfSelectedWeek();
+    DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
+    _filteredDeliveries = _deliveries.where((delivery) {
+      return delivery.requestedDate
+              .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+          delivery.requestedDate.isBefore(endOfWeek);
+    }).toList();
+  }
+
+  DateTime startOfSelectedWeek() {
+    int dayOfWeek = selectedWeek.weekday;
+    DateTime startOfWeek = selectedWeek.subtract(Duration(days: dayOfWeek - 1));
+    return startOfWeek;
+  }
+
+  Widget weekSelectorWidget() {
+    DateTime startOfWeek = startOfSelectedWeek();
+    DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+
+    String formattedStart =
+        DateFormat('EEE dd MMM', 'es_MX').format(startOfWeek);
+    String formattedEnd =
+        DateFormat('EEE dd MMM, yyyy', 'es_MX').format(endOfWeek);
+    String dateRange = '$formattedStart - $formattedEnd';
+
+    bool isCurrentWeek = DateTime.now().difference(startOfWeek).inDays < 7;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: () => changeWeek(-7),
+          ),
+          Text(dateRange),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: isCurrentWeek ? null : () => changeWeek(7),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void changeWeek(int days) {
+    setState(() {
+      selectedWeek = selectedWeek.add(Duration(days: days));
+      filterDeliveriesByWeek();
+    });
+  }
+
+  Widget buildEmptyListView() {
+    return ListView(
+      children: [
+        const SizedBox(height: 180),
+        Container(
+            margin: const EdgeInsets.symmetric(horizontal: 50),
+            child: Image.asset('assets/images/empty.png')),
+        const Center(
+            child: Text(
+          'Sin pedidos esta semana',
+          style: TextStyle(
+            color: Colors.black54,
+          ),
+        )),
+      ],
+    );
+  }
+
+  Widget buildDeliveriesListView() {
+    int totalDeliveries = _filteredDeliveries.length;
+    int totalAmount = totalDeliveries * 8;
+
+    return ListView.builder(
+      itemCount: totalDeliveries > 0 ? totalDeliveries + 1 : totalDeliveries,
+      itemBuilder: (context, index) {
+        if (index == 0 && totalDeliveries > 0) {
+          return Card(
+            surfaceTintColor: Colors.white,
+            margin: const EdgeInsets.all(8.0),
+            child: ListTile(
+              title: Text(
+                "Total semanal a pagar",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18.0, color: Colors.grey[600]),
+              ),
+              subtitle: Text(
+                "\$$totalAmount MXN",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+          );
+        }
+
+        final deliveryIndex = index - 1;
+        final delivery = _filteredDeliveries[deliveryIndex];
+
+        return DeliveryCard(
+          deliveyId: delivery.id,
+          status: delivery.status,
+          date: delivery.requestedDate,
+          destination: delivery.destination.title,
+          origin: delivery.origin.title,
+          price: delivery.price,
+        );
+      },
+      padding: const EdgeInsets.only(bottom: 70.0),
+    );
   }
 }

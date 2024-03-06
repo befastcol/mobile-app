@@ -1,6 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/foundation.dart';
 
 class CourierStateProvider with ChangeNotifier {

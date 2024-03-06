@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/screens/home/register/waiting_approval.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

@@ -1,9 +1,9 @@
+import 'package:be_fast/shared/widgets/delivery_card.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/screens/home/deliveries/delivery_card.dart';
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 
 class Deliveries extends StatefulWidget {
   const Deliveries({super.key});
@@ -15,21 +15,21 @@ class Deliveries extends StatefulWidget {
 class _DeliveriesState extends State<Deliveries> {
   List<DeliveryModel> allDeliveries = [];
   List<DeliveryModel> filteredDeliveries = [];
-  bool isLoading = false;
+  bool _isLoading = false;
   DateTime selectedWeek = DateTime.now();
 
   void loadUserDeliveries() async {
-    setState(() => isLoading = true);
+    setState(() => _isLoading = true);
     try {
       String? userId = await UserSession.getUserId();
       allDeliveries =
-          await DeliveriesAPI().getUserDeliveries(userId: userId.toString());
+          await DeliveriesAPI.getUserDeliveries(userId: userId.toString());
       filterDeliveriesByWeek();
     } catch (error) {
       debugPrint('loadUserDeliveries: $error');
     } finally {
       if (mounted) {
-        setState(() => isLoading = false);
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -137,7 +137,7 @@ class _DeliveriesState extends State<Deliveries> {
           children: [
             RefreshIndicator(
               onRefresh: () async => loadUserDeliveries(),
-              child: isLoading
+              child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : filteredDeliveries.isEmpty
                       ? buildEmptyListView()
@@ -214,17 +214,12 @@ class _DeliveriesState extends State<Deliveries> {
 
   Widget buildDeliveriesListView() {
     int totalDeliveries = filteredDeliveries.length;
-    // Usamos la variable totalAmount existente para calcular el total
-    int totalAmount =
-        totalDeliveries * 8; // Suponiendo que $8 es el precio por entrega
+    int totalAmount = totalDeliveries * 8;
 
     return ListView.builder(
-      itemCount: totalDeliveries > 0
-          ? totalDeliveries + 1
-          : totalDeliveries, // Ajusta el itemCount
+      itemCount: totalDeliveries > 0 ? totalDeliveries + 1 : totalDeliveries,
       itemBuilder: (context, index) {
         if (index == 0 && totalDeliveries > 0) {
-          // Si es el primer ítem y hay pedidos, muestra la Card del total a pagar
           return Card(
             surfaceTintColor: Colors.white,
             margin: const EdgeInsets.all(8.0),
@@ -244,8 +239,7 @@ class _DeliveriesState extends State<Deliveries> {
           );
         }
 
-        final deliveryIndex =
-            index - 1; // Ajusta el índice para acceder a filteredDeliveries
+        final deliveryIndex = index - 1;
         final delivery = filteredDeliveries[deliveryIndex];
 
         return DeliveryCard(

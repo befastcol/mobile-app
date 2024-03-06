@@ -4,11 +4,11 @@ import 'package:http/http.dart';
 import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
 
-import 'package:be_fast/utils/user_session.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:be_fast/api/constants/base_url.dart';
 
 class DeliveriesAPI {
-  Future<List<DeliveryModel>> getUserDeliveries(
+  static Future<List<DeliveryModel>> getUserDeliveries(
       {required String userId}) async {
     try {
       Response response =
@@ -27,7 +27,7 @@ class DeliveriesAPI {
     }
   }
 
-  Future<List<DeliveryModel>> getCourierDeliveries(
+  static Future<List<DeliveryModel>> getCourierDeliveries(
       {required String courierId}) async {
     try {
       Response response =
