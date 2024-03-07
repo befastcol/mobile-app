@@ -131,6 +131,7 @@ class _CouriersState extends State<Couriers> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => CourierDeliveries(
+                                            phone: courier.phone,
                                             isDisabled: courier.isDisabled,
                                             name: courier.name,
                                             courierId: courier.id,

@@ -5,15 +5,17 @@ import 'package:be_fast/shared/widgets/delivery_card.dart';
 import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CourierDeliveries extends StatefulWidget {
-  final String courierId, name;
+  final String courierId, name, phone;
   final bool isDisabled;
 
   const CourierDeliveries(
       {super.key,
       required this.courierId,
       required this.name,
+      required this.phone,
       required this.isDisabled});
 
   @override
@@ -63,6 +65,18 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
     });
   }
 
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      throw 'Could not launch $launchUri';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +98,7 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
               onSelected: (String value) {
                 switch (value) {
                   case 'call':
+                    _makePhoneCall(widget.phone);
                     break;
                   case 'disable':
                     _showDisableConfirmDialog();

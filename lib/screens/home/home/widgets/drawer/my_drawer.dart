@@ -6,6 +6,7 @@ import 'package:be_fast/screens/home/deliveries/deliveries.dart';
 import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/screens/home/profile/profile.dart';
 import 'package:be_fast/screens/home/register/register.dart';
+import 'package:be_fast/screens/home/settings/settings.dart';
 import "package:be_fast/screens/home/trips/trips.dart";
 import 'package:be_fast/screens/home/users/users.dart';
 import 'package:be_fast/screens/home/vehicle/vehicle.dart';
@@ -183,6 +184,21 @@ class MyDrawer extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const Requests()),
+                        );
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: value.user.role == 'admin',
+                    child: ListTile(
+                      leading: const Icon(Icons.settings),
+                      trailing: const Icon(Icons.navigate_next),
+                      title: const Text('Configuración'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsScreen()),
                         );
                       },
                     ),

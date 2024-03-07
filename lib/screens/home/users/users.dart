@@ -46,9 +46,7 @@ class _UsersState extends State<Users> {
       default:
         filteredUsers = List.from(users);
     }
-    setState(() {
-      users = filteredUsers;
-    });
+    if (mounted) setState(() => users = filteredUsers);
   }
 
   @override
