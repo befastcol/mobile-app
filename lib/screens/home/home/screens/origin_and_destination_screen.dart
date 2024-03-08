@@ -1,5 +1,7 @@
 import 'package:be_fast/api/google_maps.dart';
-import 'package:be_fast/providers/user.dart';
+import 'package:be_fast/models/custom/custom.dart';
+import 'package:be_fast/providers/delivery_provider.dart';
+import 'package:be_fast/providers/user_map_provider.dart';
 import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,22 +10,23 @@ import 'package:provider/provider.dart';
 import 'package:be_fast/shared/utils/debounce.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class LocationSelectionScreen extends StatefulWidget {
+class OriginAndDestinationScreen extends StatefulWidget {
   final String originTitle, destinationTitle;
   final bool isSelectingOrigin;
 
-  const LocationSelectionScreen(
+  const OriginAndDestinationScreen(
       {super.key,
       required this.originTitle,
       required this.destinationTitle,
       required this.isSelectingOrigin});
 
   @override
-  State<LocationSelectionScreen> createState() =>
-      _LocationSelectionScreenState();
+  State<OriginAndDestinationScreen> createState() =>
+      _OriginAndDestinationScreenState();
 }
 
-class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
+class _OriginAndDestinationScreenState
+    extends State<OriginAndDestinationScreen> {
   final TextEditingController _originController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
 
@@ -57,15 +60,17 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
       List<dynamic> results =
           await GoogleMapsAPI().getAutocompleteResults(value, position);
 
-      setState(
-          () => _destinationAutocompleteResults = results.take(4).toList());
+      if (mounted) {
+        setState(
+            () => _destinationAutocompleteResults = results.take(4).toList());
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-        builder: (context, provider, child) => Scaffold(
+    return Consumer2<DeliveryProvider, UserMapProvider>(
+        builder: (context, deliveryState, mapState, child) => Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 title: const Text('Ubicación'),
@@ -132,15 +137,34 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
 
                             return ListTile(
                               onTap: () async {
-                                Navigator.pop(context);
-                                provider.setIsUpdatingLocation(true);
-                                final result = await GoogleMapsAPI()
-                                    .getPlaceLatLng(placeId);
-                                final LatLng latLng = result['latLng'];
-                                final String city = result['city'];
+                                try {
+                                  deliveryState
+                                      .setIsLoadingDeliveryDetails(true);
+                                  Navigator.pop(context);
+                                  final result = await GoogleMapsAPI()
+                                      .getPlaceLatLng(placeId);
+                                  final LatLng latLng = result['latLng'];
+                                  final String city = result['city'];
 
-                                provider.updateOrigin(
-                                    latLng, title, subtitle, city);
+                                  deliveryState.updateDeliveryOrigin(Point(
+                                      title: title,
+                                      subtitle: subtitle,
+                                      city: city,
+                                      coordinates: [
+                                        latLng.longitude,
+                                        latLng.latitude
+                                      ]));
+                                  mapState.addMarker(
+                                      'origin',
+                                      latLng,
+                                      BitmapDescriptor.defaultMarkerWithHue(
+                                          200));
+                                } catch (e) {
+                                  debugPrint("$e");
+                                } finally {
+                                  deliveryState
+                                      .setIsLoadingDeliveryDetails(false);
+                                }
                               },
                               leading: const Icon(Icons.location_on,
                                   color: Colors.blue),
@@ -168,18 +192,31 @@ class _LocationSelectionScreenState extends State<LocationSelectionScreen> {
                             return ListTile(
                               onTap: () async {
                                 try {
+                                  deliveryState
+                                      .setIsLoadingDeliveryDetails(true);
                                   Navigator.pop(context);
-                                  provider.setIsUpdatingLocation(true);
                                   final result = await GoogleMapsAPI()
                                       .getPlaceLatLng(placeId);
                                   final LatLng latLng = result['latLng'];
                                   final String city = result['city'];
-                                  provider.updateDestination(
-                                      latLng, title, subtitle, city);
+                                  deliveryState.updateDeliveryDestination(Point(
+                                      title: title,
+                                      subtitle: subtitle,
+                                      city: city,
+                                      coordinates: [
+                                        latLng.longitude,
+                                        latLng.latitude
+                                      ]));
+                                  mapState.addMarker(
+                                      'destination',
+                                      latLng,
+                                      BitmapDescriptor.defaultMarkerWithHue(
+                                          BitmapDescriptor.hueRed));
                                 } catch (e) {
                                   debugPrint("$e");
                                 } finally {
-                                  provider.setIsUpdatingLocation(true);
+                                  deliveryState
+                                      .setIsLoadingDeliveryDetails(false);
                                 }
                               },
                               leading: const Icon(Icons.location_on,

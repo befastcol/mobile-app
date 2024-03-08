@@ -1,4 +1,4 @@
-import 'package:be_fast/shared/utils/bytes_from_asset.dart';
+import 'package:be_fast/shared/utils/icons_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 Future<BitmapDescriptor> getVehicleIcon(String vehicle,

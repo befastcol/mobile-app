@@ -1,6 +1,8 @@
-import 'package:be_fast/providers/user.dart';
-import 'package:be_fast/shared/utils/user_session.dart';
+import 'package:be_fast/providers/delivery_provider.dart';
+import 'package:be_fast/providers/user_map_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:be_fast/screens/home/home/home.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -9,9 +11,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:be_fast/shared/utils/firebase_options.dart';
 
-import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/login.dart';
 import 'package:provider/provider.dart';
+
+import 'providers/user_provider.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +31,10 @@ void main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => DeliveryProvider()),
+          ChangeNotifierProvider(
+              create: (context) => UserMapProvider(
+                  Provider.of<DeliveryProvider>(context, listen: false))),
         ],
         child: const BeFast(),
       ),
@@ -70,7 +77,7 @@ class AuthenticationWrapperState extends State<AuthenticationWrapper> {
           if (userId == null) {
             return const Login();
           }
-          return const Home();
+          return const HomeScreen();
         } else {
           return const Scaffold(
             body: Center(

@@ -17,7 +17,8 @@ class RouteDetails {
 }
 
 class GoogleMapsAPI {
-  static const String _baseUrl = 'https://maps.googleapis.com/maps/api';
+  static const String _googleMapsBaseUrl =
+      'https://maps.googleapis.com/maps/api';
   String? apiKey = dotenv.env['GOOGLE_API_KEY'];
 
   Future<RouteDetails> getRouteCoordinates(
@@ -25,7 +26,7 @@ class GoogleMapsAPI {
     try {
       final response = await http.get(
         Uri.parse(
-          '$_baseUrl'
+          '$_googleMapsBaseUrl'
           '/directions/json?'
           'origin=${origin.coordinates[1]},${origin.coordinates[0]}&'
           'destination=${destination.coordinates[1]},${destination.coordinates[0]}&'
@@ -90,7 +91,7 @@ class GoogleMapsAPI {
   Future<List<dynamic>> getAutocompleteResults(
       String query, Position position) async {
     final String url =
-        '$_baseUrl/place/autocomplete/json?input=$query&location=${position.latitude},${position.longitude}&radius=25000&strictbounds=true&key=$apiKey';
+        '$_googleMapsBaseUrl/place/autocomplete/json?input=$query&location=${position.latitude},${position.longitude}&radius=25000&strictbounds=true&key=$apiKey';
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -103,7 +104,7 @@ class GoogleMapsAPI {
 
   Future<Map<String, dynamic>> getPlaceLatLng(String placeId) async {
     final String url =
-        '$_baseUrl/place/details/json?place_id=$placeId&key=$apiKey';
+        '$_googleMapsBaseUrl/place/details/json?place_id=$placeId&key=$apiKey';
 
     try {
       final response = await http.get(Uri.parse(url));

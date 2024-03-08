@@ -1,5 +1,6 @@
 import 'package:be_fast/api/google_maps.dart';
-import 'package:be_fast/providers/user.dart';
+import 'package:be_fast/models/custom/custom.dart';
+import 'package:be_fast/providers/delivery_provider.dart';
 import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -49,8 +50,8 @@ class _AutocompleteScreenState extends State<AutocompleteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-        builder: (context, provider, child) => Scaffold(
+    return Consumer<DeliveryProvider>(
+        builder: (context, deliveryState, child) => Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 title: const Text('Ubicación'),
@@ -106,8 +107,14 @@ class _AutocompleteScreenState extends State<AutocompleteScreen> {
                                   final LatLng latLng = result['latLng'];
                                   final String city = result['city'];
 
-                                  provider.updateOrigin(
-                                      latLng, title, subtitle, city);
+                                  deliveryState.updateDeliveryOrigin(Point(
+                                      title: title,
+                                      subtitle: subtitle,
+                                      city: city,
+                                      coordinates: [
+                                        latLng.longitude,
+                                        latLng.latitude
+                                      ]));
                                 } finally {
                                   widget.setIsLoadingLocation(false);
                                 }

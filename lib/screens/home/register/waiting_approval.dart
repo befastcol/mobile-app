@@ -49,7 +49,7 @@ class _WaitingApprovalScreenState extends State<WaitingApprovalScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Home()));
+                                builder: (context) => const HomeScreen()));
                       },
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),

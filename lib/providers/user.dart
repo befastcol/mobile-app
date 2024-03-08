@@ -6,7 +6,7 @@ import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/shared/utils/bytes_from_asset.dart';
+import 'package:be_fast/shared/utils/icons_helper.dart';
 import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class UserProvider extends ChangeNotifier {
+class OldUserProvider extends ChangeNotifier {
   UserModel _user = UserModel(
     id: '',
     phone: '',
@@ -52,6 +52,12 @@ class UserProvider extends ChangeNotifier {
   bool get isUpdatingLocation => _isUpdatingLocation;
   bool get isSearchingDeliveries => _isSearchingDeliveries;
 
+  OldUserProvider() {
+    initializeUser();
+    initializeMap();
+    initializeCouriers();
+  }
+
   Future<void> initializeMap() async {
     try {
       Position position = await LocationHelper.determinePosition();
@@ -82,7 +88,7 @@ class UserProvider extends ChangeNotifier {
 
   Future initializeCouriers() async {
     try {
-      List<UserModel> couriers = await UsersAPI().getAvailableCouriers();
+      List<UserModel> couriers = await UsersAPI.getAvailableCouriers();
       final motoIcon =
           await getBytesFromAsset('assets/images/moto_icon.png', 100);
       final carIcon =
@@ -158,7 +164,7 @@ class UserProvider extends ChangeNotifier {
     try {
       _isSearchingDeliveries = true;
       notifyListeners();
-      _delivery = await DeliveriesAPI().createDelivery(
+      _delivery = await DeliveriesAPI.createDelivery(
           origin: _origin, destination: _destination, price: _price);
     } catch (e) {
       debugPrint("createDelivery: $e");
@@ -170,7 +176,7 @@ class UserProvider extends ChangeNotifier {
     required Function onError,
   }) async {
     try {
-      await DeliveriesAPI().cancelDelivery(deliveryId: _delivery.id);
+      await DeliveriesAPI.cancelDelivery(deliveryId: _delivery.id);
       onSuccess();
     } catch (e) {
       onError();
@@ -201,7 +207,7 @@ class UserProvider extends ChangeNotifier {
       try {
         RouteDetails routeDetails =
             await GoogleMapsAPI().getRouteCoordinates(_origin, _destination);
-        _price = await DeliveriesAPI().getDeliveryPrice(
+        _price = await DeliveriesAPI.getDeliveryPrice(
             distance: routeDetails.distance, duration: routeDetails.duration);
 
         _polylines.clear();

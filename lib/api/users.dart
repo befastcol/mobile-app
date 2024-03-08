@@ -123,7 +123,7 @@ class UsersAPI {
     }
   }
 
-  Future<void> saveUserLocation(
+  static Future<void> saveUserLocation(
       {required String? userId, required Point originLocation}) async {
     try {
       Response response = await put(
@@ -216,7 +216,7 @@ class UsersAPI {
     }
   }
 
-  Future<List<UserModel>> getAvailableCouriers() async {
+  static Future<List<UserModel>> getAvailableCouriers() async {
     try {
       final response =
           await get(Uri.parse('$baseUrlApi/users/couriers/available'));

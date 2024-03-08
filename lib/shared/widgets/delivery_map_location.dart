@@ -2,7 +2,7 @@ import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/models/user.dart';
-import 'package:be_fast/shared/utils/bytes_from_asset.dart';
+import 'package:be_fast/shared/utils/icons_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -36,7 +36,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
   Future<void> _initialize() async {
     try {
       DeliveryModel delivery =
-          await DeliveriesAPI().getDeliveryById(deliveryId: widget.deliveryId);
+          await DeliveriesAPI.getDeliveryById(deliveryId: widget.deliveryId);
       UserModel courier = await UsersAPI.getUser(userId: delivery.courier);
       LatLng currentLocationLatLng = LatLng(
           courier.currentLocation?.coordinates[1] ?? 0,

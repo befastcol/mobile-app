@@ -1,8 +1,9 @@
 import 'package:be_fast/api/users.dart';
-import 'package:be_fast/providers/user.dart';
 import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../providers/user_provider.dart';
 
 class Vehicle extends StatefulWidget {
   final String vehicle, id;

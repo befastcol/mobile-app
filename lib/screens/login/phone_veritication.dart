@@ -1,5 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
+import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,6 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:be_fast/shared/utils/auth_service.dart';
 
-import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/name.dart';
 
 class PhoneVerification extends StatefulWidget {
@@ -79,7 +79,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  user.alreadyExists ? const Home() : const Name()),
+                  user.alreadyExists ? const HomeScreen() : const Name()),
           (Route<dynamic> route) => false,
         );
       }

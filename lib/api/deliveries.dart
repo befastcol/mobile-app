@@ -44,7 +44,7 @@ class DeliveriesAPI {
     }
   }
 
-  Future<DeliveryModel> createDelivery({
+  static Future<DeliveryModel> createDelivery({
     required Point origin,
     required Point destination,
     required int price,
@@ -72,7 +72,8 @@ class DeliveriesAPI {
     }
   }
 
-  Future<DeliveryModel> getDeliveryById({required String deliveryId}) async {
+  static Future<DeliveryModel> getDeliveryById(
+      {required String deliveryId}) async {
     try {
       Response response =
           await get(Uri.parse('$baseUrlApi/deliveries/get/$deliveryId'));
@@ -86,7 +87,7 @@ class DeliveriesAPI {
     }
   }
 
-  Future cancelDelivery({required String deliveryId}) async {
+  static Future cancelDelivery({required String deliveryId}) async {
     try {
       await delete(Uri.parse('$baseUrlApi/deliveries/delete/$deliveryId'));
     } catch (e) {
@@ -94,7 +95,7 @@ class DeliveriesAPI {
     }
   }
 
-  Future<int> getDeliveryPrice({
+  static Future<int> getDeliveryPrice({
     required int distance,
     required int duration,
   }) async {

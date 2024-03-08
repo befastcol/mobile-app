@@ -1,19 +1,19 @@
-import 'package:be_fast/screens/home/courier/courier_map.dart';
-import 'package:be_fast/screens/home/location/location.dart';
-import 'package:be_fast/screens/home/requests/requests.dart';
-import 'package:be_fast/screens/home/couriers/couriers.dart';
-import 'package:be_fast/screens/home/deliveries/deliveries.dart';
-import 'package:be_fast/providers/user.dart';
-import 'package:be_fast/screens/home/profile/profile.dart';
-import 'package:be_fast/screens/home/register/register.dart';
-import 'package:be_fast/screens/home/settings/settings.dart';
+import "package:be_fast/providers/user_provider.dart";
+import "package:be_fast/screens/home/courier/courier_map.dart";
+import "package:be_fast/screens/home/couriers/couriers.dart";
+import "package:be_fast/screens/home/deliveries/deliveries.dart";
+import "package:be_fast/screens/home/location/location.dart";
+import "package:be_fast/screens/home/profile/profile.dart";
+import "package:be_fast/screens/home/register/register.dart";
+import "package:be_fast/screens/home/requests/requests.dart";
+import "package:be_fast/screens/home/settings/settings.dart";
 import "package:be_fast/screens/home/trips/trips.dart";
-import 'package:be_fast/screens/home/users/users.dart';
-import 'package:be_fast/screens/home/vehicle/vehicle.dart';
-import 'package:be_fast/shared/utils/show_snack_bar.dart';
+import "package:be_fast/screens/home/users/users.dart";
+import "package:be_fast/screens/home/vehicle/vehicle.dart";
+import "package:be_fast/shared/utils/format_phone.dart";
+import "package:be_fast/shared/utils/show_snack_bar.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import '../../../../../shared/utils/format_phone.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
@@ -23,14 +23,14 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<UserProvider>(
-        builder: (context, value, child) => Drawer(
+        builder: (context, userState, child) => Drawer(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
                   UserAccountsDrawerHeader(
-                    accountEmail: Text(formatPhone(value.user.phone)),
+                    accountEmail: Text(formatPhone(userState.phone)),
                     accountName: Text(
-                      value.user.name,
+                      userState.name,
                       style: const TextStyle(fontSize: 24.0),
                     ),
                     decoration: const BoxDecoration(
@@ -46,7 +46,7 @@ class MyDrawer extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => Profile(
-                                name: value.user.name, id: value.user.id)),
+                                name: userState.name, id: userState.id)),
                       );
                     },
                   ),
@@ -76,7 +76,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                   const Divider(),
                   Visibility(
-                    visible: value.user.role == 'user',
+                    visible: userState.role == 'user',
                     child: ListTile(
                       leading: const Icon(Icons.motorcycle),
                       trailing: const Icon(Icons.navigate_next),
@@ -91,13 +91,13 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'courier',
+                    visible: userState.role == 'courier',
                     child: ListTile(
                       leading: const Icon(Icons.maps_home_work),
                       trailing: const Icon(Icons.navigate_next),
                       title: const Text('Mapa'),
                       onTap: () {
-                        if (value.user.isDisabled) {
+                        if (userState.isDisabled) {
                           Navigator.pop(context);
                           showSnackBar(context,
                               "No puedes acceder al mapa porque tu cuenta ha sido deshabilitada.");
@@ -113,7 +113,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'courier',
+                    visible: userState.role == 'courier',
                     child: ListTile(
                       leading: const Icon(Icons.motorcycle),
                       trailing: const Icon(Icons.navigate_next),
@@ -123,14 +123,14 @@ class MyDrawer extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Vehicle(
-                                  vehicle: value.user.vehicle,
-                                  id: value.user.id)),
+                                  vehicle: userState.vehicle,
+                                  id: userState.id)),
                         );
                       },
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'courier',
+                    visible: userState.role == 'courier',
                     child: ListTile(
                       leading: const Icon(Icons.list),
                       trailing: const Icon(Icons.navigate_next),
@@ -145,7 +145,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'admin',
+                    visible: userState.role == 'admin',
                     child: ListTile(
                       leading: const Icon(Icons.motorcycle),
                       trailing: const Icon(Icons.navigate_next),
@@ -160,7 +160,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'admin',
+                    visible: userState.role == 'admin',
                     child: ListTile(
                       leading: const Icon(Icons.people),
                       trailing: const Icon(Icons.navigate_next),
@@ -175,7 +175,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'admin',
+                    visible: userState.role == 'admin',
                     child: ListTile(
                       leading: const Icon(Icons.insert_drive_file_sharp),
                       trailing: const Icon(Icons.navigate_next),
@@ -190,7 +190,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: value.user.role == 'admin',
+                    visible: userState.role == 'admin',
                     child: ListTile(
                       leading: const Icon(Icons.settings),
                       trailing: const Icon(Icons.navigate_next),

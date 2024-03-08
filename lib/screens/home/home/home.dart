@@ -1,83 +1,55 @@
+import 'package:be_fast/screens/home/home/widgets/looking_for_couriers_card.dart';
+import 'package:be_fast/screens/home/home/widgets/service_request_card.dart';
+import 'package:be_fast/screens/home/home/widgets/where_to_go_card.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:be_fast/screens/home/home/widgets/drawer/my_drawer.dart';
-import 'package:be_fast/providers/user.dart';
-import 'package:be_fast/screens/home/home/widgets/searching_card/searching_card.dart';
-import 'package:be_fast/screens/home/home/widgets/selection_card/selection_card.dart';
+import 'package:provider/provider.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+import '../../../providers/user_map_provider.dart';
+import 'widgets/my_drawer.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-    return FutureBuilder(
-        future: Future.wait([
-          userProvider.initializeUser(),
-          userProvider.initializeMap(),
-          userProvider.initializeCouriers()
-        ]),
-        builder: (context, snapshot) {
-          return Consumer<UserProvider>(
-              builder: (context, value, child) => Scaffold(
-                    key: _scaffoldKey,
-                    resizeToAvoidBottomInset: false,
-                    drawer: const MyDrawer(),
-                    floatingActionButton: FloatingActionButton(
-                      backgroundColor: Colors.white,
-                      child: const Icon(Icons.menu),
-                      onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+    return Consumer<UserMapProvider>(
+        builder: (context, mapState, child) => Scaffold(
+            key: _scaffoldKey,
+            resizeToAvoidBottomInset: false,
+            drawer: const MyDrawer(),
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.white,
+              child: const Icon(Icons.menu),
+              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
+            body: mapState.initialCameraPosition == null
+                ? const Center(child: CircularProgressIndicator())
+                : Stack(children: [
+                    GoogleMap(
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      markers: mapState.markers,
+                      polylines: mapState.polylines,
+                      initialCameraPosition: mapState.initialCameraPosition!,
+                      myLocationButtonEnabled: false,
+                      onMapCreated: (GoogleMapController controller) {
+                        if (!mapState.controller.isCompleted) {
+                          mapState.controller.complete(controller);
+                        }
+                      },
                     ),
-                    floatingActionButtonLocation:
-                        FloatingActionButtonLocation.startTop,
-                    body: value.initialCameraPosition == null
-                        ? const Center(child: CircularProgressIndicator())
-                        : Stack(
-                            children: [
-                              GoogleMap(
-                                mapType: MapType.normal,
-                                myLocationEnabled: true,
-                                markers: value.markers!,
-                                polylines: value.polylines,
-                                initialCameraPosition:
-                                    value.initialCameraPosition!,
-                                myLocationButtonEnabled: false,
-                                onMapCreated: (GoogleMapController controller) {
-                                  if (!value.controller.isCompleted) {
-                                    value.controller.complete(controller);
-                                  }
-                                },
-                              ),
-                              Visibility(
-                                visible: !value.isSearchingDeliveries,
-                                child: const Positioned(
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  child: SelectionCard(),
-                                ),
-                              ),
-                              Visibility(
-                                visible: value.isSearchingDeliveries,
-                                child: const Positioned(
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  child: SearchingCard(),
-                                ),
-                              ),
-                            ],
-                          ),
-                  ));
-        });
+                    const WhereToGoCard(),
+                    const ServiceRequestCard(),
+                    const LookingForCouriersCard()
+                  ])));
   }
 }

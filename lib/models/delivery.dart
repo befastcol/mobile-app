@@ -32,4 +32,26 @@ class DeliveryModel {
           : null,
     );
   }
+
+  DeliveryModel copyWith({
+    String? id,
+    String? status,
+    String? courier,
+    int? price,
+    Point? origin,
+    Point? destination,
+    DateTime? requestedDate,
+    DateTime? deliveredDate,
+  }) {
+    return DeliveryModel(
+      id: id ?? this.id,
+      status: status ?? this.status,
+      courier: courier ?? this.courier,
+      price: price ?? this.price,
+      origin: origin ?? this.origin,
+      destination: destination ?? this.destination,
+      requestedDate: requestedDate ?? this.requestedDate,
+      deliveredDate: deliveredDate ?? this.deliveredDate,
+    );
+  }
 }

@@ -1,5 +1,5 @@
 import 'package:be_fast/api/users.dart';
-import 'package:be_fast/providers/user.dart';
+import 'package:be_fast/providers/delivery_provider.dart';
 import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/screens/login/autocomplete.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
@@ -24,18 +24,18 @@ class _LocationState extends State<Location> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(builder: (context, provider, child) {
+    return Consumer<DeliveryProvider>(builder: (context, deliveryState, child) {
       Future saveUserLocation() async {
         try {
           setState(() => _isSaving = true);
           String? userId = await UserSession.getUserId();
 
-          await UsersAPI().saveUserLocation(
-              userId: userId, originLocation: provider.origin);
+          await UsersAPI.saveUserLocation(
+              userId: userId, originLocation: deliveryState.origin);
           if (mounted) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const Home()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
               (Route<dynamic> route) => false,
             );
           }
@@ -87,7 +87,7 @@ class _LocationState extends State<Location> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => AutocompleteScreen(
-                                    originTitle: provider.origin.title,
+                                    originTitle: deliveryState.origin.title,
                                     setIsLoadingLocation: setIsLoadingLocation),
                               ),
                             ),
@@ -100,9 +100,9 @@ class _LocationState extends State<Location> {
                                   const Icon(Icons.location_on,
                                       color: Colors.blue),
                                   const SizedBox(width: 10),
-                                  Text(provider.origin.title.isEmpty
+                                  Text(deliveryState.origin.title.isEmpty
                                       ? 'Ubicación'
-                                      : provider.origin.title),
+                                      : deliveryState.origin.title),
                                 ],
                               ),
                             ),
@@ -116,10 +116,11 @@ class _LocationState extends State<Location> {
                       : SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: provider.origin.coordinates.isNotEmpty &&
-                                    !_isLoadingLocation
-                                ? saveUserLocation
-                                : null,
+                            onPressed:
+                                deliveryState.origin.coordinates.isNotEmpty &&
+                                        !_isLoadingLocation
+                                    ? saveUserLocation
+                                    : null,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
                               shape: RoundedRectangleBorder(
