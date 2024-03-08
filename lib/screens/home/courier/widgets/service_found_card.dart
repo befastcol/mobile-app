@@ -24,27 +24,41 @@ class ServiceFoundCard extends StatelessWidget {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
-                        const ListTile(
-                          title: Text("Colina de Vinimal 54"),
-                          subtitle:
-                              Text("Calle Atenas, Villa de Álvarez, 28978"),
-                          leading: Icon(
+                        ListTile(
+                          title: Text(
+                            "${provider.delivery?.origin.title}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            "${provider.delivery?.origin.subtitle}",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          leading: const Icon(
                             Icons.location_on,
                             color: Colors.blue,
                           ),
                         ),
-                        const ListTile(
-                          title: Text("Sendera"),
-                          subtitle:
-                              Text("Calle Atenas, Villa de Álvarez, 28978"),
-                          leading: Icon(
+                        ListTile(
+                          title: Text(
+                            "${provider.delivery?.destination.title}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            "${provider.delivery?.destination.subtitle}",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          leading: const Icon(
                             Icons.location_on,
                             color: Colors.red,
                           ),
                         ),
-                        const ListTile(
-                          title: Text("\$40 MXN"),
-                          leading: Icon(
+                        ListTile(
+                          title: Text("\$${provider.delivery?.price} MXN"),
+                          leading: const Icon(
                             Icons.payments,
                             color: Colors.teal,
                           ),
@@ -54,7 +68,9 @@ class ServiceFoundCard extends StatelessWidget {
                           child: SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                provider.acceptService(context);
+                              },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 50),
                                   shape: RoundedRectangleBorder(

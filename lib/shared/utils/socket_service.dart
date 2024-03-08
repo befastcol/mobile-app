@@ -2,25 +2,30 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'package:be_fast/api/constants/base_url.dart';
 
 class SocketService {
-  late Socket socket;
+  late Socket _socket;
 
   void initSocket() {
-    socket = io(baseUrl, <String, dynamic>{
+    _socket = io(baseUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });
-    socket.connect();
+
+    _socket.connect();
   }
 
-  void dispose() {
-    socket.disconnect();
+  void disconnect() {
+    _socket.disconnect();
+  }
+
+  void clearListeners() {
+    _socket.clearListeners();
   }
 
   void emit(String event, dynamic data) {
-    socket.emit(event, data);
+    _socket.emit(event, data);
   }
 
   void on(String event, Function(dynamic) handler) {
-    socket.on(event, handler);
+    _socket.on(event, handler);
   }
 }

@@ -105,7 +105,8 @@ class MyDrawer extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const CourierMap()),
+                                builder: (context) =>
+                                    CourierMap(key: ValueKey(DateTime.now()))),
                           );
                         }
                       },

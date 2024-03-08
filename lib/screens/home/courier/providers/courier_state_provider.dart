@@ -10,6 +10,10 @@ class CourierStateProvider with ChangeNotifier {
   UserModel? get courier => _courier;
   bool get isToggled => _isToggled;
 
+  CourierStateProvider() {
+    initCourier();
+  }
+
   Future initCourier() async {
     try {
       String? courierId = await UserSession.getUserId();

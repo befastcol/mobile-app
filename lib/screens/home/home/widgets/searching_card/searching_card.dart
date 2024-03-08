@@ -68,16 +68,20 @@ class _SearchingCardState extends State<SearchingCard> {
           child: Column(
             children: [
               Text(
-                isCourierAssigned
-                    ? 'Repartidor asignado!'
-                    : 'Buscando repartidores...',
+                isCancelingService
+                    ? 'Cancelando servicio...'
+                    : isCourierAssigned
+                        ? 'Repartidor asignado!'
+                        : 'Buscando repartidores...',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Container(
                   width: 80,
                   height: 80,
                   margin: const EdgeInsets.symmetric(vertical: 26),
-                  child: const CircularProgressIndicator()),
+                  child: CircularProgressIndicator(
+                    color: !isCancelingService ? Colors.blueGrey : Colors.red,
+                  )),
               Visibility(
                 visible: !isCancelingService,
                 child: SizedBox(
