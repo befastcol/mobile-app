@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:be_fast/models/custom/custom.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 
 import 'package:be_fast/models/user.dart';
@@ -136,6 +137,28 @@ class UsersAPI {
             'subtitle': originLocation.subtitle,
             'coordinates': originLocation.coordinates,
             'city': originLocation.city
+          }
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  static Future<void> saveUserCurrentLocation(
+      {required String? userId, required Position currentLocation}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/update/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'currentLocation': {
+            'type': 'Point',
+            'coordinates': [currentLocation.longitude, currentLocation.latitude]
           }
         }),
       );

@@ -50,7 +50,7 @@ class DeliveryProvider extends ChangeNotifier {
 
       DeliveryModel delivery = await DeliveriesAPI.createDelivery(
           origin: _origin, destination: _destination, price: _price);
-      initDeliveryValues(delivery);
+      updateDeliveryValues(delivery);
     } catch (e) {
       debugPrint("createDelivery: $e");
     }
@@ -75,7 +75,7 @@ class DeliveryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initDeliveryValues(DeliveryModel delivery) {
+  void updateDeliveryValues(DeliveryModel delivery) {
     _id = delivery.id;
     _courier = delivery.courier;
     _status = delivery.status;

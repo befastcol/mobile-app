@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:be_fast/api/google_maps.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_map_provider.dart';
@@ -99,11 +100,8 @@ class CourierStreamProvider with ChangeNotifier {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
-      _socketService.emit('updateLocation', {
-        'courierId': courierId,
-        'latitude': position.latitude,
-        'longitude': position.longitude,
-      });
+      await UsersAPI.saveUserCurrentLocation(
+          userId: courierId, currentLocation: position);
     } catch (e) {
       debugPrint('Error sending location update: $e');
     }

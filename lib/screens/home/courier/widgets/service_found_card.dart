@@ -8,8 +8,8 @@ class ServiceFoundCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CourierStreamProvider>(
-        builder: (context, provider, child) => Visibility(
-              visible: provider.serviceFound,
+        builder: (context, streamState, child) => Visibility(
+              visible: streamState.serviceFound,
               child: Positioned(
                 left: 0,
                 right: 0,
@@ -26,12 +26,12 @@ class ServiceFoundCard extends StatelessWidget {
                       children: [
                         ListTile(
                           title: Text(
-                            "${provider.delivery?.origin.title}",
+                            "${streamState.delivery?.origin.title}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           subtitle: Text(
-                            "${provider.delivery?.origin.subtitle}",
+                            "${streamState.delivery?.origin.subtitle}",
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -42,12 +42,12 @@ class ServiceFoundCard extends StatelessWidget {
                         ),
                         ListTile(
                           title: Text(
-                            "${provider.delivery?.destination.title}",
+                            "${streamState.delivery?.destination.title}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           subtitle: Text(
-                            "${provider.delivery?.destination.subtitle}",
+                            "${streamState.delivery?.destination.subtitle}",
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -57,7 +57,7 @@ class ServiceFoundCard extends StatelessWidget {
                           ),
                         ),
                         ListTile(
-                          title: Text("\$${provider.delivery?.price} MXN"),
+                          title: Text("\$${streamState.delivery?.price} MXN"),
                           leading: const Icon(
                             Icons.payments,
                             color: Colors.teal,
@@ -69,7 +69,7 @@ class ServiceFoundCard extends StatelessWidget {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                provider.acceptService(context);
+                                streamState.acceptService(context);
                               },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 50),
