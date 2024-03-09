@@ -124,4 +124,10 @@ class UserMapProvider extends ChangeNotifier {
         .animateCamera(CameraUpdate.newLatLngBounds(bounds, 120.0));
     notifyListeners();
   }
+
+  void resetValues() {
+    polylines.clear();
+    markers.clear();
+    notifyListeners();
+  }
 }

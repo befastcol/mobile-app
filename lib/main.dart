@@ -75,6 +75,7 @@ class AuthenticationWrapperState extends State<AuthenticationWrapper> {
         if (snapshot.connectionState == ConnectionState.done) {
           String? userId = snapshot.data;
           if (userId == null) {
+            FlutterNativeSplash.remove();
             return const Login();
           }
           return const HomeScreen();

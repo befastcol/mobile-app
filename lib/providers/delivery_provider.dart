@@ -17,7 +17,6 @@ class DeliveryProvider extends ChangeNotifier {
   int _price = 0;
 
   bool _isLoadingDeliveryDetails = false;
-  bool _isLookingForCouriers = false;
 
   String get id => _id;
   String? get courier => _courier;
@@ -28,8 +27,6 @@ class DeliveryProvider extends ChangeNotifier {
   int get price => _price;
 
   bool get isLoadingDeliveryDetails => _isLoadingDeliveryDetails;
-
-  bool get isLookingForCouriers => _isLookingForCouriers;
 
   DeliveryProvider() {
     _initDeliveryOrigin();
@@ -45,9 +42,6 @@ class DeliveryProvider extends ChangeNotifier {
 
   Future createDelivery() async {
     try {
-      _isLookingForCouriers = true;
-      notifyListeners();
-
       DeliveryModel delivery = await DeliveriesAPI.createDelivery(
           origin: _origin, destination: _destination, price: _price);
       updateDeliveryValues(delivery);
@@ -102,8 +96,16 @@ class DeliveryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setIsLookingForCouriers(bool value) {
-    _isLookingForCouriers = value;
+  void resetId() {
+    _id = '';
+    notifyListeners();
+  }
+
+  void resetValues() {
+    _id = '';
+    _origin = Point();
+    _destination = Point();
+    _price = 0;
     notifyListeners();
   }
 }

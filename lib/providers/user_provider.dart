@@ -27,8 +27,8 @@ class UserProvider extends ChangeNotifier {
   Future _initUser() async {
     String? userId = await UserSession.getUserId();
     UserModel user = await UsersAPI.getUser(userId: userId);
-    FlutterNativeSplash.remove();
     initUserValues(user);
+    FlutterNativeSplash.remove();
   }
 
   initUserValues(UserModel user) {

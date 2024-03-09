@@ -13,7 +13,7 @@ class ServiceRequestCard extends StatelessWidget {
         builder: (context, deliveryState, child) => Visibility(
               visible: deliveryState.origin.coordinates.isNotEmpty &&
                   deliveryState.destination.coordinates.isNotEmpty &&
-                  !deliveryState.isLookingForCouriers,
+                  deliveryState.id.isEmpty,
               child: Positioned(
                 left: 0,
                 right: 0,

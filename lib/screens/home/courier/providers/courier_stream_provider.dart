@@ -116,6 +116,13 @@ class CourierStreamProvider with ChangeNotifier {
       CourierMapProvider courierMapProvider =
           Provider.of<CourierMapProvider>(context, listen: false);
 
+      String? courierId = await UserSession.getUserId();
+      _socketService.emit("serviceAccepted", {
+        "courierId": courierId,
+        "status": 'in_progress',
+        "deliveryId": delivery?.id
+      });
+
       Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
