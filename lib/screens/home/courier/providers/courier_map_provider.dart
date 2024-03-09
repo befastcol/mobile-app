@@ -8,17 +8,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CourierMapProvider with ChangeNotifier {
   GoogleMapController? _googleMapController;
-  bool _isInitialized = false;
   CameraPosition? _initialCameraPosition;
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
-  BitmapDescriptor? icon;
+  BitmapDescriptor? _icon;
 
   GoogleMapController? get googleMapController => _googleMapController;
   CameraPosition? get initialCameraPosition => _initialCameraPosition;
   Set<Marker> get markers => _markers;
   Set<Polyline> get polylines => _polylines;
-  bool get isInitialized => _isInitialized;
 
   CourierMapProvider() {
     initMap();
@@ -41,7 +39,6 @@ class CourierMapProvider with ChangeNotifier {
       target: LatLng(position.latitude, position.longitude),
       zoom: 19,
     );
-    setInitialized(true);
     await _initIcon();
     updateMarker(position);
     animateCamera(position);
@@ -51,29 +48,25 @@ class CourierMapProvider with ChangeNotifier {
     try {
       String? courierId = await UserSession.getUserId();
       UserModel courier = await UsersAPI.getUser(userId: courierId);
-      icon = await getVehicleIcon(courier.vehicle, size: 125);
+      _icon = await getVehicleIcon(courier.vehicle, size: 125);
     } catch (e) {
       debugPrint("$e");
+    } finally {
+      notifyListeners();
     }
-  }
-
-  void setInitialized(bool value) {
-    _isInitialized = value;
-    notifyListeners();
   }
 
   void updateMarker(Position position) {
-    _markers.removeWhere(
-        (marker) => marker.markerId == const MarkerId('currentLocation'));
+    if (_icon != null) {
+      _markers.removeWhere(
+          (marker) => marker.markerId == const MarkerId('currentLocation'));
 
-    if (icon != null) {
       _markers.add(Marker(
           markerId: const MarkerId('currentLocation'),
           position: LatLng(position.latitude, position.longitude),
-          icon: icon!));
+          icon: _icon!));
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   void animateCamera(Position position) {
