@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/providers/delivery_provider.dart';
+import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
@@ -27,18 +28,34 @@ class UserMapProvider extends ChangeNotifier {
 
   UserMapProvider(this._deliveryProvider) {
     _initUserPosition();
+    _initOriginPosition();
     _initiAvailableCouriersMarkers();
   }
 
   Future _initUserPosition() async {
     try {
       Position position = await LocationHelper.determinePosition();
-
-      addMarker('origin', LatLng(position.latitude, position.longitude),
-          BitmapDescriptor.defaultMarkerWithHue(200));
       updateCameraPosition(position);
     } catch (e) {
       debugPrint("$e");
+      LatLng defaultPosition =
+          const LatLng(19.243373669401056, -103.72850900850291);
+      _initialCameraPosition =
+          CameraPosition(target: defaultPosition, zoom: 14);
+      notifyListeners();
+    }
+  }
+
+  Future _initOriginPosition() async {
+    String? userId = await UserSession.getUserId();
+    UserModel user = await UsersAPI.getUser(userId: userId);
+
+    if (user.originLocation.coordinates.length == 2) {
+      addMarker(
+          'origin',
+          LatLng(user.originLocation.coordinates[1],
+              user.originLocation.coordinates[0]),
+          BitmapDescriptor.defaultMarkerWithHue(200));
     }
   }
 

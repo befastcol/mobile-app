@@ -6,6 +6,8 @@ import 'package:be_fast/shared/utils/icons_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'delivery_details_card.dart';
+
 class DeliveryMapLocation extends StatefulWidget {
   final String deliveryId;
 
@@ -17,6 +19,8 @@ class DeliveryMapLocation extends StatefulWidget {
 }
 
 class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
+  DeliveryModel? _delivery;
+  UserModel? _courier;
   GoogleMapController? _googleMapController;
   CameraPosition? _initialCameraPosition;
   final Set<Marker> _markers = {};
@@ -37,11 +41,14 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     try {
       DeliveryModel delivery =
           await DeliveriesAPI.getDeliveryById(deliveryId: widget.deliveryId);
+      setState(() => _delivery = delivery);
       UserModel courier = await UsersAPI.getUser(userId: delivery.courier);
-      LatLng currentLocationLatLng = LatLng(
+      setState(() => _courier = courier);
+
+      LatLng courierLocation = LatLng(
           courier.currentLocation?.coordinates[1] ?? 0,
           courier.currentLocation?.coordinates[0] ?? 0);
-      _setupMap(delivery, courier, currentLocationLatLng);
+      _setupMap(delivery, courier, courierLocation);
     } catch (e) {
       debugPrint('Error fetching data: $e');
     }
@@ -101,13 +108,25 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
       appBar: AppBar(title: const Text('En camino...')),
       body: _initialCameraPosition == null
           ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              mapType: MapType.normal,
-              myLocationButtonEnabled: false,
-              myLocationEnabled: true,
-              initialCameraPosition: _initialCameraPosition!,
-              markers: _markers,
-              onMapCreated: (controller) => _googleMapController = controller,
+          : Stack(
+              children: [
+                GoogleMap(
+                  mapType: MapType.normal,
+                  myLocationButtonEnabled: false,
+                  myLocationEnabled: true,
+                  initialCameraPosition: _initialCameraPosition!,
+                  markers: _markers,
+                  onMapCreated: (controller) =>
+                      _googleMapController = controller,
+                ),
+                DeliveryDetailsCard(
+                  origin: _delivery?.origin,
+                  destination: _delivery?.destination,
+                  name: _courier?.name ?? '',
+                  phone: _courier?.phone ?? '',
+                  price: _delivery?.price ?? 0,
+                )
+              ],
             ),
     );
   }
