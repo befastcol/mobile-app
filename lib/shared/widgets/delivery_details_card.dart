@@ -1,5 +1,4 @@
 import 'package:be_fast/models/custom/custom.dart';
-import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
