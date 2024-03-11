@@ -17,6 +17,7 @@ class DeliveryProvider extends ChangeNotifier {
   int _price = 0;
 
   bool _isLoadingDeliveryDetails = false;
+  bool _isMotorcycleSelected = true;
 
   String get id => _id;
   String? get courier => _courier;
@@ -27,6 +28,7 @@ class DeliveryProvider extends ChangeNotifier {
   int get price => _price;
 
   bool get isLoadingDeliveryDetails => _isLoadingDeliveryDetails;
+  bool get isMotorcycleSelected => _isMotorcycleSelected;
 
   DeliveryProvider() {
     _initDeliveryOrigin();
@@ -40,13 +42,21 @@ class DeliveryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future createDelivery() async {
+  Future createDelivery(Function onError) async {
     try {
+      String vehicle = _isMotorcycleSelected ? 'motorcycle' : 'car';
+      int finalPrice = _isMotorcycleSelected ? _price : _price + 20;
+
       DeliveryModel delivery = await DeliveriesAPI.createDelivery(
-          origin: _origin, destination: _destination, price: _price);
+        origin: _origin,
+        destination: _destination,
+        price: finalPrice,
+        vehicle: vehicle,
+      );
+
       updateDeliveryValues(delivery);
     } catch (e) {
-      debugPrint("createDelivery: $e");
+      onError();
     }
   }
 
@@ -66,7 +76,7 @@ class DeliveryProvider extends ChangeNotifier {
   Future getDeliveryPrice(int distance, int duration) async {
     _price = await DeliveriesAPI.getDeliveryPrice(
         distance: distance, duration: duration);
-    notifyListeners();
+    setIsLoadingDeliveryDetails(false);
   }
 
   void updateDeliveryValues(DeliveryModel delivery) {
@@ -86,13 +96,13 @@ class DeliveryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateDeliveryPrice(int price) {
-    _price = price;
+  void setIsLoadingDeliveryDetails(bool value) {
+    _isLoadingDeliveryDetails = value;
     notifyListeners();
   }
 
-  void setIsLoadingDeliveryDetails(bool value) {
-    _isLoadingDeliveryDetails = value;
+  void setIsMotorcycleSelected(bool value) {
+    _isMotorcycleSelected = value;
     notifyListeners();
   }
 

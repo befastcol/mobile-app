@@ -139,6 +139,7 @@ class UserMapProvider extends ChangeNotifier {
 
     await mapController
         .animateCamera(CameraUpdate.newLatLngBounds(bounds, 120.0));
+
     notifyListeners();
   }
 

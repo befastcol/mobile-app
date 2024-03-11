@@ -15,7 +15,8 @@ class WhereToGoCard extends StatelessWidget {
     return Consumer2<UserProvider, DeliveryProvider>(
         builder: (context, userState, deliveryState, child) => Visibility(
               visible: deliveryState.origin.coordinates.isEmpty ||
-                  deliveryState.destination.coordinates.isEmpty,
+                  deliveryState.destination.coordinates.isEmpty &&
+                      !deliveryState.isLoadingDeliveryDetails,
               child: Positioned(
                 left: 0,
                 right: 0,
@@ -33,50 +34,45 @@ class WhereToGoCard extends StatelessWidget {
                         Visibility(
                             visible: deliveryState.isLoadingDeliveryDetails,
                             child: const LoadingSkeleton()),
-                        Visibility(
-                          visible: !deliveryState.isLoadingDeliveryDetails,
-                          child: Column(
-                            children: [
-                              Material(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(10),
-                                child: InkWell(
-                                  onTap: () {
-                                    if (userState.isDisabled) {
-                                      return showSnackBar(context,
-                                          "No puedes crear más pedidos porque tu cuenta ha sido deshabilitada.");
-                                    }
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            OriginAndDestinationScreen(
-                                          isSelectingOrigin: false,
-                                          originTitle:
-                                              deliveryState.origin.title,
-                                          destinationTitle:
-                                              deliveryState.destination.title,
-                                        ),
+                        Column(
+                          children: [
+                            Material(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(10),
+                              child: InkWell(
+                                onTap: () {
+                                  if (userState.isDisabled) {
+                                    return showSnackBar(context,
+                                        "No puedes crear más pedidos porque tu cuenta ha sido deshabilitada.");
+                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          OriginAndDestinationScreen(
+                                        isSelectingOrigin: false,
+                                        originTitle: deliveryState.origin.title,
+                                        destinationTitle:
+                                            deliveryState.destination.title,
                                       ),
-                                    );
-                                  },
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: const Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(12, 16, 12, 16),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.search,
-                                            color: Colors.blueGrey),
-                                        SizedBox(width: 10),
-                                        Text("¿A dónde vamos?"),
-                                      ],
                                     ),
+                                  );
+                                },
+                                borderRadius: BorderRadius.circular(10),
+                                child: const Padding(
+                                  padding: EdgeInsets.fromLTRB(12, 16, 12, 16),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.search,
+                                          color: Colors.blueGrey),
+                                      SizedBox(width: 10),
+                                      Text("¿A dónde vamos?"),
+                                    ],
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
+                              ),
+                            )
+                          ],
                         )
                       ],
                     ),

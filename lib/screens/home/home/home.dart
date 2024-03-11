@@ -1,4 +1,5 @@
 import 'package:be_fast/providers/delivery_provider.dart';
+import 'package:be_fast/screens/home/home/widgets/loading_skeleton.dart';
 import 'package:be_fast/screens/home/home/widgets/looking_for_couriers_card.dart';
 import 'package:be_fast/screens/home/home/widgets/service_request_card.dart';
 import 'package:be_fast/screens/home/home/widgets/where_to_go_card.dart';
@@ -49,7 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     const WhereToGoCard(),
+                    const LoadingSkeleton(),
                     const ServiceRequestCard(),
+
+                    //We don't want to call its initState until id is not empty
                     Visibility(
                         visible: deliveryState.id.isNotEmpty,
                         child: const LookingForCouriersCard())

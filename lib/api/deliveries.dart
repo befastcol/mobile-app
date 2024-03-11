@@ -44,11 +44,11 @@ class DeliveriesAPI {
     }
   }
 
-  static Future<DeliveryModel> createDelivery({
-    required Point origin,
-    required Point destination,
-    required int price,
-  }) async {
+  static Future<DeliveryModel> createDelivery(
+      {required Point origin,
+      required Point destination,
+      required int price,
+      required String vehicle}) async {
     String? userId = await UserSession.getUserId();
 
     try {
@@ -59,6 +59,7 @@ class DeliveriesAPI {
           "origin": origin.toJson(),
           "destination": destination.toJson(),
           "price": price,
+          "vehicle": vehicle
         }),
       );
 
