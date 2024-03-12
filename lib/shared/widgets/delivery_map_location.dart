@@ -68,8 +68,10 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
 
     _socketService.on("locationChanged", (data) {
       if (data['latitude'] != null && data['longitude'] != null) {
-        _addMarker('currentLocation',
-            LatLng(data['latitude'], data['longitude']), vehicleIcon);
+        setState(() {
+          _addMarker('currentLocation',
+              LatLng(data['latitude'], data['longitude']), vehicleIcon);
+        });
       }
     });
   }
