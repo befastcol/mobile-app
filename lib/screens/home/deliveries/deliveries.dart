@@ -71,7 +71,7 @@ class _DeliveriesState extends State<Deliveries> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.teal[200],
+        backgroundColor: const Color.fromRGBO(172, 222, 80, 1),
         title: const Text("Mis pedidos"),
         actions: filteredDeliveries.isNotEmpty
             ? [
@@ -82,6 +82,7 @@ class _DeliveriesState extends State<Deliveries> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
+                          surfaceTintColor: Colors.white,
                           title: const Text("¿Cómo se calcula el cobro?"),
                           content: RichText(
                             text: TextSpan(

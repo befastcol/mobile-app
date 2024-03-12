@@ -83,9 +83,8 @@ class _ServiceRequestCardState extends State<ServiceRequestCard> {
                         onPressed: () async {
                           try {
                             setState(() => _isLoadingRequest = true);
-                            await deliveryState.createDelivery(() =>
-                                showSnackBar(context,
-                                    "No hay repartidores disponibles"));
+                            await deliveryState.createDelivery(
+                                (message) => showSnackBar(context, message));
                           } finally {
                             setState(() => _isLoadingRequest = false);
                           }

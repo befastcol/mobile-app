@@ -83,6 +83,7 @@ class _TripsState extends State<Trips> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
+                          surfaceTintColor: Colors.white,
                           title: const Text("¿Cómo se calcula el cobro?"),
                           content: RichText(
                             text: TextSpan(

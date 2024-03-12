@@ -45,6 +45,7 @@ class _RequestDetailsState extends State<RequestDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          surfaceTintColor: Colors.white,
           title: const Text("Confirmar"),
           content: Text(
               "¿Estás seguro de que quieres aceptar a ${widget.name} como repartidor?"),

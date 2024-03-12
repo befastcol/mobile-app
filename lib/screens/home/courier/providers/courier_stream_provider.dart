@@ -72,6 +72,7 @@ class CourierStreamProvider with ChangeNotifier {
         'courierId': courierId,
         'latitude': position.latitude,
         'longitude': position.longitude,
+        'deliveryId': delivery?.id
       });
     } catch (e) {
       debugPrint('Error sending location update: $e');

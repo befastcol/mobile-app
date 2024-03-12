@@ -134,6 +134,7 @@ class _UserDeliveriesState extends State<UserDeliveries> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          surfaceTintColor: Colors.white,
           title: const Text('Confirmación'),
           content: Text(
               '¿Estás seguro de que deseas deshabilitar a ${widget.name}?'),
@@ -162,6 +163,7 @@ class _UserDeliveriesState extends State<UserDeliveries> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          surfaceTintColor: Colors.white,
           title: const Text('Confirmación'),
           content:
               Text('¿Estás seguro de que deseas habilitar a ${widget.name}?'),

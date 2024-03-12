@@ -3,6 +3,7 @@ import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/shared/utils/icons_helper.dart';
+import 'package:be_fast/shared/utils/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -19,6 +20,8 @@ class DeliveryMapLocation extends StatefulWidget {
 }
 
 class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
+  final SocketService _socketService = SocketService();
+  BitmapDescriptor? vehicleIcon;
   DeliveryModel? _delivery;
   UserModel? _courier;
   GoogleMapController? _googleMapController;
@@ -27,17 +30,23 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
 
   @override
   void initState() {
+    _socketService.initSocket();
+    _initDelivery();
+    _listenToCourierLocationChanges();
+
     super.initState();
-    _initialize();
   }
 
   @override
   void dispose() {
+    debugPrint("delivery map location disposed");
+    _socketService.clearListeners();
+    _socketService.disconnect();
     _googleMapController?.dispose();
     super.dispose();
   }
 
-  Future<void> _initialize() async {
+  Future<void> _initDelivery() async {
     try {
       DeliveryModel delivery =
           await DeliveriesAPI.getDeliveryById(deliveryId: widget.deliveryId);
@@ -54,6 +63,17 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     }
   }
 
+  void _listenToCourierLocationChanges() {
+    _socketService.emit("joinDeliveryRoom", {"deliveryId": widget.deliveryId});
+
+    _socketService.on("locationChanged", (data) {
+      if (data['latitude'] != null && data['longitude'] != null) {
+        _addMarker('currentLocation',
+            LatLng(data['latitude'], data['longitude']), vehicleIcon);
+      }
+    });
+  }
+
   void _setupMap(DeliveryModel delivery, UserModel courier,
       LatLng currentLocationLatLng) async {
     final originLatLng =
@@ -61,8 +81,6 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     final destinationLatLng = LatLng(delivery.destination.coordinates[1],
         delivery.destination.coordinates[0]);
 
-    // Determinar el ícono en base al tipo de ehículo del courier
-    BitmapDescriptor vehicleIcon;
     if (courier.vehicle == "motorcycle") {
       vehicleIcon = await getBytesFromAsset('assets/images/moto_icon.png', 100);
     } else if (courier.vehicle == "car") {
@@ -83,8 +101,13 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
     });
   }
 
-  void _addMarker(String id, LatLng latLng, BitmapDescriptor icon) {
-    _markers.add(Marker(markerId: MarkerId(id), position: latLng, icon: icon));
+  void _addMarker(String id, LatLng latLng, BitmapDescriptor? icon) {
+    _markers.removeWhere((marker) => marker.markerId == MarkerId(id));
+
+    _markers.add(Marker(
+        markerId: MarkerId(id),
+        position: latLng,
+        icon: icon ?? BitmapDescriptor.defaultMarker));
   }
 
   void _updateCameraBounds(

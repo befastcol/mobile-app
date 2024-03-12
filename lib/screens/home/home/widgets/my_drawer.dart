@@ -34,7 +34,7 @@ class MyDrawer extends StatelessWidget {
                       style: const TextStyle(fontSize: 24.0),
                     ),
                     decoration: const BoxDecoration(
-                      color: Color.fromRGBO(39, 50, 112, 1),
+                      color: Color.fromRGBO(28, 29, 51, 1),
                     ),
                   ),
                   ListTile(

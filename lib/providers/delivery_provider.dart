@@ -56,7 +56,10 @@ class DeliveryProvider extends ChangeNotifier {
 
       updateDeliveryValues(delivery);
     } catch (e) {
-      onError();
+      String message = _isMotorcycleSelected
+          ? "No hay motos disponibles, intenta más tarde"
+          : "No hay carros disponibles, intenta más tarde";
+      onError(message);
     }
   }
 
