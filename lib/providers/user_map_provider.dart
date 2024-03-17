@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/providers/delivery_provider.dart';
+import 'package:be_fast/shared/utils/default_position.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 
@@ -38,8 +39,7 @@ class UserMapProvider extends ChangeNotifier {
       updateCameraPosition(position);
     } catch (e) {
       debugPrint("$e");
-      LatLng defaultPosition =
-          const LatLng(19.243373669401056, -103.72850900850291);
+
       _initialCameraPosition =
           CameraPosition(target: defaultPosition, zoom: 14);
       notifyListeners();

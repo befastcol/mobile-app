@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:be_fast/providers/delivery_provider.dart';
 import 'package:be_fast/providers/user_map_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:be_fast/screens/home/home/home.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:firebase_core/firebase_core.dart';

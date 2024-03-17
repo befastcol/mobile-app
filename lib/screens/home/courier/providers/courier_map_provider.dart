@@ -1,5 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
+import 'package:be_fast/shared/utils/default_position.dart';
 import 'package:be_fast/shared/utils/icon_helper.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/foundation.dart';
@@ -31,17 +32,23 @@ class CourierMapProvider with ChangeNotifier {
   }
 
   Future initMap() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.bestForNavigation);
 
-    _initialCameraPosition = CameraPosition(
-      tilt: 100,
-      target: LatLng(position.latitude, position.longitude),
-      zoom: 19,
-    );
-    await _initIcon();
-    updateMarker(position);
-    animateCamera(position);
+      _initialCameraPosition = CameraPosition(
+        tilt: 100,
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 19,
+      );
+      await _initIcon();
+      updateMarker(position);
+      animateCamera(position);
+    } catch (e) {
+      _initialCameraPosition =
+          CameraPosition(target: defaultPosition, zoom: 14);
+      notifyListeners();
+    }
   }
 
   Future _initIcon() async {
