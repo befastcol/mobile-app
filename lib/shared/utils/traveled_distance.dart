@@ -1,3 +1,4 @@
+import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:geolocator/geolocator.dart';
 
 class DistanceResult {
@@ -9,8 +10,7 @@ class DistanceResult {
 
 Future calculateTraveledDistance(Position? lastPosition) async {
   try {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position position = await LocationHelper.determinePosition();
 
     double distance = Geolocator.distanceBetween(
       lastPosition?.latitude ?? 0,

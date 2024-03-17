@@ -2,6 +2,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 class LocationHelper {
+  static bool _hasRequestedCurrentPosition = false;
+
   static Future<Position> determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -24,6 +26,14 @@ class LocationHelper {
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
+    if (_hasRequestedCurrentPosition) {
+      Position? lastPosition = await Geolocator.getLastKnownPosition();
+      if (lastPosition != null) {
+        return lastPosition;
+      }
+    }
+
+    _hasRequestedCurrentPosition = true;
     return await Geolocator.getCurrentPosition();
   }
 

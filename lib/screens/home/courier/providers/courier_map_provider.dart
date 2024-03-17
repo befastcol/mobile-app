@@ -2,6 +2,7 @@ import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/shared/utils/default_position.dart';
 import 'package:be_fast/shared/utils/icon_helper.dart';
+import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -33,9 +34,7 @@ class CourierMapProvider with ChangeNotifier {
 
   Future initMap() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.bestForNavigation);
-
+      Position position = await LocationHelper.determinePosition();
       _initialCameraPosition = CameraPosition(
         tilt: 100,
         target: LatLng(position.latitude, position.longitude),

@@ -5,6 +5,7 @@ import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/screens/home/courier/providers/courier_map_provider.dart';
+import 'package:be_fast/shared/utils/location_helper.dart';
 import 'package:be_fast/shared/utils/traveled_distance.dart';
 import 'package:be_fast/shared/utils/socket_service.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
@@ -97,9 +98,7 @@ class CourierStreamProvider with ChangeNotifier {
   Future _initCurrentLocation() async {
     try {
       String? courierId = await UserSession.getUserId();
-
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      Position position = await LocationHelper.determinePosition();
 
       await UsersAPI.saveUserCurrentLocation(
           userId: courierId, currentLocation: position);
@@ -124,14 +123,10 @@ class CourierStreamProvider with ChangeNotifier {
         "deliveryId": delivery?.id
       });
 
-      Position currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      Position position = await LocationHelper.determinePosition();
 
       RouteDetails originRoute = await GoogleMapsAPI().getRouteCoordinates(
-          Point(coordinates: [
-            currentPosition.longitude,
-            currentPosition.latitude
-          ]),
+          Point(coordinates: [position.longitude, position.latitude]),
           delivery!.origin);
 
       courierMapProvider.addPolylines(Polyline(
