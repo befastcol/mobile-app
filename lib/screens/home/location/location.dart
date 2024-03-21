@@ -1,6 +1,6 @@
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/providers/delivery_provider.dart';
-import 'package:be_fast/screens/login/autocomplete.dart';
+import 'package:be_fast/screens/home/location/autocomplete.dart';
 import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';

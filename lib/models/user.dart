@@ -3,6 +3,7 @@ import 'package:be_fast/models/custom/custom.dart';
 class UserModel {
   final String name, phone, status, vehicle, role, id;
   final Documents documents;
+  final int credits;
   final Point? currentLocation;
   final Point originLocation;
   final bool isDisabled;
@@ -11,6 +12,7 @@ class UserModel {
     required this.id,
     this.name = '',
     required this.phone,
+    this.credits = 0,
     this.role = 'user',
     required this.documents,
     this.currentLocation,
@@ -26,6 +28,7 @@ class UserModel {
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
       role: json['role'] ?? 'user',
+      credits: json['credits'] ?? 0,
       documents: Documents.fromJson(json['documents']),
       currentLocation: Point.fromJson(json['currentLocation']),
       originLocation: Point.fromJson(json['originLocation']),

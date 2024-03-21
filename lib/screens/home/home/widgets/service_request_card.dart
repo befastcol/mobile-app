@@ -107,7 +107,7 @@ class _ServiceRequestCardState extends State<ServiceRequestCard> {
                             ),
                             const SizedBox(width: 20),
                             Text(
-                              '\$${deliveryState.isMotorcycleSelected ? deliveryState.price : deliveryState.price + 20}', // Aumenta el precio en 20 si el carro está seleccionado
+                              '\$${deliveryState.isMotorcycleSelected ? deliveryState.price : deliveryState.price + 20}',
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),

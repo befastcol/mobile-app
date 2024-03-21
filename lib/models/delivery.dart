@@ -54,4 +54,17 @@ class DeliveryModel {
       deliveredDate: deliveredDate ?? this.deliveredDate,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'requestedDate': requestedDate.toIso8601String(),
+      'origin': origin.toJson(),
+      'destination': destination.toJson(),
+      'price': price,
+      'status': status,
+      'courier': courier,
+      'deliveredDate': deliveredDate?.toIso8601String(),
+    };
+  }
 }

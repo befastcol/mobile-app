@@ -41,6 +41,7 @@ class _AutocompleteScreenState extends State<AutocompleteScreen> {
   void _onLocationChanged(String value) {
     _debounce.run(() async {
       Position position = await LocationHelper.determinePosition();
+
       List<dynamic> results =
           await GoogleMapsAPI().getAutocompleteResults(value, position);
 

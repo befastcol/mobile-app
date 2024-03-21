@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/api/users.dart';
@@ -12,30 +13,39 @@ import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CourierStreamProvider with ChangeNotifier {
   final CourierMapProvider _courierMapProvider;
 
   DeliveryModel? _delivery;
   Timer? _timer;
+  DateTime? _deadline;
   Position? _lastPosition;
   final SocketService _socketService = SocketService();
   bool _serviceFound = false;
   bool _serviceAccepted = false;
 
+  bool _isAcceptingService = false;
+  bool _isEndingService = false;
+
   DeliveryModel? get delivery => _delivery;
   Timer? get timer => _timer;
+  DateTime? get deadline => _deadline;
   Position? get lastPosition => _lastPosition;
 
   bool get serviceFound => _serviceFound;
   bool get serviceAccepted => _serviceAccepted;
+
+  bool get isAcceptingService => _isAcceptingService;
+  bool get isEndingService => _isEndingService;
 
   CourierStreamProvider(this._courierMapProvider) {
     _initSocket();
     _initCurrentLocation();
     _initTimerStream();
     _subscribeToDeliveryUpdates();
+    _checkIfCourierIsBusy();
   }
 
   @override
@@ -49,6 +59,22 @@ class CourierStreamProvider with ChangeNotifier {
   void _initSocket() {
     _socketService.initSocket();
     notifyListeners();
+  }
+
+  Future _checkIfCourierIsBusy() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? deliveryInfoJson = prefs.getString('deliveryInfo');
+
+    if (deliveryInfoJson == null) return;
+
+    try {
+      Map<String, dynamic> deliveryData = json.decode(deliveryInfoJson);
+      _delivery = DeliveryModel.fromJson(deliveryData);
+      await _updateCourierMap();
+      updateServiceIsAccepted();
+    } catch (e) {
+      debugPrint("Error parsing delivery info: $e");
+    }
   }
 
   void _initTimerStream() {
@@ -84,11 +110,13 @@ class CourierStreamProvider with ChangeNotifier {
     String? courierId = await UserSession.getUserId();
     AudioPlayer player = AudioPlayer();
 
-    _socketService.on("$courierId", (deliveryDetails) async {
+    _socketService.emit("joinCourierRoom", {"courierId": courierId});
+    _socketService.on("deliveryFound", (data) async {
       await player.play(AssetSource('sounds/notification_sound.wav'));
 
-      if (deliveryDetails is Map<String, dynamic>) {
-        _delivery = DeliveryModel.fromJson(deliveryDetails);
+      if (data is Map<String, dynamic>) {
+        _deadline = DateTime.parse(data['deadline']);
+        _delivery = DeliveryModel.fromJson(data['deliveryInfo']);
         _serviceFound = true;
         notifyListeners();
       }
@@ -108,28 +136,60 @@ class CourierStreamProvider with ChangeNotifier {
   }
 
   Future acceptService(BuildContext context) async {
-    _serviceAccepted = true;
-    _serviceFound = false;
+    try {
+      _isAcceptingService = true;
+      notifyListeners();
+
+      await _storeDeliveryDetails();
+      await _updateCourierMap();
+      await _emitServiceAccepted();
+
+      updateServiceIsAccepted();
+    } finally {
+      _isAcceptingService = false;
+      notifyListeners();
+    }
+  }
+
+  Future endService() async {
+    _isEndingService = true;
     notifyListeners();
 
     try {
-      CourierMapProvider courierMapProvider =
-          Provider.of<CourierMapProvider>(context, listen: false);
-
       String? courierId = await UserSession.getUserId();
-      _socketService.emit("serviceAccepted", {
-        "courierId": courierId,
-        "status": 'in_progress',
-        "deliveryId": delivery?.id
-      });
+      _socketService.emit("serviceFinished",
+          {"courierId": courierId, "deliveryId": delivery?.id});
+    } finally {
+      _isEndingService = false;
+      _resetState();
+    }
+  }
 
+  void _resetState() {
+    _serviceAccepted = false;
+    _serviceFound = false;
+    _courierMapProvider.resetState();
+    notifyListeners();
+  }
+
+  Future _storeDeliveryDetails() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('deliveryInfo', json.encode(_delivery?.toJson()));
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
+
+  Future _updateCourierMap() async {
+    try {
       Position position = await LocationHelper.determinePosition();
 
       RouteDetails originRoute = await GoogleMapsAPI().getRouteCoordinates(
           Point(coordinates: [position.longitude, position.latitude]),
           delivery!.origin);
 
-      courierMapProvider.addPolylines(Polyline(
+      _courierMapProvider.addPolylines(Polyline(
         polylineId: const PolylineId('current_to_origin'),
         points: originRoute.polylinePoints,
         color: Colors.blueAccent,
@@ -139,24 +199,40 @@ class CourierStreamProvider with ChangeNotifier {
       RouteDetails destinationRoute = await GoogleMapsAPI()
           .getRouteCoordinates(_delivery!.origin, _delivery!.destination);
 
-      courierMapProvider.addPolylines(Polyline(
+      _courierMapProvider.addPolylines(Polyline(
         polylineId: const PolylineId('origin_to_destination'),
         points: destinationRoute.polylinePoints,
         color: Colors.redAccent,
         width: 8,
       ));
-      courierMapProvider.updateMarkers(Marker(
+      _courierMapProvider.updateMarkers(Marker(
           markerId: const MarkerId('origin'),
           icon: BitmapDescriptor.defaultMarkerWithHue(200),
           position: LatLng(delivery?.origin.coordinates[1] ?? 0,
               delivery?.origin.coordinates[0] ?? 0)));
 
-      courierMapProvider.updateMarkers(Marker(
+      _courierMapProvider.updateMarkers(Marker(
           markerId: const MarkerId('destination'),
           position: LatLng(delivery?.destination.coordinates[1] ?? 0,
               delivery?.destination.coordinates[0] ?? 0)));
     } catch (e) {
       debugPrint("$e");
     }
+  }
+
+  Future _emitServiceAccepted() async {
+    try {
+      String? courierId = await UserSession.getUserId();
+      _socketService.emit("serviceAccepted",
+          {"courierId": courierId, "deliveryId": delivery?.id});
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
+
+  void updateServiceIsAccepted() {
+    _serviceAccepted = true;
+    _serviceFound = false;
+    notifyListeners();
   }
 }

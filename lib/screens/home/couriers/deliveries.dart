@@ -4,7 +4,6 @@ import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/shared/widgets/delivery_card.dart';
 import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CourierDeliveries extends StatefulWidget {
@@ -23,17 +22,15 @@ class CourierDeliveries extends StatefulWidget {
 }
 
 class _CourierDeliveriesState extends State<CourierDeliveries> {
-  List<DeliveryModel> _allDeliveries = [];
-  List<DeliveryModel> filteredDeliveries = [];
+  List<DeliveryModel> _deliveries = [];
   bool _isLoading = false;
-  DateTime selectedWeek = DateTime.now();
+  final TextEditingController _creditsController = TextEditingController();
 
   void loadCourierDeliveries() async {
     try {
       setState(() => _isLoading = true);
-      _allDeliveries =
+      _deliveries =
           await DeliveriesAPI.getCourierDeliveries(courierId: widget.courierId);
-      filterDeliveriesByWeek();
     } catch (error) {
       debugPrint('loadCourierDeliveries: $error ${widget.courierId}');
     } finally {
@@ -41,28 +38,6 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  void filterDeliveriesByWeek() {
-    DateTime startOfWeek = startOfSelectedWeek();
-    DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
-    filteredDeliveries = _allDeliveries.where((delivery) {
-      return delivery.requestedDate.isAfter(startOfWeek) &&
-          delivery.requestedDate.isBefore(endOfWeek);
-    }).toList();
-  }
-
-  DateTime startOfSelectedWeek() {
-    int dayOfWeek = selectedWeek.weekday;
-    DateTime startOfWeek = selectedWeek.subtract(Duration(days: dayOfWeek - 1));
-    return startOfWeek;
-  }
-
-  void changeWeek(int days) {
-    setState(() {
-      selectedWeek = selectedWeek.add(Duration(days: days));
-      filterDeliveriesByWeek();
-    });
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
@@ -81,6 +56,46 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
   void initState() {
     super.initState();
     loadCourierDeliveries();
+  }
+
+  void _showAddCreditsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          surfaceTintColor: Colors.white,
+          title: const Text(
+            'Créditos',
+            textAlign: TextAlign.center,
+          ),
+          content: TextField(
+            controller: _creditsController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(
+              hintText: 'Agrega los créditos',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Agregar'),
+              onPressed: () {
+                // Aquí puedes manejar la lógica para agregar los créditos
+                // Por ejemplo, actualizar una base de datos o una variable de estado
+                print('Créditos agregados: ${_creditsController.text}');
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -106,11 +121,16 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
                   case 'enable':
                     _showEnableConfirmDialog();
                     break;
+                  case 'credits':
+                    _showAddCreditsDialog();
+                    break;
                   default:
                     break;
                 }
               },
               itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(
+                    value: 'credits', child: Text('➕ Agregar créditos')),
                 const PopupMenuItem(value: 'call', child: Text('📞 Llamar')),
                 widget.isDisabled
                     ? const PopupMenuItem(
@@ -135,15 +155,9 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
               onRefresh: () async => loadCourierDeliveries(),
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : filteredDeliveries.isEmpty
+                  : _deliveries.isEmpty
                       ? buildEmptyListView()
                       : buildDeliveriesListView(),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: weekSelectorWidget(),
             ),
           ],
         ),
@@ -164,14 +178,14 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Deshabilitar'),
               onPressed: () {
                 _disableCourier(true);
-                Navigator.of(context).pop(); // Cierra el diálogo
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -229,45 +243,6 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
     }
   }
 
-  Widget weekSelectorWidget() {
-    DateTime startOfWeek = startOfSelectedWeek();
-    DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
-
-    String formattedStart =
-        DateFormat('EEE dd MMM', 'es_MX').format(startOfWeek);
-    String formattedEnd =
-        DateFormat('EEE dd MMM, yyyy', 'es_MX').format(endOfWeek);
-    String dateRange = '$formattedStart - $formattedEnd';
-
-    bool isCurrentWeek = DateTime.now().difference(startOfWeek).inDays < 7;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            icon: const Icon(
-                Icons.chevron_left), // Ícono más neutro para "anterior"
-            onPressed: () => changeWeek(-7),
-          ),
-          Text(dateRange),
-          IconButton(
-            icon: const Icon(
-                Icons.chevron_right), // Ícono más neutro para "siguiente"
-            onPressed: isCurrentWeek ? null : () => changeWeek(7),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget buildEmptyListView() {
     return ListView(
       children: [
@@ -277,7 +252,7 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
             child: Image.asset('assets/images/empty.png')),
         const Center(
             child: Text(
-          'Sin pedidos esta semana',
+          'No hay pedidos realizados',
           style: TextStyle(
             color: Colors.black54,
           ),
@@ -287,42 +262,35 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
   }
 
   Widget buildDeliveriesListView() {
-    int totalDeliveries = filteredDeliveries.length;
-    int totalAmount = totalDeliveries * 8;
-
     return ListView.builder(
-      itemCount: totalDeliveries > 0 ? totalDeliveries + 1 : totalDeliveries,
+      itemCount: _deliveries.length,
       itemBuilder: (context, index) {
-        if (index == 0 && totalDeliveries > 0) {
+        if (index == 0 && _deliveries.isNotEmpty) {
           return Card(
             surfaceTintColor: Colors.white,
             margin: const EdgeInsets.all(8.0),
             child: ListTile(
               title: Text(
-                "Total semanal a pagar",
+                "Créditos restantes",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18.0, color: Colors.grey[600]),
               ),
-              subtitle: Text(
-                "\$$totalAmount MXN",
+              subtitle: const Text(
+                "20",
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 16.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
             ),
           );
         }
 
-        final deliveryIndex = index - 1;
-        final delivery = filteredDeliveries[deliveryIndex];
-
         return DeliveryCard(
-          deliveyId: delivery.id,
-          status: delivery.status,
-          date: delivery.requestedDate,
-          destination: delivery.destination.title,
-          origin: delivery.origin.title,
-          price: delivery.price,
+          deliveyId: _deliveries[index].id,
+          status: _deliveries[index].status,
+          date: _deliveries[index].requestedDate,
+          destination: _deliveries[index].destination.title,
+          origin: _deliveries[index].origin.title,
+          price: _deliveries[index].price,
         );
       },
       padding: const EdgeInsets.only(bottom: 70.0),

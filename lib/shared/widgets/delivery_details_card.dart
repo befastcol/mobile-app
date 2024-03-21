@@ -64,16 +64,32 @@ class DeliveryDetailsCard extends StatelessWidget {
                   ),
                 ),
                 ListTile(
-                  title: Text("${origin?.title}"),
-                  subtitle: Text("${origin?.subtitle}"),
+                  title: Text(
+                    "${origin?.title}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    "${origin?.subtitle}",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   leading: const Icon(
                     Icons.location_on,
                     color: Colors.blue,
                   ),
                 ),
                 ListTile(
-                  title: Text("${destination?.title}"),
-                  subtitle: Text("${destination?.subtitle}"),
+                  title: Text(
+                    "${destination?.title}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    "${destination?.subtitle}",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   leading: const Icon(
                     Icons.location_on,
                     color: Colors.red,
@@ -84,7 +100,9 @@ class DeliveryDetailsCard extends StatelessWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          //TODO: Cancel service
+                        },
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(

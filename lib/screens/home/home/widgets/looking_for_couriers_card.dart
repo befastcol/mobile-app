@@ -42,18 +42,16 @@ class _LookingForCouriersCardState extends State<LookingForCouriersCard> {
       DeliveryProvider deliveryState, UserMapProvider userMapState) {
     _socketService.emit("joinDeliveryRoom", {"deliveryId": deliveryState.id});
     _socketService.on("serviceAccepted", (data) {
-      if (data['status'] == 'in_progress') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => DeliveryMapLocation(
-                    deliveryId: deliveryState.id,
-                  )),
-        ).then((value) {
-          deliveryState.resetValues();
-          userMapState.resetValues();
-        });
-      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DeliveryMapLocation(
+                  deliveryId: deliveryState.id,
+                )),
+      ).then((value) {
+        deliveryState.resetValues();
+        userMapState.resetValues();
+      });
     });
   }
 

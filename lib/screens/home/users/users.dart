@@ -116,7 +116,6 @@ class _UsersState extends State<Users> {
                               MaterialPageRoute(
                                   builder: (context) => UserDeliveries(
                                         isDisabled: user.isDisabled,
-                                        originLocation: user.originLocation,
                                         name: user.name,
                                         userId: user.id,
                                       ))).then((value) => _handleGetAllUsers());

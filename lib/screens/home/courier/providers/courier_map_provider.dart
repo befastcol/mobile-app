@@ -102,4 +102,13 @@ class CourierMapProvider with ChangeNotifier {
     _polylines.add(polyline);
     notifyListeners();
   }
+
+  void resetState() {
+    _markers.removeWhere((marker) =>
+        marker.markerId == const MarkerId('origin') ||
+        marker.markerId == const MarkerId('destination'));
+
+    polylines.clear();
+    notifyListeners();
+  }
 }
