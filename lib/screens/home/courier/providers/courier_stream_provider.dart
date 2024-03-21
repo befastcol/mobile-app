@@ -65,7 +65,7 @@ class CourierStreamProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? deliveryInfoJson = prefs.getString('deliveryInfo');
 
-    if (deliveryInfoJson == null) return;
+    if (deliveryInfoJson == null || deliveryInfoJson.isEmpty) return;
 
     try {
       Map<String, dynamic> deliveryData = json.decode(deliveryInfoJson);
@@ -159,6 +159,8 @@ class CourierStreamProvider with ChangeNotifier {
       String? courierId = await UserSession.getUserId();
       _socketService.emit("serviceFinished",
           {"courierId": courierId, "deliveryId": delivery?.id});
+
+      await _resetDeliveryDetails();
     } finally {
       _isEndingService = false;
       _resetState();
@@ -176,6 +178,16 @@ class CourierStreamProvider with ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('deliveryInfo', json.encode(_delivery?.toJson()));
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
+
+  Future _resetDeliveryDetails() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      await prefs.setString('deliveryInfo', '');
     } catch (e) {
       debugPrint("$e");
     }

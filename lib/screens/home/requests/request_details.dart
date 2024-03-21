@@ -68,7 +68,7 @@ class _RequestDetailsState extends State<RequestDetails> {
     if (confirm == true) {
       try {
         String? userId = await UserSession.getUserId();
-        await UsersAPI().updateUserRole(userId: userId, role: 'courier');
+        await UsersAPI.updateUserRole(userId: userId, role: 'courier');
 
         if (mounted) {
           showSnackBar(context,

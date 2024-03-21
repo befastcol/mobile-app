@@ -7,7 +7,7 @@ import 'package:be_fast/models/user.dart';
 import 'package:be_fast/api/constants/base_url.dart';
 
 class UsersAPI {
-  Future<CreateUserResponse> createUser({required String phone}) async {
+  static Future<CreateUserResponse> createUser({required String phone}) async {
     try {
       Response response = await post(
         Uri.parse('$baseUrlApi/users/create'),
@@ -37,7 +37,7 @@ class UsersAPI {
     }
   }
 
-  Future<void> updateUserName(
+  static Future<void> updateUserName(
       {required String? userId, required String name}) async {
     try {
       Response response = await put(
@@ -54,7 +54,7 @@ class UsersAPI {
     }
   }
 
-  Future<void> updateUserRole(
+  static Future<void> updateUserRole(
       {required String? userId, required String role}) async {
     try {
       Response response = await put(
@@ -171,7 +171,7 @@ class UsersAPI {
     }
   }
 
-  Future<void> updateUserDocuments(
+  static Future<void> updateUserDocuments(
       {required String? userId,
       required String? ineFront,
       required String? ineBack,
@@ -198,7 +198,7 @@ class UsersAPI {
     }
   }
 
-  Future<List<UserModel>> getAllUsers() async {
+  static Future<List<UserModel>> getAllUsers() async {
     try {
       Response response = await get(Uri.parse('$baseUrlApi/users/all'));
       if (response.statusCode == 200) {
@@ -211,7 +211,7 @@ class UsersAPI {
     }
   }
 
-  Future<List<UserModel>> getAcceptedCouriers() async {
+  static Future<List<UserModel>> getAcceptedCouriers() async {
     try {
       Response response =
           await get(Uri.parse('$baseUrlApi/users/couriers/accepted'));
@@ -225,7 +225,7 @@ class UsersAPI {
     }
   }
 
-  Future<List<UserModel>> getPendingCouriers() async {
+  static Future<List<UserModel>> getPendingCouriers() async {
     try {
       final response =
           await get(Uri.parse('$baseUrlApi/users/couriers/pending'));

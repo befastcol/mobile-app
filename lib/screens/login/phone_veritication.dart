@@ -71,8 +71,7 @@ class _PhoneVerificationState extends State<PhoneVerification> {
         return;
       }
 
-      CreateUserResponse user =
-          await UsersAPI().createUser(phone: widget.phone);
+      CreateUserResponse user = await UsersAPI.createUser(phone: widget.phone);
       await UserSession.storeUserId(userId: user.userId);
       if (mounted) {
         Navigator.pushAndRemoveUntil(

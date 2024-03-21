@@ -35,8 +35,7 @@ class _NameState extends State<Name> {
     try {
       setState(() => _isLoading = true);
       String? userId = await UserSession.getUserId();
-      await UsersAPI()
-          .updateUserName(name: _nameController.text, userId: userId);
+      await UsersAPI.updateUserName(name: _nameController.text, userId: userId);
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,

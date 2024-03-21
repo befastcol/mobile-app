@@ -24,7 +24,7 @@ class _UsersState extends State<Users> {
   Future _handleGetAllUsers() async {
     try {
       setState(() => isLoading = true);
-      users = await UsersAPI().getAllUsers();
+      users = await UsersAPI.getAllUsers();
       _applyFilter();
     } finally {
       if (mounted) {

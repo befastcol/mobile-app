@@ -20,9 +20,9 @@ class _TripsState extends State<Trips> {
       _isLoading = true;
     });
     try {
-      String? userId = await UserSession.getUserId();
-      _deliveries = await DeliveriesAPI.getCourierDeliveries(
-          courierId: userId.toString());
+      String? courierId = await UserSession.getUserId();
+      _deliveries =
+          await DeliveriesAPI.getCourierDeliveries(courierId: courierId);
     } catch (error) {
       debugPrint('loadCourierTrips: $error');
     } finally {
@@ -154,7 +154,6 @@ class _TripsState extends State<Trips> {
           price: _deliveries[index].price,
         );
       },
-      padding: const EdgeInsets.only(bottom: 70.0),
     );
   }
 }

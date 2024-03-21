@@ -28,7 +28,7 @@ class DeliveriesAPI {
   }
 
   static Future<List<DeliveryModel>> getCourierDeliveries(
-      {required String courierId}) async {
+      {required String? courierId}) async {
     try {
       Response response =
           await get(Uri.parse('$baseUrlApi/deliveries/couriers/$courierId'));

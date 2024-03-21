@@ -19,7 +19,7 @@ class _CouriersState extends State<Couriers> {
   void _loadAcceptedCouriers() async {
     try {
       setState(() => _isLoading = true);
-      _couriers = await UsersAPI().getAcceptedCouriers();
+      _couriers = await UsersAPI.getAcceptedCouriers();
       _applyFilter();
     } catch (error) {
       debugPrint('_loadAcceptedCouriers: $error');

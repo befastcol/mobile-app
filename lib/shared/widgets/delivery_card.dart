@@ -20,6 +20,7 @@ class DeliveryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         surfaceTintColor: Colors.white,
+        color: Colors.white,
         child: InkWell(
           onTap: status == "in_progress"
               ? () {

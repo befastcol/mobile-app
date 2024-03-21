@@ -17,7 +17,7 @@ class _RequestsState extends State<Requests> {
   Future _loadPendingCouriers() async {
     try {
       setState(() => _isLoading = true);
-      _pendingCouriers = await UsersAPI().getPendingCouriers();
+      _pendingCouriers = await UsersAPI.getPendingCouriers();
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

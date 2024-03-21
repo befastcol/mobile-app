@@ -63,7 +63,7 @@ class _DriverLicenseScreenState extends State<DriverLicenseScreen> {
           await _uploadFile(_image!, 'driverLicense/${_image!.name}');
 
       String? userId = await UserSession.getUserId();
-      await UsersAPI().updateUserDocuments(
+      await UsersAPI.updateUserDocuments(
           userId: userId,
           ineFront: ineFrontUrl,
           ineBack: ineBackUrl,
