@@ -116,7 +116,6 @@ class DeliveryProvider extends ChangeNotifier {
 
   void resetValues() {
     _id = '';
-    _origin = Point();
     _destination = Point();
     _price = 0;
     notifyListeners();
