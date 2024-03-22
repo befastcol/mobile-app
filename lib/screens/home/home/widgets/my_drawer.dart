@@ -101,6 +101,10 @@ class MyDrawer extends StatelessWidget {
                           Navigator.pop(context);
                           showSnackBar(context,
                               "No puedes acceder al mapa porque tu cuenta ha sido deshabilitada.");
+                        } else if (userState.credits == 0) {
+                          Navigator.pop(context);
+                          showSnackBar(context,
+                              "No puedes acceder al mapa porque no tienes créditos, puedes recargar con un administrador.");
                         } else {
                           Navigator.push(
                             context,

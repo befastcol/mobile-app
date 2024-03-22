@@ -12,6 +12,7 @@ class UserProvider extends ChangeNotifier {
   String _vehicle = '';
   String _role = '';
   bool _isDisabled = false;
+  int _credits = 0;
 
   String get id => _id;
   String get phone => _phone;
@@ -19,6 +20,7 @@ class UserProvider extends ChangeNotifier {
   String get vehicle => _vehicle;
   String get role => _role;
   bool get isDisabled => _isDisabled;
+  int get credits => _credits;
 
   UserProvider() {
     _initUser();
@@ -38,6 +40,7 @@ class UserProvider extends ChangeNotifier {
     _vehicle = user.vehicle;
     _role = user.role;
     _isDisabled = user.isDisabled;
+    _credits = user.credits;
     notifyListeners();
   }
 

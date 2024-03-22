@@ -1,3 +1,4 @@
+import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:be_fast/shared/widgets/delivery_card.dart';
 import 'package:flutter/material.dart';
 import 'package:be_fast/api/deliveries.dart';
@@ -15,25 +16,27 @@ class _DeliveriesState extends State<Deliveries> {
   List<DeliveryModel> deliveries = [];
   bool _isLoading = false;
 
-  void loadUserDeliveries() async {
+  @override
+  void initState() {
+    _loadUserDeliveries();
+    super.initState();
+  }
+
+  Future _loadUserDeliveries() async {
     setState(() => _isLoading = true);
     try {
       String? userId = await UserSession.getUserId();
       deliveries =
           await DeliveriesAPI.getUserDeliveries(userId: userId.toString());
     } catch (error) {
-      debugPrint('Error loading user deliveries: $error');
+      if (mounted) {
+        showSnackBar(context, "Error al cargar los pedidos");
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadUserDeliveries();
   }
 
   @override
@@ -47,7 +50,7 @@ class _DeliveriesState extends State<Deliveries> {
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () async => loadUserDeliveries(),
+          onRefresh: () async => _loadUserDeliveries(),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : deliveries.isEmpty
@@ -82,7 +85,7 @@ class _DeliveriesState extends State<Deliveries> {
       itemBuilder: (context, index) {
         final delivery = deliveries[index];
         return DeliveryCard(
-          deliveyId: delivery.id,
+          deliveryId: delivery.id,
           status: delivery.status,
           date: delivery.requestedDate,
           destination: delivery.destination.title,

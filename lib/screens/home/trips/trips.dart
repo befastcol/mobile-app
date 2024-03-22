@@ -1,8 +1,10 @@
 import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/delivery.dart';
+import 'package:be_fast/providers/user_provider.dart';
 import 'package:be_fast/shared/widgets/delivery_card.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Trips extends StatefulWidget {
   const Trips({super.key});
@@ -15,16 +17,18 @@ class _TripsState extends State<Trips> {
   List<DeliveryModel> _deliveries = [];
   bool _isLoading = false;
 
-  void loadCourierTrips() async {
-    setState(() {
-      _isLoading = true;
-    });
+  @override
+  void initState() {
+    _loadCourierTrips();
+    super.initState();
+  }
+
+  Future _loadCourierTrips() async {
     try {
+      setState(() => _isLoading = true);
       String? courierId = await UserSession.getUserId();
       _deliveries =
           await DeliveriesAPI.getCourierDeliveries(courierId: courierId);
-    } catch (error) {
-      debugPrint('loadCourierTrips: $error');
     } finally {
       if (mounted) {
         setState(() {
@@ -32,12 +36,6 @@ class _TripsState extends State<Trips> {
         });
       }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadCourierTrips();
   }
 
   @override
@@ -66,7 +64,7 @@ class _TripsState extends State<Trips> {
                               children: <TextSpan>[
                                 TextSpan(
                                   text:
-                                      'Cada crédito representa un viaje que podrás realizar, si necesitas más créditos puedes recargar más.',
+                                      'Cada crédito representa un viaje que podrás realizar, si necesitas más créditos contacta a un administrador.',
                                 ),
                               ],
                             ),
@@ -91,7 +89,7 @@ class _TripsState extends State<Trips> {
         child: Stack(
           children: [
             RefreshIndicator(
-              onRefresh: () async => loadCourierTrips(),
+              onRefresh: () async => _loadCourierTrips(),
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _deliveries.isEmpty
@@ -123,37 +121,40 @@ class _TripsState extends State<Trips> {
   }
 
   Widget buildDeliveriesListView() {
-    return ListView.builder(
-      itemCount: _deliveries.length,
-      itemBuilder: (context, index) {
-        if (index == 0 && _deliveries.isNotEmpty) {
-          return Card(
-            surfaceTintColor: Colors.white,
-            margin: const EdgeInsets.all(8.0),
-            child: ListTile(
-              title: Text(
-                "Créditos restantes",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18.0, color: Colors.grey[600]),
-              ),
-              subtitle: const Text(
-                "20",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-            ),
-          );
-        }
+    return Consumer<UserProvider>(
+        builder: (context, userState, child) => ListView.builder(
+              itemCount: _deliveries.length,
+              itemBuilder: (context, index) {
+                if (index == 0 && _deliveries.isNotEmpty) {
+                  return Card(
+                    surfaceTintColor: Colors.white,
+                    margin: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      title: Text(
+                        "Créditos restantes",
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(fontSize: 18.0, color: Colors.grey[600]),
+                      ),
+                      subtitle: Text(
+                        "${userState.credits}",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                }
 
-        return DeliveryCard(
-          deliveyId: _deliveries[index].id,
-          status: _deliveries[index].status,
-          date: _deliveries[index].requestedDate,
-          destination: _deliveries[index].destination.title,
-          origin: _deliveries[index].origin.title,
-          price: _deliveries[index].price,
-        );
-      },
-    );
+                return DeliveryCard(
+                  deliveryId: _deliveries[index].id,
+                  status: _deliveries[index].status,
+                  date: _deliveries[index].requestedDate,
+                  destination: _deliveries[index].destination.title,
+                  origin: _deliveries[index].origin.title,
+                  price: _deliveries[index].price,
+                );
+              },
+            ));
   }
 }

@@ -9,12 +9,14 @@ import 'package:url_launcher/url_launcher.dart';
 class CourierDeliveries extends StatefulWidget {
   final String courierId, name, phone;
   final bool isDisabled;
+  final int credits;
 
   const CourierDeliveries(
       {super.key,
       required this.courierId,
       required this.name,
       required this.phone,
+      required this.credits,
       required this.isDisabled});
 
   @override
@@ -26,13 +28,17 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
   bool _isLoading = false;
   final TextEditingController _creditsController = TextEditingController();
 
-  void loadCourierDeliveries() async {
+  @override
+  void initState() {
+    _loadCourierDeliveries();
+    super.initState();
+  }
+
+  Future _loadCourierDeliveries() async {
     try {
       setState(() => _isLoading = true);
       _deliveries =
           await DeliveriesAPI.getCourierDeliveries(courierId: widget.courierId);
-    } catch (error) {
-      debugPrint('loadCourierDeliveries: $error ${widget.courierId}');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -41,21 +47,19 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
+    Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
     );
+
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     } else {
-      throw 'Could not launch $launchUri';
+      if (mounted) {
+        showSnackBar(
+            context, "Ocurrió un error al intentar marcar a este número.");
+      }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadCourierDeliveries();
   }
 
   void _showAddCreditsDialog() {
@@ -64,35 +68,95 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
       builder: (BuildContext context) {
         return AlertDialog(
           surfaceTintColor: Colors.white,
-          title: const Text(
-            'Créditos',
-            textAlign: TextAlign.center,
+          backgroundColor: Colors.white,
+          title: const Column(
+            children: [
+              Text(
+                'Agregar créditos',
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                "La cantidad de créditos será la cantidad existente más la nueva cantidad.",
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 20,
+              )
+            ],
           ),
           content: TextField(
             controller: _creditsController,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
             decoration: const InputDecoration(
-              hintText: 'Agrega los créditos',
+              hintText: 'Créditos',
+              border: OutlineInputBorder(),
             ),
           ),
           actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Agregar'),
-              onPressed: () {
-                // Aquí puedes manejar la lógica para agregar los créditos
-                // Por ejemplo, actualizar una base de datos o una variable de estado
-                print('Créditos agregados: ${_creditsController.text}');
-                Navigator.of(context).pop();
-              },
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  _addCredits();
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  backgroundColor: Colors.blue,
+                ),
+                child: const Text(
+                  'Agregar',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  Future<void> _addCredits() async {
+    showLoadingDialog(context); // Muestra un diálogo de carga
+
+    try {
+      await UsersAPI.updateCourierCredits(
+        courierId: widget.courierId,
+        credits: int.parse(_creditsController.text),
+      );
+      if (mounted) {
+        showSnackBar(context, 'Créditos agregados correctamente');
+      }
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, 'Error guardando los créditos');
+      }
+    } finally {
+      if (mounted) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
+          content: SizedBox(
+              width: 100,
+              height: 100,
+              child: Center(child: CircularProgressIndicator())),
         );
       },
     );
@@ -152,7 +216,7 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
         child: Stack(
           children: [
             RefreshIndicator(
-              onRefresh: () async => loadCourierDeliveries(),
+              onRefresh: () async => _loadCourierDeliveries(),
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _deliveries.isEmpty
@@ -275,17 +339,18 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18.0, color: Colors.grey[600]),
               ),
-              subtitle: const Text(
-                "20",
+              subtitle: Text(
+                "${widget.credits}",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
             ),
           );
         }
 
         return DeliveryCard(
-          deliveyId: _deliveries[index].id,
+          deliveryId: _deliveries[index].id,
           status: _deliveries[index].status,
           date: _deliveries[index].requestedDate,
           destination: _deliveries[index].destination.title,

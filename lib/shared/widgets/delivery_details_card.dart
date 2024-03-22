@@ -95,28 +95,28 @@ class DeliveryDetailsCard extends StatelessWidget {
                     color: Colors.red,
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          //TODO: Cancel service
-                        },
-                        style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            backgroundColor: Colors.red),
-                        child: const Text('Cancelar servicio',
-                            style: TextStyle(color: Colors.white))),
-                  ),
-                ),
+                // Container(
+                //   margin: const EdgeInsets.only(top: 20),
+                //   child: SizedBox(
+                //     width: double.infinity,
+                //     child: ElevatedButton(
+                //         onPressed: () {
+                //           //Implement Cancel service
+                //         },
+                //         style: ElevatedButton.styleFrom(
+                //             minimumSize: const Size(double.infinity, 50),
+                //             shape: RoundedRectangleBorder(
+                //                 borderRadius: BorderRadius.circular(8)),
+                //             backgroundColor: Colors.red),
+                //         child: const Text('Cancelar servicio',
+                //             style: TextStyle(color: Colors.white))),
+                //   ),
+                // ),
               ],
             ),
           ),
           minHeight: 100,
-          maxHeight: 380,
+          maxHeight: 320,
           collapsed: Container(
             decoration: const BoxDecoration(
               color: Colors.white,

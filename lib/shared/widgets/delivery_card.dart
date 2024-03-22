@@ -5,11 +5,11 @@ import 'delivery_map_location.dart';
 class DeliveryCard extends StatelessWidget {
   final DateTime date;
   final int price;
-  final String origin, destination, status, deliveyId;
+  final String origin, destination, status, deliveryId;
 
   const DeliveryCard(
       {super.key,
-      required this.deliveyId,
+      required this.deliveryId,
       required this.date,
       required this.destination,
       required this.origin,
@@ -28,7 +28,7 @@ class DeliveryCard extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => DeliveryMapLocation(
-                                deliveryId: deliveyId,
+                                deliveryId: deliveryId,
                               )));
                 }
               : null,

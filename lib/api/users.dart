@@ -171,6 +171,24 @@ class UsersAPI {
     }
   }
 
+  static Future<void> updateCourierCredits(
+      {required String? courierId, required int credits}) async {
+    try {
+      Response response = await put(
+        Uri.parse('$baseUrlApi/users/credits/$courierId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'credits': credits}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message']);
+      }
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
+
   static Future<void> updateUserDocuments(
       {required String? userId,
       required String? ineFront,
