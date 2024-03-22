@@ -45,5 +45,6 @@ app.*.map.json
 /node_modules
 
 /ios/Runner/Config.swift
+/android/keys.properties
 
 .env
