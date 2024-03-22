@@ -145,7 +145,9 @@ class UserMapProvider extends ChangeNotifier {
 
   void resetValues() {
     polylines.clear();
-    markers.clear();
+    _markers.removeWhere(
+        (marker) => marker.markerId == const MarkerId('destination'));
+    _initiAvailableCouriersMarkers();
     notifyListeners();
   }
 }

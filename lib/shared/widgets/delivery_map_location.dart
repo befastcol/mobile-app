@@ -3,6 +3,7 @@ import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/delivery.dart';
 import 'package:be_fast/models/user.dart';
 import 'package:be_fast/shared/utils/icons_helper.dart';
+import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:be_fast/shared/utils/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -72,6 +73,14 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
           _addMarker('currentLocation',
               LatLng(data['latitude'], data['longitude']), vehicleIcon);
         });
+      }
+    });
+
+    _socketService.on("serviceFinished", (data) {
+      if (mounted) {
+        showSnackBar(
+            context, "Se ha entregado el pedido, servicio finalizado.");
+        Navigator.pop(context);
       }
     });
   }
