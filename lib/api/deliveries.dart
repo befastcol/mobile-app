@@ -74,13 +74,32 @@ class DeliveriesAPI {
   }
 
   static Future<DeliveryModel> getDeliveryById(
-      {required String deliveryId}) async {
+      {required String? deliveryId}) async {
     try {
       Response response =
           await get(Uri.parse('$baseUrlApi/deliveries/get/$deliveryId'));
       if (response.statusCode == 200) {
         dynamic delivery = json.decode(response.body);
         return DeliveryModel.fromJson(delivery);
+      }
+
+      throw Exception(json.decode(response.body)['message']);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  static Future<bool> checkIfDeliveryExists(
+      {required String? deliveryId}) async {
+    try {
+      Response response =
+          await get(Uri.parse('$baseUrlApi/deliveries/get/$deliveryId'));
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      if (response.statusCode == 404) {
+        return false;
       }
       throw Exception(json.decode(response.body)['message']);
     } catch (e) {

@@ -95,39 +95,47 @@ class _ServiceFoundCardState extends State<ServiceFoundCard> {
                         color: Colors.teal,
                       ),
                     ),
-                    if (timeLeft > 0)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Text('Tiempo restante: $timeLeft segundos',
-                            style: const TextStyle(
-                                color: Colors.red, fontSize: 16)),
-                      ),
                     Visibility(
                       visible: !streamState.isAcceptingService,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                await streamState.acceptService(context);
-                              } catch (e) {
-                                if (mounted) {
-                                  showSnackBar(
-                                      context, "Error al aceptar el servicio.");
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  await streamState.acceptService(context, () {
+                                    if (mounted) {
+                                      showSnackBar(context,
+                                          "Pedido cancelado por el usuario.");
+                                    }
+                                  });
+                                } catch (e) {
+                                  if (mounted) {
+                                    showSnackBar(context,
+                                        "Error al aceptar el servicio.");
+                                  }
                                 }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
+                              },
+                              style: ElevatedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 50),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                backgroundColor: Colors.blue),
-                            child: const Text('Aceptar',
-                                style: TextStyle(color: Colors.white)),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Colors.blue,
+                              ),
+                              child: const Text('Aceptar',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('$timeLeft segundos restantes',
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.blueGrey)),
+                          ),
+                        ],
                       ),
                     ),
                     Visibility(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
@@ -71,7 +72,7 @@ class CourierStreamProvider with ChangeNotifier {
       Map<String, dynamic> deliveryData = json.decode(deliveryInfoJson);
       _delivery = DeliveryModel.fromJson(deliveryData);
       await _updateCourierMap();
-      updateServiceIsAccepted();
+      _updateServiceIsAccepted();
     } catch (e) {
       debugPrint("Error parsing delivery info: $e");
     }
@@ -135,19 +136,37 @@ class CourierStreamProvider with ChangeNotifier {
     }
   }
 
-  Future acceptService(BuildContext context) async {
+  Future acceptService(BuildContext context, Function onCanceled) async {
     try {
       _isAcceptingService = true;
       notifyListeners();
 
-      await _storeDeliveryDetails();
-      await _updateCourierMap();
-      await _emitServiceAccepted();
+      bool isCanceled = await _checkIfDeliveryIsCanceled();
 
-      updateServiceIsAccepted();
+      if (isCanceled) {
+        onCanceled();
+        _serviceFound = false;
+        notifyListeners();
+      } else {
+        await _storeDeliveryDetails();
+        await _updateCourierMap();
+        await _emitServiceAccepted();
+
+        _updateServiceIsAccepted();
+      }
     } finally {
       _isAcceptingService = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> _checkIfDeliveryIsCanceled() async {
+    try {
+      return !(await DeliveriesAPI.checkIfDeliveryExists(
+          deliveryId: delivery?.id));
+    } catch (e) {
+      debugPrint("$e");
+      return false;
     }
   }
 
@@ -242,7 +261,7 @@ class CourierStreamProvider with ChangeNotifier {
     }
   }
 
-  void updateServiceIsAccepted() {
+  void _updateServiceIsAccepted() {
     _serviceAccepted = true;
     _serviceFound = false;
     notifyListeners();
