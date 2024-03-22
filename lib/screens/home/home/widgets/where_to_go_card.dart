@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/origin_and_destination_screen.dart';
-import 'loading_skeleton.dart';
 
 class WhereToGoCard extends StatelessWidget {
   const WhereToGoCard({super.key});
@@ -31,9 +30,6 @@ class WhereToGoCard extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Visibility(
-                            visible: deliveryState.isLoadingDeliveryDetails,
-                            child: const LoadingSkeleton()),
                         Column(
                           children: [
                             Material(
