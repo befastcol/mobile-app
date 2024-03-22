@@ -1,10 +1,10 @@
 import 'package:be_fast/api/deliveries.dart';
+import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/delivery.dart';
-import 'package:be_fast/providers/user_provider.dart';
+import 'package:be_fast/models/user.dart';
 import 'package:be_fast/shared/widgets/delivery_card.dart';
 import 'package:be_fast/shared/utils/user_session.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Trips extends StatefulWidget {
   const Trips({super.key});
@@ -16,6 +16,7 @@ class Trips extends StatefulWidget {
 class _TripsState extends State<Trips> {
   List<DeliveryModel> _deliveries = [];
   bool _isLoading = false;
+  int _credits = 0;
 
   @override
   void initState() {
@@ -29,6 +30,8 @@ class _TripsState extends State<Trips> {
       String? courierId = await UserSession.getUserId();
       _deliveries =
           await DeliveriesAPI.getCourierDeliveries(courierId: courierId);
+      UserModel user = await UsersAPI.getUser(userId: courierId);
+      _credits = user.credits;
     } finally {
       if (mounted) {
         setState(() {
@@ -121,40 +124,38 @@ class _TripsState extends State<Trips> {
   }
 
   Widget buildDeliveriesListView() {
-    return Consumer<UserProvider>(
-        builder: (context, userState, child) => ListView.builder(
-              itemCount: _deliveries.length,
-              itemBuilder: (context, index) {
-                if (index == 0 && _deliveries.isNotEmpty) {
-                  return Card(
-                    surfaceTintColor: Colors.white,
-                    margin: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(
-                        "Créditos restantes",
-                        textAlign: TextAlign.center,
-                        style:
-                            TextStyle(fontSize: 18.0, color: Colors.grey[600]),
-                      ),
-                      subtitle: Text(
-                        "${userState.credits}",
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  );
-                }
+    return ListView.builder(
+      itemCount: _deliveries.length,
+      itemBuilder: (context, index) {
+        if (index == 0 && _deliveries.isNotEmpty) {
+          return Card(
+            surfaceTintColor: Colors.white,
+            margin: const EdgeInsets.all(8.0),
+            child: ListTile(
+              title: Text(
+                "Créditos restantes",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18.0, color: Colors.grey[600]),
+              ),
+              subtitle: Text(
+                "$_credits",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+          );
+        }
 
-                return DeliveryCard(
-                  deliveryId: _deliveries[index].id,
-                  status: _deliveries[index].status,
-                  date: _deliveries[index].requestedDate,
-                  destination: _deliveries[index].destination.title,
-                  origin: _deliveries[index].origin.title,
-                  price: _deliveries[index].price,
-                );
-              },
-            ));
+        return DeliveryCard(
+          deliveryId: _deliveries[index].id,
+          status: _deliveries[index].status,
+          date: _deliveries[index].requestedDate,
+          destination: _deliveries[index].destination.title,
+          origin: _deliveries[index].origin.title,
+          price: _deliveries[index].price,
+        );
+      },
+    );
   }
 }

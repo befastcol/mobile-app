@@ -184,7 +184,6 @@ class UsersAPI {
         throw Exception(json.decode(response.body)['message']);
       }
     } catch (e) {
-      print(e);
       throw Exception(e);
     }
   }
