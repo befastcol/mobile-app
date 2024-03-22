@@ -20,7 +20,8 @@ class _ServiceRequestCardState extends State<ServiceRequestCard> {
     return Consumer<DeliveryProvider>(
       builder: (context, deliveryState, child) => Visibility(
         visible: deliveryState.destination.coordinates.isNotEmpty &&
-            deliveryState.id.isEmpty,
+            deliveryState.id.isEmpty &&
+            !deliveryState.isLoadingDeliveryDetails,
         child: Positioned(
           left: 0,
           right: 0,

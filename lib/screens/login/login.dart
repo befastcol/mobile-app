@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:be_fast/screens/login/terms_and_conditions.dart';
 import 'package:be_fast/screens/login/phone_veritication.dart';
 
 class Login extends StatefulWidget {
@@ -11,11 +13,21 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController phoneController = TextEditingController();
+  bool _isAgreedToTerms = false;
 
   @override
   void dispose() {
     phoneController.dispose();
     super.dispose();
+  }
+
+  void _navigateToTermsAndConditions(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TermsAndConditionsScreen(),
+      ),
+    );
   }
 
   @override
@@ -71,28 +83,58 @@ class _LoginState extends State<Login> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _isAgreedToTerms,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              _isAgreedToTerms = value ?? false;
+                            });
+                          },
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              _navigateToTermsAndConditions(context);
+                            },
+                            child: const Text(
+                              'Acepto los términos y condiciones',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PhoneVerification(
-                                  phone: phoneController.text,
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: _isAgreedToTerms
+                            ? () {
+                                if (formKey.currentState!.validate()) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PhoneVerification(
+                                        phone: phoneController.text,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            : null, // Esta parte deshabilita el botón si _isAgreedToTerms es falso
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          backgroundColor: Colors.blue,
+                          backgroundColor: _isAgreedToTerms
+                              ? Colors.blue
+                              : Colors
+                                  .grey, // Cambia el color si no está de acuerdo
                         ),
                         child: const Text(
                           'Entrar',
