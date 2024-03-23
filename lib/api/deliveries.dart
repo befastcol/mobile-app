@@ -107,7 +107,7 @@ class DeliveriesAPI {
     }
   }
 
-  static Future cancelDelivery({required String deliveryId}) async {
+  static Future cancelDelivery({required String? deliveryId}) async {
     try {
       await delete(Uri.parse('$baseUrlApi/deliveries/delete/$deliveryId'));
     } catch (e) {

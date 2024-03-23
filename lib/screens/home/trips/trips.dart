@@ -148,6 +148,7 @@ class _TripsState extends State<Trips> {
         }
 
         return DeliveryCard(
+          loadDeliveries: _loadCourierTrips,
           deliveryId: _deliveries[index].id,
           status: _deliveries[index].status,
           date: _deliveries[index].requestedDate,

@@ -6,9 +6,11 @@ class DeliveryCard extends StatelessWidget {
   final DateTime date;
   final int price;
   final String origin, destination, status, deliveryId;
+  final Function loadDeliveries;
 
   const DeliveryCard(
       {super.key,
+      required this.loadDeliveries,
       required this.deliveryId,
       required this.date,
       required this.destination,
@@ -29,7 +31,7 @@ class DeliveryCard extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => DeliveryMapLocation(
                                 deliveryId: deliveryId,
-                              )));
+                              ))).then((value) => loadDeliveries());
                 }
               : null,
           child: Container(

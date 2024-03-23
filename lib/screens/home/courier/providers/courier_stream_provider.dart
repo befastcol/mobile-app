@@ -47,6 +47,7 @@ class CourierStreamProvider with ChangeNotifier {
     _initTimerStream();
     _subscribeToDeliveryUpdates();
     _checkIfCourierIsBusy();
+    _streamIfDeliveryIsCanceled();
   }
 
   @override
@@ -60,6 +61,27 @@ class CourierStreamProvider with ChangeNotifier {
   void _initSocket() {
     _socketService.initSocket();
     notifyListeners();
+  }
+
+  void _streamIfDeliveryIsCanceled() {
+    const duration = Duration(seconds: 10);
+    _timer = Timer.periodic(duration, (Timer t) async {
+      if (serviceAccepted) {
+        bool isCanceled = await _checkIfDeliveryIsCanceled();
+
+        if (isCanceled) {
+          try {
+            String? userId = await UserSession.getUserId();
+            await UsersAPI.updateCourierStatus(
+                userId: userId, status: 'available');
+            await _resetStoredDeliveryDetails();
+            _resetState();
+          } catch (e) {
+            debugPrint("$e");
+          }
+        }
+      }
+    });
   }
 
   Future _checkIfCourierIsBusy() async {
@@ -83,7 +105,7 @@ class CourierStreamProvider with ChangeNotifier {
     _timer = Timer.periodic(duration, (Timer t) async {
       DistanceResult result = await calculateTraveledDistance(_lastPosition);
 
-      if (result.distance > 10) {
+      if (result.distance > 20) {
         _lastPosition = result.position;
         _courierMapProvider.updateMarker(result.position);
         _courierMapProvider.animateCamera(result.position);
@@ -165,7 +187,6 @@ class CourierStreamProvider with ChangeNotifier {
       return !(await DeliveriesAPI.checkIfDeliveryExists(
           deliveryId: delivery?.id));
     } catch (e) {
-      debugPrint("$e");
       return false;
     }
   }
@@ -179,7 +200,7 @@ class CourierStreamProvider with ChangeNotifier {
       _socketService.emit("serviceFinished",
           {"courierId": courierId, "deliveryId": delivery?.id});
 
-      await _resetDeliveryDetails();
+      await _resetStoredDeliveryDetails();
     } finally {
       _isEndingService = false;
       _resetState();
@@ -202,7 +223,7 @@ class CourierStreamProvider with ChangeNotifier {
     }
   }
 
-  Future _resetDeliveryDetails() async {
+  Future _resetStoredDeliveryDetails() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 

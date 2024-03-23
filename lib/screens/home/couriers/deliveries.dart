@@ -350,6 +350,7 @@ class _CourierDeliveriesState extends State<CourierDeliveries> {
         }
 
         return DeliveryCard(
+          loadDeliveries: _loadCourierDeliveries,
           deliveryId: _deliveries[index].id,
           status: _deliveries[index].status,
           date: _deliveries[index].requestedDate,

@@ -154,6 +154,7 @@ class _DeliveryMapLocationState extends State<DeliveryMapLocation> {
                       _googleMapController = controller,
                 ),
                 DeliveryDetailsCard(
+                  id: _delivery?.id,
                   origin: _delivery?.origin,
                   destination: _delivery?.destination,
                   name: _courier?.name ?? '',

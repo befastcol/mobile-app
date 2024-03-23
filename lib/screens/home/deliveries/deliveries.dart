@@ -85,6 +85,7 @@ class _DeliveriesState extends State<Deliveries> {
       itemBuilder: (context, index) {
         final delivery = deliveries[index];
         return DeliveryCard(
+          loadDeliveries: _loadUserDeliveries,
           deliveryId: delivery.id,
           status: delivery.status,
           date: delivery.requestedDate,

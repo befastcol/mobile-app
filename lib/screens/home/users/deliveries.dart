@@ -198,6 +198,7 @@ class _UserDeliveriesState extends State<UserDeliveries> {
       itemCount: _deliveries.length,
       itemBuilder: (context, index) {
         return DeliveryCard(
+          loadDeliveries: _handleGetUserDeliveries,
           deliveryId: _deliveries[index].id,
           status: _deliveries[index].status,
           date: _deliveries[index].requestedDate,
