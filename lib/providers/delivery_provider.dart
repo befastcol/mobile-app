@@ -79,7 +79,7 @@ class DeliveryProvider extends ChangeNotifier {
   Future getDeliveryPrice(int distance, int duration) async {
     _price = await DeliveriesAPI.getDeliveryPrice(
         distance: distance, duration: duration);
-    setIsLoadingDeliveryDetails(false);
+    notifyListeners();
   }
 
   void updateDeliveryValues(DeliveryModel delivery) {

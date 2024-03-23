@@ -54,6 +54,7 @@ class CourierMapBodyState extends State<CourierMapBody> {
                         !stream.serviceFound &&
                         !stream.serviceAccepted,
                     child: IconButton(
+                      iconSize: 40,
                       icon: Icon(
                         state.isToggled ? Icons.toggle_on : Icons.toggle_off,
                         color: state.isToggled ? Colors.teal : Colors.blueGrey,

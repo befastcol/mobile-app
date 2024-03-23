@@ -161,6 +161,9 @@ class _OriginAndDestinationScreenState
                                           200));
                                 } catch (e) {
                                   debugPrint("$e");
+                                } finally {
+                                  deliveryState
+                                      .setIsLoadingDeliveryDetails(false);
                                 }
                               },
                               leading: const Icon(Icons.location_on,
@@ -211,6 +214,9 @@ class _OriginAndDestinationScreenState
                                           BitmapDescriptor.hueRed));
                                 } catch (e) {
                                   debugPrint("$e");
+                                } finally {
+                                  deliveryState
+                                      .setIsLoadingDeliveryDetails(false);
                                 }
                               },
                               leading: const Icon(Icons.location_on,

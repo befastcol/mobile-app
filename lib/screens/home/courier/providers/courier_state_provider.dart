@@ -11,15 +11,15 @@ class CourierStateProvider with ChangeNotifier {
   bool get isToggled => _isToggled;
 
   CourierStateProvider() {
-    initCourier();
+    _initCourier();
   }
 
-  Future initCourier() async {
+  Future _initCourier() async {
     try {
       String? courierId = await UserSession.getUserId();
       _courier = await UsersAPI.getUser(userId: courierId);
 
-      checkIfIsAvailable();
+      _checkIfIsAvailable();
       notifyListeners();
     } catch (e) {
       debugPrint("$e");
@@ -43,7 +43,7 @@ class CourierStateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void checkIfIsAvailable() {
+  void _checkIfIsAvailable() {
     if (_courier?.status == 'available' || _courier?.status == 'busy') {
       _isToggled = true;
     }

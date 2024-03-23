@@ -1,20 +1,46 @@
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/models/custom/custom.dart';
+import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DeliveryDetailsCard extends StatelessWidget {
+class DeliveryDetailsCard extends StatefulWidget {
   final String phone, name;
+  final String? id;
   final Point? origin, destination;
   final int price;
 
   const DeliveryDetailsCard(
       {super.key,
+      required this.id,
       required this.origin,
       required this.destination,
       required this.phone,
       required this.name,
       required this.price});
+
+  @override
+  State<DeliveryDetailsCard> createState() => _DeliveryDetailsCardState();
+}
+
+class _DeliveryDetailsCardState extends State<DeliveryDetailsCard> {
+  bool _isCancelingService = false;
+
+  Future _cancelService() async {
+    try {
+      setState(() => _isCancelingService = true);
+      await DeliveriesAPI.cancelDelivery(deliveryId: widget.id);
+      if (mounted) {
+        showSnackBar(context, "Servicio cancelado.");
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) showSnackBar(context, "Error al cancelar el servicio.");
+    } finally {
+      setState(() => _isCancelingService = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +67,8 @@ class DeliveryDetailsCard extends StatelessWidget {
                   ),
                 ),
                 ListTile(
-                  title: Text(name),
-                  subtitle: Text("Costo del envío: \$$price"),
+                  title: Text(widget.name),
+                  subtitle: Text("Costo del envío: \$${widget.price}"),
                   leading: const Icon(
                     Icons.person,
                     color: Colors.blueGrey,
@@ -55,7 +81,7 @@ class DeliveryDetailsCard extends StatelessWidget {
                     onPressed: () async {
                       final Uri launchUri = Uri(
                         scheme: 'tel',
-                        path: phone,
+                        path: widget.phone,
                       );
                       if (await canLaunchUrl(launchUri)) {
                         await launchUrl(launchUri);
@@ -65,12 +91,12 @@ class DeliveryDetailsCard extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
-                    "${origin?.title}",
+                    "${widget.origin?.title}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    "${origin?.subtitle}",
+                    "${widget.origin?.subtitle}",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -81,12 +107,12 @@ class DeliveryDetailsCard extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
-                    "${destination?.title}",
+                    "${widget.destination?.title}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    "${destination?.subtitle}",
+                    "${widget.destination?.subtitle}",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -95,28 +121,42 @@ class DeliveryDetailsCard extends StatelessWidget {
                     color: Colors.red,
                   ),
                 ),
-                // Container(
-                //   margin: const EdgeInsets.only(top: 20),
-                //   child: SizedBox(
-                //     width: double.infinity,
-                //     child: ElevatedButton(
-                //         onPressed: () {
-                //           //Implement Cancel service
-                //         },
-                //         style: ElevatedButton.styleFrom(
-                //             minimumSize: const Size(double.infinity, 50),
-                //             shape: RoundedRectangleBorder(
-                //                 borderRadius: BorderRadius.circular(8)),
-                //             backgroundColor: Colors.red),
-                //         child: const Text('Cancelar servicio',
-                //             style: TextStyle(color: Colors.white))),
-                //   ),
-                // ),
+                Visibility(
+                  visible: !_isCancelingService,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          onPressed: _cancelService,
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              backgroundColor: Colors.red),
+                          child: const Text('Cancelar servicio',
+                              style: TextStyle(color: Colors.white))),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _isCancelingService,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    child: const Center(
+                      child: LinearProgressIndicator(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        color: Colors.red,
+                        minHeight: 50,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
           minHeight: 100,
-          maxHeight: 320,
+          maxHeight: 390,
           collapsed: Container(
             decoration: const BoxDecoration(
               color: Colors.white,

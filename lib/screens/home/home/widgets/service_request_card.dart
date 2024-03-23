@@ -19,10 +19,9 @@ class _ServiceRequestCardState extends State<ServiceRequestCard> {
   Widget build(BuildContext context) {
     return Consumer<DeliveryProvider>(
       builder: (context, deliveryState, child) => Visibility(
-        visible: deliveryState.origin.coordinates.isNotEmpty &&
-            deliveryState.destination.coordinates.isNotEmpty &&
-            deliveryState.price > 0 &&
-            deliveryState.id.isEmpty,
+        visible: deliveryState.destination.coordinates.isNotEmpty &&
+            deliveryState.id.isEmpty &&
+            !deliveryState.isLoadingDeliveryDetails,
         child: Positioned(
           left: 0,
           right: 0,
@@ -76,7 +75,7 @@ class _ServiceRequestCardState extends State<ServiceRequestCard> {
                         ),
                       )),
                   Visibility(
-                    visible: !_isLoadingRequest,
+                    visible: !_isLoadingRequest && deliveryState.price > 0,
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -177,9 +176,11 @@ class _ServiceRequestCardState extends State<ServiceRequestCard> {
                 Icon(isOrigin ? Icons.location_on : Icons.location_on,
                     color: isOrigin ? Colors.blue : Colors.red),
                 const SizedBox(width: 10),
-                Text(isOrigin
-                    ? deliveryState.origin.title
-                    : deliveryState.destination.title),
+                Text(isOrigin && deliveryState.origin.title.isEmpty
+                    ? '¿De dónde salimos'
+                    : isOrigin
+                        ? deliveryState.origin.title
+                        : deliveryState.destination.title),
               ],
             ),
           ),

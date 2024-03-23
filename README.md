@@ -106,4 +106,8 @@ struct Config {
 flutter pub get
 ```
 
-### Paso 5: Listo
+### Paso 5: Crea un archivo keys.properties dentro de la carpeta android
+
+```
+GOOGLE_MAPS_API_KEY=AIzaSyAml********************ZArxGGOdIA
+```

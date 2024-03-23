@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:be_fast/api/deliveries.dart';
 import 'package:be_fast/api/google_maps.dart';
 import 'package:be_fast/api/users.dart';
 import 'package:be_fast/models/custom/custom.dart';
@@ -46,6 +47,7 @@ class CourierStreamProvider with ChangeNotifier {
     _initTimerStream();
     _subscribeToDeliveryUpdates();
     _checkIfCourierIsBusy();
+    _streamIfDeliveryIsCanceled();
   }
 
   @override
@@ -61,6 +63,27 @@ class CourierStreamProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void _streamIfDeliveryIsCanceled() {
+    const duration = Duration(seconds: 10);
+    _timer = Timer.periodic(duration, (Timer t) async {
+      if (serviceAccepted) {
+        bool isCanceled = await _checkIfDeliveryIsCanceled();
+
+        if (isCanceled) {
+          try {
+            String? userId = await UserSession.getUserId();
+            await UsersAPI.updateCourierStatus(
+                userId: userId, status: 'available');
+            await _resetStoredDeliveryDetails();
+            _resetState();
+          } catch (e) {
+            debugPrint("$e");
+          }
+        }
+      }
+    });
+  }
+
   Future _checkIfCourierIsBusy() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? deliveryInfoJson = prefs.getString('deliveryInfo');
@@ -71,7 +94,7 @@ class CourierStreamProvider with ChangeNotifier {
       Map<String, dynamic> deliveryData = json.decode(deliveryInfoJson);
       _delivery = DeliveryModel.fromJson(deliveryData);
       await _updateCourierMap();
-      updateServiceIsAccepted();
+      _updateServiceIsAccepted();
     } catch (e) {
       debugPrint("Error parsing delivery info: $e");
     }
@@ -82,7 +105,7 @@ class CourierStreamProvider with ChangeNotifier {
     _timer = Timer.periodic(duration, (Timer t) async {
       DistanceResult result = await calculateTraveledDistance(_lastPosition);
 
-      if (result.distance > 10) {
+      if (result.distance > 20) {
         _lastPosition = result.position;
         _courierMapProvider.updateMarker(result.position);
         _courierMapProvider.animateCamera(result.position);
@@ -135,19 +158,36 @@ class CourierStreamProvider with ChangeNotifier {
     }
   }
 
-  Future acceptService(BuildContext context) async {
+  Future acceptService(BuildContext context, Function onCanceled) async {
     try {
       _isAcceptingService = true;
       notifyListeners();
 
-      await _storeDeliveryDetails();
-      await _updateCourierMap();
-      await _emitServiceAccepted();
+      bool isCanceled = await _checkIfDeliveryIsCanceled();
 
-      updateServiceIsAccepted();
+      if (isCanceled) {
+        onCanceled();
+        _serviceFound = false;
+        notifyListeners();
+      } else {
+        await _storeDeliveryDetails();
+        await _updateCourierMap();
+        await _emitServiceAccepted();
+
+        _updateServiceIsAccepted();
+      }
     } finally {
       _isAcceptingService = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> _checkIfDeliveryIsCanceled() async {
+    try {
+      return !(await DeliveriesAPI.checkIfDeliveryExists(
+          deliveryId: delivery?.id));
+    } catch (e) {
+      return false;
     }
   }
 
@@ -160,7 +200,7 @@ class CourierStreamProvider with ChangeNotifier {
       _socketService.emit("serviceFinished",
           {"courierId": courierId, "deliveryId": delivery?.id});
 
-      await _resetDeliveryDetails();
+      await _resetStoredDeliveryDetails();
     } finally {
       _isEndingService = false;
       _resetState();
@@ -183,7 +223,7 @@ class CourierStreamProvider with ChangeNotifier {
     }
   }
 
-  Future _resetDeliveryDetails() async {
+  Future _resetStoredDeliveryDetails() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -242,7 +282,7 @@ class CourierStreamProvider with ChangeNotifier {
     }
   }
 
-  void updateServiceIsAccepted() {
+  void _updateServiceIsAccepted() {
     _serviceAccepted = true;
     _serviceFound = false;
     notifyListeners();
