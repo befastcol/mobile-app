@@ -53,6 +53,12 @@ class _LookingForCouriersCardState extends State<LookingForCouriersCard> {
         userMapState.resetValues();
       });
     });
+
+    _socketService.on("deliveryNotAccepted", (data) {
+      deliveryState.resetId();
+      showSnackBar(
+          context, "Ningún repartidor aceptó tu pedido, intenta más tarde");
+    });
   }
 
   @override
