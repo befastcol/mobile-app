@@ -1,46 +1,23 @@
-import 'dart:async';
-
 import 'package:be_fast/screens/home/courier/providers/courier_stream_provider.dart';
 import 'package:be_fast/shared/utils/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ServiceFoundCard extends StatefulWidget {
-  const ServiceFoundCard({Key? key}) : super(key: key);
+  final int timeLeft;
+  const ServiceFoundCard({Key? key, required this.timeLeft}) : super(key: key);
 
   @override
   State<ServiceFoundCard> createState() => _ServiceFoundCardState();
 }
 
 class _ServiceFoundCardState extends State<ServiceFoundCard> {
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<CourierStreamProvider>(
       builder: (context, streamState, child) {
-        final timeLeft = streamState.deadline != null
-            ? streamState.deadline!.difference(DateTime.now()).inSeconds
-            : 0;
-
         return Visibility(
-          visible: streamState.serviceFound && timeLeft > 0,
+          visible: streamState.serviceFound && widget.timeLeft > 0,
           child: Positioned(
             left: 0,
             right: 0,
@@ -131,7 +108,7 @@ class _ServiceFoundCardState extends State<ServiceFoundCard> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text('$timeLeft segundos restantes',
+                            child: Text('${widget.timeLeft} segundos restantes',
                                 style: const TextStyle(
                                     fontSize: 16, color: Colors.blueGrey)),
                           ),
