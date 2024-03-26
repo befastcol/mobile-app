@@ -36,7 +36,7 @@ class CourierMapProvider with ChangeNotifier {
     try {
       Position position = await LocationHelper.determinePosition();
       _initialCameraPosition = CameraPosition(
-        tilt: 100,
+        tilt: 90,
         target: LatLng(position.latitude, position.longitude),
         zoom: 19,
       );
@@ -44,8 +44,7 @@ class CourierMapProvider with ChangeNotifier {
       updateMarker(position);
       animateCamera(position);
     } catch (e) {
-      _initialCameraPosition =
-          CameraPosition(target: defaultPosition, zoom: 14);
+      _initialCameraPosition = CameraPosition(target: defaultLatLng, zoom: 14);
       notifyListeners();
     }
   }
@@ -80,7 +79,7 @@ class CourierMapProvider with ChangeNotifier {
       target: LatLng(position.latitude, position.longitude),
       zoom: 19,
       bearing: position.heading,
-      tilt: 100,
+      tilt: 90,
     );
     _googleMapController
         ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));

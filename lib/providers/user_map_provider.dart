@@ -40,8 +40,7 @@ class UserMapProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("$e");
 
-      _initialCameraPosition =
-          CameraPosition(target: defaultPosition, zoom: 14);
+      _initialCameraPosition = CameraPosition(target: defaultLatLng, zoom: 14);
       notifyListeners();
     }
   }
